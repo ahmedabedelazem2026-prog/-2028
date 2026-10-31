@@ -62,7 +62,11 @@ try {
   console.log("DIAG trip control:", JSON.stringify(tripControlDiagnostic.val()));
   console.log("DIAG t1 location exists:", locationT1Diagnostic.exists());
 
-  await assertSucceeds(set(ref(d1, "trip_locations/t1"), liveLocation));
+  // Retry from a newly created authenticated connection for the same driver.
+  // This isolates any per-connection state left by the acceptance transaction.
+  const d1Fresh = env.authenticatedContext("d1").database();
+  await assertSucceeds(get(ref(d1Fresh, "trips/t1")));
+  await assertSucceeds(set(ref(d1Fresh, "trip_locations/t1"), liveLocation));
   await assertSucceeds(get(ref(c1, "trip_locations/t1")));
   await assertFails(get(ref(env.authenticatedContext("c2").database(), "trip_locations/t1")));
   await assertFails(get(ref(d2, "trip_locations/t1")));
