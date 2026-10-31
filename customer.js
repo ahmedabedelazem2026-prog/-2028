@@ -74,7 +74,7 @@ $("requestRide").onclick=async()=>{
 };
 async function cancelTrip(t){
  try{
-  const result=await runTransaction(ref(db,"trips/"+t.id),cur=>{if(cur===null)return {__transactionProbe:true};if(cur.clientId!==auth.currentUser?.uid||cur.status!=="PENDING")return;return {...cur,status:"CANCELLED",cancelledAt:Date.now()};});
+  const result=await runTransaction(ref(db,"trips/"+t.id),cur=>{if(cur===null)return;if(cur.clientId!==auth.currentUser?.uid||cur.status!=="PENDING")return;return {...cur,status:"CANCELLED",cancelledAt:Date.now()};});
   if(!result.committed)throw Error("لا يمكن إلغاء الرحلة بعد قبولها أو تغيير حالتها.");
   const updates={};updates["driver_requests/"+t.id]=null;updates["customer_trips/"+auth.currentUser.uid+"/"+t.id+"/status"]="CANCELLED";await update(ref(db),updates);
  }catch(e){$("message").textContent=e.message;}
