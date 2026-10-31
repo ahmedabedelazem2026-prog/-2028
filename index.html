@@ -1,34 +1,7 @@
 <!doctype html>
-<html lang="ar" dir="rtl">
-<head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#071b36"><title>تاكسي العاصمة | احجز رحلتك</title>
-<link rel="stylesheet" href="style.css">
-</head>
-<body>
-<header class="top"><div class="brand">🚕 تاكسي العاصمة</div><nav><a href="index.html">العميل</a><a href="driver.html">السائق</a><a href="admin.html">الإدارة</a></nav></header>
-<main class="wrap">
-<section class="hero"><span class="eyebrow">العريش • شمال سيناء</span><h1>مشوارك علينا.. بأمان وراحة</h1><p>اطلب رحلتك، وسيصل الطلب إلى السائقين المتاحين ليقبله أحدهم.</p></section>
-<section class="panel">
-<h2>احجز مشوارك</h2>
-<div id="authBox">
-<div class="grid"><label>الاسم<input id="name" placeholder="اسمك"></label><label>رقم الهاتف<input id="phone" type="tel" placeholder="01xxxxxxxxx"></label></div>
-<label>البريد الإلكتروني<input id="email" type="email" placeholder="name@example.com"></label>
-<label>كلمة المرور<input id="password" type="password" minlength="6" placeholder="6 أحرف على الأقل"></label>
-<div class="actions"><button id="signup">إنشاء حساب</button><button class="secondary" id="login">تسجيل الدخول</button></div>
-</div>
-<div id="bookingBox" hidden>
-<p id="welcome"></p>
-<label>مكان الركوب<input id="pickup" placeholder="مثال: شارع 23 يوليو - العريش"></label>
-<label>الوجهة<input id="destination" placeholder="إلى أين تريد الذهاب؟"></label>
-<label>ملاحظات (اختياري)<textarea id="notes" rows="2" placeholder="أي تفاصيل إضافية"></textarea></label>
-<button id="requestRide">إرسال طلب الرحلة</button>
-<div id="rideStatus" class="notice" aria-live="polite"></div>
-<button id="logout" class="secondary">تسجيل الخروج</button>
-</div>
-<p id="message" class="notice" aria-live="polite">للتشغيل: أضف إعدادات Firebase الخاصة بمشروعك في firebase-config.js ثم فعّل Authentication وFirestore.</p>
-</section>
-</main>
-<footer>تاكسي العاصمة • للحجز والاستفسار: 01094129592</footer>
-<script type="module" src="customer.js"></script>
-</body></html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#071b36"><title>تاكسي العاصمة | احجز رحلتك</title><link rel="stylesheet" href="style.css"></head>
+<body><header class="top"><div class="brand">🚕 تاكسي العاصمة</div><nav><a href="index.html">العميل</a><a href="driver.html">السائق</a><a href="admin.html">الإدارة</a></nav></header>
+<main class="wrap"><section class="hero"><span class="eyebrow">العريش • شمال سيناء</span><h1>مشوارك علينا.. بأمان وراحة</h1><p>اطلب رحلتك، وسيصل الطلب إلى السائقين المتاحين ليقبله أحدهم.</p></section>
+<section class="panel"><h2>احجز مشوارك</h2><div id="authBox"><div class="grid"><label>الاسم<input id="name" placeholder="اسمك"></label><label>رقم الهاتف<input id="phone" type="tel" placeholder="01xxxxxxxxx"></label></div><label>البريد الإلكتروني<input id="email" type="email" placeholder="name@example.com"></label><label>كلمة المرور<input id="password" type="password" minlength="6" placeholder="6 أحرف على الأقل"></label><div class="actions"><button id="signup">إنشاء حساب</button><button id="login" class="secondary">تسجيل الدخول</button></div></div>
+<div id="bookingBox" hidden><p id="welcome"></p><label>مكان الركوب<input id="pickup" placeholder="مثال: وسط البلد - العريش"></label><label>الوجهة<input id="destination" placeholder="إلى أين تريد الذهاب؟"></label><label>ملاحظات (اختياري)<textarea id="notes" rows="2"></textarea></label><button id="requestRide">إرسال طلب الرحلة</button><div id="rideStatus" class="notice" aria-live="polite"></div><button id="logout" class="secondary">تسجيل الخروج</button></div><p id="message" class="notice" aria-live="polite"></p></section></main>
+<footer>تاكسي العاصمة • للحجز والاستفسار: 01094129592</footer><script type="module" src="customer.js"></script></body></html>
