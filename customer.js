@@ -2,6 +2,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/fireba
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 import { getDatabase, ref, set, push, get, update, onValue, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
 import { firebaseConfig } from "./firebase-config.js";
+import {watchAvailableDrivers,stopWatchingAvailableDrivers} from "./maps.js";
 const $=id=>document.getElementById(id), app=initializeApp(firebaseConfig), auth=getAuth(app), db=getDatabase(app);
 let stopTrips=null, sending=false;
 const labels={PENDING:"نبحث عن سائق متاح لقبول طلبك",ACCEPTED:"تم قبول الرحلة — السائق في طريقه إليك",IN_PROGRESS:"رحلتك جارية",COMPLETED:"اكتملت الرحلة — شكرًا لاختيارك تاكسي العاصمة",CANCELLED:"تم إلغاء الرحلة"};
@@ -30,9 +31,10 @@ function listenTrips(uid){
 }
 onAuthStateChanged(auth,async user=>{
  if(stopTrips){stopTrips();stopTrips=null;}
+ stopWatchingAvailableDrivers();
  $("authBox").hidden=!!user;$("bookingBox").hidden=!user;
  if(!user)return;
- try{const s=await get(ref(db,"customers/"+user.uid)),p=s.val()||{};$("welcome").textContent="أهلًا "+(p.name||user.email)+" — اكتب تفاصيل مشوارك.";listenTrips(user.uid);}
+ try{const s=await get(ref(db,"customers/"+user.uid)),p=s.val()||{};$("welcome").textContent="أهلًا "+(p.name||user.email)+" — اكتب تفاصيل مشوارك.";listenTrips(user.uid);watchAvailableDrivers(db);}
  catch(e){$("message").textContent="تعذر تحميل حسابك: "+e.message;}
 });
 $("signup").onclick=async()=>{
