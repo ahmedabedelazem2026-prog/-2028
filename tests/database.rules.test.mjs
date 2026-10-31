@@ -52,6 +52,16 @@ try {
     });
   });
   await assertSucceeds(set(ref(d1, "trip_locations/control"), liveLocation));
+
+  // Diagnostic comparison: capture the full server-visible trip records and
+  // whether the target location node is readable before attempting the write.
+  const tripT1Diagnostic = await get(ref(d1, "trips/t1"));
+  const tripControlDiagnostic = await get(ref(d1, "trips/control"));
+  const locationT1Diagnostic = await get(ref(d1, "trip_locations/t1"));
+  console.log("DIAG trip t1:", JSON.stringify(tripT1Diagnostic.val()));
+  console.log("DIAG trip control:", JSON.stringify(tripControlDiagnostic.val()));
+  console.log("DIAG t1 location exists:", locationT1Diagnostic.exists());
+
   await assertSucceeds(set(ref(d1, "trip_locations/t1"), liveLocation));
   await assertSucceeds(get(ref(c1, "trip_locations/t1")));
   await assertFails(get(ref(env.authenticatedContext("c2").database(), "trip_locations/t1")));
