@@ -7,6 +7,7 @@ on:
       - "tests/**"
       - "firebase.json"
       - "package.json"
+      - ".github/workflows/firebase-rules-test.yml"
   pull_request:
     paths:
       - "database.rules.draft.json"
