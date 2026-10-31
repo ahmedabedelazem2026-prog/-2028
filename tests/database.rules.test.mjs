@@ -42,6 +42,16 @@ try {
   assert.equal(tripBeforeLocationWrite.val()?.status, "ACCEPTED");
   assert.equal(tripBeforeLocationWrite.val()?.driverId, "d1");
   const liveLocation = { lat: 31.1321, lng: 33.8033, accuracy: 12, updatedAt: 3 };
+  // Control case: seed an already-accepted trip outside security rules.
+  // This distinguishes a rules-path issue from transaction timing/state visibility.
+  await env.withSecurityRulesDisabled(async c => {
+    await set(ref(c.database(), "trips/control"), {
+      clientId: "c1", clientPhone: "01000000000", from: "A", fromName: "A",
+      to: "B", toName: "B", carType: "economy", rideWhen: "now", notes: "",
+      status: "ACCEPTED", driverId: "d1", driverName: "Driver", createdAt: 2, acceptedAt: 3
+    });
+  });
+  await assertSucceeds(set(ref(d1, "trip_locations/control"), liveLocation));
   await assertSucceeds(set(ref(d1, "trip_locations/t1"), liveLocation));
   await assertSucceeds(get(ref(c1, "trip_locations/t1")));
   await assertFails(get(ref(env.authenticatedContext("c2").database(), "trip_locations/t1")));
