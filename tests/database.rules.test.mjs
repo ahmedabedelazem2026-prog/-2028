@@ -31,6 +31,12 @@ try {
     return { ...current, status: "ACCEPTED", driverId: "d1", driverName: "Driver", acceptedAt: 3 };
   }));
   assert.equal(accepted.committed, true);
+  const liveLocation = { lat: 31.1321, lng: 33.8033, accuracy: 12, updatedAt: 3 };
+  await assertSucceeds(set(ref(d1, "trip_locations/t1"), liveLocation));
+  await assertSucceeds(get(ref(c1, "trip_locations/t1")));
+  await assertFails(get(ref(env.authenticatedContext("c2").database(), "trip_locations/t1")));
+  await assertFails(get(ref(d2, "trip_locations/t1")));
+  await assertFails(set(ref(d2, "trip_locations/t1"), liveLocation));
   await assertSucceeds(update(ref(d1), {
     "customer_trips/c1/t1/status": "ACCEPTED",
     "customer_trips/c1/t1/driverName": "Driver",
@@ -56,6 +62,7 @@ try {
     return { ...current, status: "COMPLETED", completedAt: 5 };
   }));
   assert.equal(completed.committed, true);
+  await assertFails(set(ref(d1, "trip_locations/t1"), { ...liveLocation, updatedAt: 6 }));
   await assertSucceeds(update(ref(d1), {
     "customer_trips/c1/t1/status": "COMPLETED",
     "customer_trips/c1/t1/updatedAt": 5,
