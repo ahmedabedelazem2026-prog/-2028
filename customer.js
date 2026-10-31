@@ -45,8 +45,17 @@ $("requestRide").onclick=async()=>{
   const carType=$("carType").value,rideWhen=$("rideWhen").value,notes=$("notes").value.trim();
   const trip={clientId:user.uid,clientPhone:profile.phone||"",from:fromName,fromName,to:toName,toName,carType,rideWhen,notes,status:"PENDING",createdAt:now};
   const dispatch={tripId:id,clientId:user.uid,pickup:fromName,destination:toName,carType,createdAt:now,status:"PENDING"};
-  const updates={};updates["trips/"+id]=trip;updates["driver_requests/"+id]=dispatch;updates["customer_trips/"+user.uid+"/"+id]=trip;
-  await update(ref(db),updates);
+  // Create the main trip first so database rules can verify it before dispatch.
+  await set(tripRef,trip);
+  try {
+   await set(ref(db,"customer_trips/"+user.uid+"/"+id),trip);
+   await set(ref(db,"driver_requests/"+id),dispatch);
+  } catch(dispatchError) {
+   // If dispatch/history creation fails, mark the trip cancelled rather than leaving an undispatched pending request.
+   await runTransaction(tripRef,cur=>cur&&cur.clientId===user.uid&&cur.status==="PENDING"?{...cur,status:"CANCELLED",cancelledAt:Date.now()}:cur);
+   try { await set(ref(db,"customer_trips/"+user.uid+"/"+id+"/status"),"CANCELLED"); } catch (_) {}
+   throw dispatchError;
+  }
   $("pickup").value="";$("destination").value="";$("notes").value="";
   $("rideStatus").textContent="تم إرسال طلبك للسائقين المتاحين. سنعرض لك حالة القبول هنا.";
  }catch(e){$("rideStatus").textContent="لم يتم إرسال الطلب: "+e.message;}
