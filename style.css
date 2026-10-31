@@ -11,3 +11,26 @@
 @media(max-width:650px){.site-header{height:auto;min-height:72px;padding:10px 5%;gap:10px;flex-wrap:wrap}.brand b{font-size:14px}.brand-icon{width:38px;height:38px}.main-nav{order:3;width:100%;justify-content:space-between;gap:5px;padding-top:7px;border-top:1px solid var(--line)}.main-nav a{font-size:9px}.header-call{padding:5px 9px}.header-call b{font-size:13px}.hero{min-height:680px;align-items:flex-start;padding:65px 6% 250px}.hero-content{max-width:100%}.hero h1{font-size:48px}.hero-content>p{font-size:12px}.hero-car-wrap{width:100%;height:260px;left:0;bottom:22px}.hero-scroll{display:none}.hero-meta{font-size:9px}.quick-stats{width:90%;grid-template-columns:1fr 1fr;gap:15px;padding:17px;margin-bottom:65px}.quick-stats>a{border-right:0;border-top:1px solid var(--line);padding-top:10px;grid-column:1/-1}.section-shell{width:90%;margin-bottom:70px}.section-title{align-items:flex-start;flex-direction:column}.section-title.centered{align-items:center}.section-title h2{font-size:28px}.booking-card{padding:18px}.form-grid{grid-template-columns:1fr;gap:0}.map-tools{align-items:stretch;flex-direction:column}.map-tools .btn-outline{width:100%}#taxiMap{height:330px}.map-legend{flex-direction:column}.service-grid,.how-grid{grid-template-columns:1fr}.service-card{min-height:320px}.service-card img{height:190px}.contact-banner{padding:23px;align-items:flex-start;flex-direction:column}.site-footer{align-items:flex-start;flex-direction:column;gap:12px}.secure-note{align-self:flex-start}}
 
 .gm-layer-controls{display:flex;flex-direction:column;gap:6px;margin:10px}.gm-layer-button{border:1px solid #c6d2df;border-radius:7px;background:#fff;color:#24364b;padding:7px 10px;font:700 10px Cairo,Tahoma,sans-serif;box-shadow:0 2px 9px #0002;cursor:pointer}.gm-layer-button.active{background:#10243b;color:#f0dca9;border-color:#d8b56d}
+
+
+/* تنسيق موحد لبوابتي السائق والإدارة */
+.top{min-height:78px;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:12px max(5%,calc((100% - 1180px)/2));background:rgba(5,16,31,.96);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}
+.top .brand{font-weight:900;gap:12px}.brand-mark{display:grid;place-items:center;width:44px;height:44px;border:1px solid #d8b56d99;border-radius:14px;color:var(--gold2);font-weight:900;background:#172b43}
+.top .brand small{display:block;color:var(--gold);font-size:10px;margin-top:4px;letter-spacing:0}
+.top nav{display:flex;gap:20px;flex-wrap:wrap}.top nav a{color:#d5deea;text-decoration:none;font-size:12px;font-weight:800}.top nav a:hover{color:var(--gold2)}
+.wrap{width:min(900px,92%);margin:45px auto 80px}.wrap.wide{width:min(1180px,92%)}
+.wrap>.hero{min-height:0;display:block;padding:34px;margin-bottom:22px;border:1px solid #d8b56d44;border-radius:18px;background:linear-gradient(120deg,#142b43,#091729);overflow:visible}
+.wrap>.hero h1{font-size:clamp(26px,4vw,42px);margin:12px 0}.wrap>.hero p{font-size:13px;color:#c5d0de;line-height:2;margin:0}
+.panel{padding:28px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(145deg,#10243a,#0b192b);box-shadow:var(--shadow)}
+.panel h2{font-size:19px;margin:8px 0 18px}.panel h3{font-size:15px;margin:25px 0 12px}
+.panel button{min-height:43px;padding:10px 20px;border:0;border-radius:9px;background:linear-gradient(135deg,#f0dfb4,#c79e54);color:#17253a;font:800 12px Cairo,Tahoma,sans-serif;cursor:pointer}
+.panel button.secondary{background:#172a40;color:#e8edf3;border:1px solid #40536b}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.actions button{flex:1}
+.section-heading{display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}
+.live-pill{padding:7px 12px;border-radius:30px;background:#d8b56d18;border:1px solid #d8b56d66;color:var(--gold2);font-size:11px}
+.stack{display:grid;gap:12px}.status-card,.stack>*{padding:15px;border:1px solid var(--line);border-radius:11px;background:#09182a;color:#e6edf5;font-size:12px;line-height:1.9}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:20px 0}
+.stats>div{padding:18px;border:1px solid #d8b56d40;border-radius:12px;background:#0b1b2e;text-align:center}
+.stats strong,.stats span{display:block}.stats strong{font-size:27px;color:var(--gold2)}.stats span{font-size:11px;color:var(--muted)}
+body>footer{padding:24px;text-align:center;border-top:1px solid var(--line);background:#050e1b;color:var(--muted);font-size:11px}
+@media(max-width:650px){.top{align-items:flex-start;flex-direction:column}.top nav{width:100%;justify-content:space-between;gap:8px}.wrap{margin:25px auto 55px}.panel{padding:18px}.wrap>.hero{padding:24px}.stats{grid-template-columns:1fr 1fr}.actions{flex-direction:column}}
