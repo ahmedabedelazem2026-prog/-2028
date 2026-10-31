@@ -65,7 +65,7 @@ async function loadActiveRide(uid){
  const root=$("activeRide");root.replaceChildren();
  if(!active){activeTripId=null;activeTripStatus=null;root.textContent="لا توجد رحلة نشطة.";return;}
  activeTripId=active.id;activeTripStatus=active.status;
- if(["ACCEPTED","IN_PROGRESS"].includes(activeTripStatus)&&gpsWatchId===null)startGps();
+ if(["ACCEPTED","IN_PROGRESS"].includes(activeTripStatus)){onDisconnect(ref(db,"trip_locations/"+activeTripId)).remove();if(gpsWatchId===null)startGps();}
  const p=document.createElement("p");p.textContent=(active.fromName||active.from)+" ← "+(active.toName||active.to);
  const phone=document.createElement("p");phone.textContent="هاتف العميل: "+(active.clientPhone||"غير مسجل");
  const b=document.createElement("button");b.textContent=active.status==="ACCEPTED"?"بدء الرحلة":"إنهاء الرحلة";b.onclick=()=>advance(active,b);
@@ -81,7 +81,7 @@ async function accept(id,btn){
   });
   if(!result.committed)throw Error("سبق سائق آخر إلى قبول هذه الرحلة.");
   const t=result.snapshot.val(),updates={};updates["customer_trips/"+t.clientId+"/"+id+"/status"]="ACCEPTED";updates["customer_trips/"+t.clientId+"/"+id+"/driverName"]=profile.name||"";updates["customer_trips/"+t.clientId+"/"+id+"/driverId"]=auth.currentUser.uid;updates["customer_trips/"+t.clientId+"/"+id+"/acceptedAt"]=Date.now();updates["driver_requests/"+id]=null;updates["driver_active/"+auth.currentUser.uid+"/"+id]={fromName:t.fromName||t.from,toName:t.toName||t.to,clientPhone:t.clientPhone||"",clientId:t.clientId,status:"ACCEPTED",createdAt:t.createdAt||Date.now(),acceptedAt:Date.now()};updates["drivers/"+auth.currentUser.uid+"/available"]=false;updates["driver_locations/"+auth.currentUser.uid]=null;
-  await update(ref(db),updates);profile.available=false;activeTripId=id;activeTripStatus="ACCEPTED";showAvailability();stop();$("rides").textContent="تم قبول الرحلة. راجع تفاصيلها في قسم رحلتي الحالية.";await loadActiveRide(auth.currentUser.uid);
+  await update(ref(db),updates);profile.available=false;activeTripId=id;activeTripStatus="ACCEPTED";onDisconnect(ref(db,"trip_locations/"+id)).remove();showAvailability();stop();$("rides").textContent="تم قبول الرحلة. راجع تفاصيلها في قسم رحلتي الحالية.";await loadActiveRide(auth.currentUser.uid);
  }catch(e){$("message").textContent=e.message||"تعذر قبول الرحلة.";}finally{btn.disabled=false;}
 }
 async function advance(t,btn){
