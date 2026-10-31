@@ -3,19 +3,24 @@ import {getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuth
 import {getDatabase,ref,set,get,update,onValue,runTransaction,onDisconnect} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
 import {firebaseConfig} from "./firebase-config.js";
 const $=id=>document.getElementById(id),app=initializeApp(firebaseConfig),auth=getAuth(app),db=getDatabase(app);
-let profile=null,stopFeed=null,creatingDriver=false,gpsWatchId=null;
+let profile=null,stopFeed=null,creatingDriver=false,gpsWatchId=null,activeTripId=null,activeTripStatus=null;
 function stop(){if(stopFeed){stopFeed();stopFeed=null;}}
 function stopGps(){if(gpsWatchId!==null){navigator.geolocation.clearWatch(gpsWatchId);gpsWatchId=null;}}
-async function removeGps(){stopGps();if(auth.currentUser)await set(ref(db,"driver_locations/"+auth.currentUser.uid),null);}
+async function removeGps(){stopGps();if(auth.currentUser){const uid=auth.currentUser.uid;const updates={["driver_locations/"+uid]:null};if(activeTripId)updates["trip_locations/"+activeTripId]=null;await update(ref(db),updates);}activeTripId=null;activeTripStatus=null;}
 function startGps(){
  if(!navigator.geolocation)throw Error("هذا الهاتف أو المتصفح لا يدعم تحديد الموقع.");
  if(!window.isSecureContext)throw Error("يجب فتح الموقع عبر HTTPS حتى يعمل GPS.");
  $("gpsStatus").textContent="جارٍ تحديد موقعك...";
  gpsWatchId=navigator.geolocation.watchPosition(async pos=>{
-  try{const uid=auth.currentUser?.uid;if(!uid||!profile?.available||profile.approved!==true)return;
+  try{const uid=auth.currentUser?.uid;if(!uid||profile?.approved!==true)return;
    const loc={lat:pos.coords.latitude,lng:pos.coords.longitude,accuracy:Math.round(pos.coords.accuracy||0),updatedAt:Date.now()};
-   await set(ref(db,"driver_locations/"+uid),loc);
-   $("gpsStatus").textContent="● مشاركة الموقع مفعّلة — دقة تقريبية "+loc.accuracy+" متر";
+   if(activeTripId&&["ACCEPTED","IN_PROGRESS"].includes(activeTripStatus)){
+    await set(ref(db,"trip_locations/"+activeTripId),loc);
+    $("gpsStatus").textContent="● يتم تحديث موقعك للعميل صاحب الرحلة — دقة تقريبية "+loc.accuracy+" متر";
+   }else if(profile.available){
+    await set(ref(db,"driver_locations/"+uid),loc);
+    $("gpsStatus").textContent="● مشاركة موقعك للسائقين المتاحين — دقة تقريبية "+loc.accuracy+" متر";
+   }
   }catch(e){$("gpsStatus").textContent="تعذر إرسال الموقع: "+e.message;}
  },async err=>{$("gpsStatus").textContent=err.code===1?"لم تسمح بإذن الموقع. فعّله من إعدادات المتصفح.":"تعذر تحديد الموقع؛ تحقق من GPS وإعدادات الهاتف.";try{profile.available=false;await update(ref(db,"drivers/"+auth.currentUser.uid),{available:false});await set(ref(db,"driver_locations/"+auth.currentUser.uid),null);stopGps();showAvailability();}catch(_){}},
  {enableHighAccuracy:true,maximumAge:5000,timeout:20000});
@@ -58,7 +63,9 @@ async function loadActiveRide(uid){
  const s=await get(ref(db,"driver_active/"+uid));let active=null;
  if(s.exists()){const v=s.val();const key=Object.keys(v)[0];if(key)active={id:key,...v[key]};}
  const root=$("activeRide");root.replaceChildren();
- if(!active){root.textContent="لا توجد رحلة نشطة.";return;}
+ if(!active){activeTripId=null;activeTripStatus=null;root.textContent="لا توجد رحلة نشطة.";return;}
+ activeTripId=active.id;activeTripStatus=active.status;
+ if(["ACCEPTED","IN_PROGRESS"].includes(activeTripStatus)&&gpsWatchId===null)startGps();
  const p=document.createElement("p");p.textContent=(active.fromName||active.from)+" ← "+(active.toName||active.to);
  const phone=document.createElement("p");phone.textContent="هاتف العميل: "+(active.clientPhone||"غير مسجل");
  const b=document.createElement("button");b.textContent=active.status==="ACCEPTED"?"بدء الرحلة":"إنهاء الرحلة";b.onclick=()=>advance(active,b);
@@ -74,7 +81,7 @@ async function accept(id,btn){
   });
   if(!result.committed)throw Error("سبق سائق آخر إلى قبول هذه الرحلة.");
   const t=result.snapshot.val(),updates={};updates["customer_trips/"+t.clientId+"/"+id+"/status"]="ACCEPTED";updates["customer_trips/"+t.clientId+"/"+id+"/driverName"]=profile.name||"";updates["customer_trips/"+t.clientId+"/"+id+"/driverId"]=auth.currentUser.uid;updates["customer_trips/"+t.clientId+"/"+id+"/acceptedAt"]=Date.now();updates["driver_requests/"+id]=null;updates["driver_active/"+auth.currentUser.uid+"/"+id]={fromName:t.fromName||t.from,toName:t.toName||t.to,clientPhone:t.clientPhone||"",clientId:t.clientId,status:"ACCEPTED",createdAt:t.createdAt||Date.now(),acceptedAt:Date.now()};updates["drivers/"+auth.currentUser.uid+"/available"]=false;updates["driver_locations/"+auth.currentUser.uid]=null;
-  await update(ref(db),updates);profile.available=false;showAvailability();stop();$("rides").textContent="تم قبول الرحلة. راجع تفاصيلها في قسم رحلتي الحالية.";await loadActiveRide(auth.currentUser.uid);
+  await update(ref(db),updates);profile.available=false;activeTripId=id;activeTripStatus="ACCEPTED";showAvailability();stop();$("rides").textContent="تم قبول الرحلة. راجع تفاصيلها في قسم رحلتي الحالية.";await loadActiveRide(auth.currentUser.uid);
  }catch(e){$("message").textContent=e.message||"تعذر قبول الرحلة.";}finally{btn.disabled=false;}
 }
 async function advance(t,btn){
@@ -83,7 +90,7 @@ async function advance(t,btn){
   const r=await runTransaction(ref(db,"trips/"+t.id),cur=>{if(cur===null)return;if(cur.driverId!==auth.currentUser.uid||cur.status!==t.status)return;return {...cur,status:next,[next.toLowerCase()+"At"]:Date.now()};});
   if(!r.committed)throw Error("تغيرت حالة الرحلة. حدّث الصفحة.");
   const changes={["customer_trips/"+t.clientId+"/"+t.id+"/status"]:next,["customer_trips/"+t.clientId+"/"+t.id+"/updatedAt"]:Date.now(),["driver_active/"+auth.currentUser.uid+"/"+t.id+"/status"]:next};
-  if(next==="COMPLETED"){changes["driver_active/"+auth.currentUser.uid+"/"+t.id]=null;changes["drivers/"+auth.currentUser.uid+"/available"]=false;changes["driver_locations/"+auth.currentUser.uid]=null;profile.available=false;stopGps();showAvailability();$("gpsStatus").textContent="توقف التتبع بانتهاء الرحلة.";}
+  if(next==="COMPLETED"){changes["driver_active/"+auth.currentUser.uid+"/"+t.id]=null;changes["drivers/"+auth.currentUser.uid+"/available"]=false;changes["driver_locations/"+auth.currentUser.uid]=null;changes["trip_locations/"+t.id]=null;profile.available=false;activeTripId=null;activeTripStatus=null;stopGps();showAvailability();$("gpsStatus").textContent="توقف التتبع بانتهاء الرحلة.";}
   await update(ref(db),changes);
   await loadActiveRide(auth.currentUser.uid);$("message").textContent=next==="COMPLETED"?"تم إنهاء الرحلة بنجاح.":"تم بدء الرحلة.";
  }catch(e){$("message").textContent=e.message;}finally{btn.disabled=false;}
