@@ -44,7 +44,7 @@ $("requestRide").onclick=async()=>{
   const profile=(await get(ref(db,"customers/"+user.uid))).val()||{},tripRef=push(ref(db,"trips")),id=tripRef.key,now=Date.now();
   const carType=$("carType").value,rideWhen=$("rideWhen").value,notes=$("notes").value.trim();
   const trip={clientId:user.uid,clientPhone:profile.phone||"",from:fromName,fromName,to:toName,toName,carType,rideWhen,notes,status:"PENDING",createdAt:now};
-  const dispatch={tripId:id,pickup:fromName,destination:toName,carType,createdAt:now,status:"PENDING"};
+  const dispatch={tripId:id,clientId:user.uid,pickup:fromName,destination:toName,carType,createdAt:now,status:"PENDING"};
   const updates={};updates["trips/"+id]=trip;updates["driver_requests/"+id]=dispatch;updates["customer_trips/"+user.uid+"/"+id]=trip;
   await update(ref(db),updates);
   $("pickup").value="";$("destination").value="";$("notes").value="";
