@@ -4,8 +4,25 @@ import { getDatabase, ref, set, push, get, update, onValue, runTransaction } fro
 import { firebaseConfig } from "./firebase-config.js";
 import {watchAvailableDrivers,stopWatchingAvailableDrivers} from "./maps.js";
 const $=id=>document.getElementById(id), app=initializeApp(firebaseConfig), auth=getAuth(app), db=getDatabase(app);
-let stopTrips=null, sending=false;
+let stopTrips=null, sending=false,stopTripLocation=null,tripMarker=null,lastTripPosition=null;
 const labels={PENDING:"نبحث عن سائق متاح لقبول طلبك",ACCEPTED:"تم قبول الرحلة — السائق في طريقه إليك",IN_PROGRESS:"رحلتك جارية",COMPLETED:"اكتملت الرحلة — شكرًا لاختيارك تاكسي العاصمة",CANCELLED:"تم إلغاء الرحلة"};
+
+function watchCustomerTripLocation(trip){
+ if(stopTripLocation){stopTripLocation();stopTripLocation=null;}
+ if(tripMarker){tripMarker.setMap(null);tripMarker=null;}
+ lastTripPosition=null;
+ if(!trip||!["ACCEPTED","IN_PROGRESS"].includes(trip.status)||!trip.id)return;
+ stopTripLocation=onValue(ref(db,"trip_locations/"+trip.id),snap=>{
+  const loc=snap.val();
+  if(!loc||typeof loc.lat!=="number"||typeof loc.lng!=="number")return;
+  lastTripPosition={lat:loc.lat,lng:loc.lng};
+  const map=window.capitalTaxiMap;
+  if(!map||!window.google?.maps)return;
+  if(!tripMarker)tripMarker=new google.maps.Marker({map,position:lastTripPosition,title:"سيارة السائق في رحلتك",label:{text:"🚕",fontSize:"22px"}});
+  else tripMarker.setPosition(lastTripPosition);
+ });
+}
+
 function listenTrips(uid){
  if(stopTrips)stopTrips();
  stopTrips=onValue(ref(db,"customer_trips/"+uid),snap=>{
@@ -13,6 +30,7 @@ function listenTrips(uid){
   snap.forEach(c=>list.push({id:c.key,...c.val()}));list.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
   if(!list.length){root.textContent="لا توجد رحلات حتى الآن. ابدأ بطلب رحلتك الأولى.";history.textContent="لم تطلب أي رحلات بعد.";return;}
   const t=list[0],title=document.createElement("strong"),detail=document.createElement("p"),state=document.createElement("span");
+  watchCustomerTripLocation(t);
   title.textContent="آخر رحلة";detail.textContent=(t.fromName||t.from||"") +" ← "+(t.toName||t.to||"");
   state.className="state "+(t.status==="COMPLETED"?"done":t.status==="CANCELLED"?"muted":"");state.textContent=labels[t.status]||t.status||"حالة غير محددة";
   root.append(title,detail,state);
@@ -31,6 +49,7 @@ function listenTrips(uid){
 }
 onAuthStateChanged(auth,async user=>{
  if(stopTrips){stopTrips();stopTrips=null;}
+ if(stopTripLocation){stopTripLocation();stopTripLocation=null;}if(tripMarker){tripMarker.setMap(null);tripMarker=null;}
  stopWatchingAvailableDrivers();
  $("authBox").hidden=!!user;$("bookingBox").hidden=!user;
  if(!user)return;
@@ -74,7 +93,7 @@ $("requestRide").onclick=async()=>{
 };
 async function cancelTrip(t){
  try{
-  const result=await runTransaction(ref(db,"trips/"+t.id),cur=>{if(cur===null)return {__transactionProbe:true};if(cur.clientId!==auth.currentUser?.uid||cur.status!=="PENDING")return;return {...cur,status:"CANCELLED",cancelledAt:Date.now()};});
+  const result=await runTransaction(ref(db,"trips/"+t.id),cur=>{if(cur===null)return;if(cur.clientId!==auth.currentUser?.uid||cur.status!=="PENDING")return;return {...cur,status:"CANCELLED",cancelledAt:Date.now()};});
   if(!result.committed)throw Error("لا يمكن إلغاء الرحلة بعد قبولها أو تغيير حالتها.");
   const updates={};updates["driver_requests/"+t.id]=null;updates["customer_trips/"+auth.currentUser.uid+"/"+t.id+"/status"]="CANCELLED";await update(ref(db),updates);
  }catch(e){$("message").textContent=e.message;}

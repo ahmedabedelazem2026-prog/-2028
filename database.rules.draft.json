@@ -131,6 +131,28 @@
     "notifications": {
       ".read": false,
       ".write": false
+    },
+    "trip_locations": {
+      "$tripId": {
+        ".read": "auth != null && (root.child('admins').child(auth.uid).child('active').val() === true || root.child('trips').child($tripId).child('clientId').val() === auth.uid || root.child('trips').child($tripId).child('driverId').val() === auth.uid)",
+        ".write": "auth != null && root.child('trips').child($tripId).child('driverId').val() === auth.uid && (root.child('trips').child($tripId).child('status').val() === 'ACCEPTED' || root.child('trips').child($tripId).child('status').val() === 'IN_PROGRESS')",
+        ".validate": "newData.hasChildren(['lat','lng','accuracy','updatedAt'])",
+        "lat": {
+          ".validate": "newData.isNumber() && newData.val() >= -90 && newData.val() <= 90"
+        },
+        "lng": {
+          ".validate": "newData.isNumber() && newData.val() >= -180 && newData.val() <= 180"
+        },
+        "accuracy": {
+          ".validate": "newData.isNumber() && newData.val() >= 0"
+        },
+        "updatedAt": {
+          ".validate": "newData.isNumber()"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
     }
   }
 }

@@ -25,12 +25,52 @@ try {
   await assertSucceeds(set(ref(c1, "customer_trips/c1/t1"), { clientId: "c1", clientPhone: "01000000000", from: "A", fromName: "A", to: "B", toName: "B", carType: "economy", rideWhen: "now", notes: "", status: "PENDING", createdAt: 2 }));
   await assertSucceeds(set(ref(c1, "driver_requests/t1"), { tripId: "t1", clientId: "c1", pickup: "A", destination: "B", carType: "economy", createdAt: 2, status: "PENDING" }));
   await assertSucceeds(get(ref(d1, "driver_requests")));
+  // Prime this client with the server value before starting the transaction.
+  const tripBeforeAccept = await get(ref(d1, "trips/t1"));
+  assert.equal(tripBeforeAccept.val()?.status, "PENDING");
   const accepted = await assertSucceeds(runTransaction(ref(d1, "trips/t1"), current => {
-    if (current === null) return { __transactionProbe: true };
+    // Returning undefined aborts immediately when the local cache starts as null.
+    // Return the unchanged value so RTDB can reconcile with the server value.
+    if (current === null) return null;
     if (current.status !== "PENDING") return;
     return { ...current, status: "ACCEPTED", driverId: "d1", driverName: "Driver", acceptedAt: 3 };
   }));
   assert.equal(accepted.committed, true);
+  assert.equal(accepted.snapshot.val()?.status, "ACCEPTED");
+  assert.equal(accepted.snapshot.val()?.driverId, "d1");
+  const tripBeforeLocationWrite = await get(ref(d1, "trips/t1"));
+  assert.equal(tripBeforeLocationWrite.val()?.status, "ACCEPTED");
+  assert.equal(tripBeforeLocationWrite.val()?.driverId, "d1");
+  const liveLocation = { lat: 31.1321, lng: 33.8033, accuracy: 12, updatedAt: 3 };
+  // Control case: seed an already-accepted trip outside security rules.
+  // This distinguishes a rules-path issue from transaction timing/state visibility.
+  await env.withSecurityRulesDisabled(async c => {
+    await set(ref(c.database(), "trips/control"), {
+      clientId: "c1", clientPhone: "01000000000", from: "A", fromName: "A",
+      to: "B", toName: "B", carType: "economy", rideWhen: "now", notes: "",
+      status: "ACCEPTED", driverId: "d1", driverName: "Driver", createdAt: 2, acceptedAt: 3
+    });
+  });
+  await assertSucceeds(set(ref(d1, "trip_locations/control"), liveLocation));
+
+  // Diagnostic comparison: capture the full server-visible trip records and
+  // whether the target location node is readable before attempting the write.
+  const tripT1Diagnostic = await get(ref(d1, "trips/t1"));
+  const tripControlDiagnostic = await get(ref(d1, "trips/control"));
+  const locationT1Diagnostic = await get(ref(d1, "trip_locations/t1"));
+  console.log("DIAG trip t1:", JSON.stringify(tripT1Diagnostic.val()));
+  console.log("DIAG trip control:", JSON.stringify(tripControlDiagnostic.val()));
+  console.log("DIAG t1 location exists:", locationT1Diagnostic.exists());
+
+  // Retry from a newly created authenticated connection for the same driver.
+  // This isolates any per-connection state left by the acceptance transaction.
+  const d1Fresh = env.authenticatedContext("d1").database();
+  await assertSucceeds(get(ref(d1Fresh, "trips/t1")));
+  await assertSucceeds(set(ref(d1Fresh, "trip_locations/t1"), liveLocation));
+  await assertSucceeds(get(ref(c1, "trip_locations/t1")));
+  await assertFails(get(ref(env.authenticatedContext("c2").database(), "trip_locations/t1")));
+  await assertFails(get(ref(d2, "trip_locations/t1")));
+  await assertFails(set(ref(d2, "trip_locations/t1"), liveLocation));
   await assertSucceeds(update(ref(d1), {
     "customer_trips/c1/t1/status": "ACCEPTED",
     "customer_trips/c1/t1/driverName": "Driver",
@@ -40,7 +80,7 @@ try {
     "drivers/d1/available": false
   }));
   const started = await assertSucceeds(runTransaction(ref(d1, "trips/t1"), current => {
-    if (current === null) return { __transactionProbe: true };
+    if (current === null) return;
     if (current.driverId !== "d1" || current.status !== "ACCEPTED") return;
     return { ...current, status: "IN_PROGRESS", inProgressAt: 4 };
   }));
@@ -51,11 +91,12 @@ try {
     "driver_active/d1/t1/status": "IN_PROGRESS"
   }));
   const completed = await assertSucceeds(runTransaction(ref(d1, "trips/t1"), current => {
-    if (current === null) return { __transactionProbe: true };
+    if (current === null) return;
     if (current.driverId !== "d1" || current.status !== "IN_PROGRESS") return;
     return { ...current, status: "COMPLETED", completedAt: 5 };
   }));
   assert.equal(completed.committed, true);
+  await assertFails(set(ref(d1, "trip_locations/t1"), { ...liveLocation, updatedAt: 6 }));
   await assertSucceeds(update(ref(d1), {
     "customer_trips/c1/t1/status": "COMPLETED",
     "customer_trips/c1/t1/updatedAt": 5,
