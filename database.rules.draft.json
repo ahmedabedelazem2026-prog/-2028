@@ -91,8 +91,26 @@
       }
     },
     "driver_locations": {
-      ".read": false,
-      ".write": false
+      ".read": "auth != null",
+      "$uid": {
+        ".write": "auth != null && auth.uid === $uid && root.child('drivers').child($uid).child('approved').val() === true && root.child('drivers').child($uid).child('available').val() === true",
+        ".validate": "newData.hasChildren(['lat','lng','accuracy','updatedAt'])",
+        "lat": {
+          ".validate": "newData.isNumber() && newData.val() >= -90 && newData.val() <= 90"
+        },
+        "lng": {
+          ".validate": "newData.isNumber() && newData.val() >= -180 && newData.val() <= 180"
+        },
+        "accuracy": {
+          ".validate": "newData.isNumber() && newData.val() >= 0"
+        },
+        "updatedAt": {
+          ".validate": "newData.isNumber()"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
     },
     "test_connection": {
       ".read": false,
