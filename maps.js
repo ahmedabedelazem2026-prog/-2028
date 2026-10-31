@@ -32,8 +32,8 @@ export function watchAvailableDrivers(db){
 function renderLiveDriverMarkers(){
   if(!map||!latestDriverLocations)return;const seen=new Set();
   Object.entries(latestDriverLocations).forEach(([uid,v])=>{if(!v||typeof v.lat!=="number"||typeof v.lng!=="number")return;seen.add(uid);
-   if(!liveDriverMarkers[uid])liveDriverMarkers[child.key]=new google.maps.Marker({map,position:{lat:v.lat,lng:v.lng},title:"سائق متاح — تاكسي العاصمة",label:{text:"🚕",fontSize:"20px"}});
-   else liveDriverMarkers[child.key].setPosition({lat:v.lat,lng:v.lng});
+   if(!liveDriverMarkers[uid])liveDriverMarkers[uid]=new google.maps.Marker({map,position:{lat:v.lat,lng:v.lng},title:"سائق متاح — تاكسي العاصمة",label:{text:"🚕",fontSize:"20px"}});
+   else liveDriverMarkers[uid].setPosition({lat:v.lat,lng:v.lng});
   });
   Object.keys(liveDriverMarkers).forEach(uid=>{if(!seen.has(uid)){liveDriverMarkers[uid].setMap(null);delete liveDriverMarkers[uid];}});
 }
