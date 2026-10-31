@@ -1,0 +1,25 @@
+name: Firebase RTDB rules tests
+on:
+  push:
+    branches: [main]
+    paths:
+      - "database.rules.draft.json"
+      - "tests/**"
+      - "firebase.json"
+      - "package.json"
+  pull_request:
+    paths:
+      - "database.rules.draft.json"
+      - "tests/**"
+      - "firebase.json"
+      - "package.json"
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install
+      - run: npx firebase emulators:exec --only database "npm test"
