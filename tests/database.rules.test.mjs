@@ -26,7 +26,7 @@ try {
   await assertSucceeds(set(ref(c1, "driver_requests/t1"), { tripId: "t1", clientId: "c1", pickup: "A", destination: "B", carType: "economy", createdAt: 2, status: "PENDING" }));
   await assertSucceeds(get(ref(d1, "driver_requests")));
   const accepted = await assertSucceeds(runTransaction(ref(d1, "trips/t1"), current => {
-    if (current === null) return { __transactionProbe: true };
+    if (current === null) return;
     if (current.status !== "PENDING") return;
     return { ...current, status: "ACCEPTED", driverId: "d1", driverName: "Driver", acceptedAt: 3 };
   }));
@@ -40,7 +40,7 @@ try {
     "drivers/d1/available": false
   }));
   const started = await assertSucceeds(runTransaction(ref(d1, "trips/t1"), current => {
-    if (current === null) return { __transactionProbe: true };
+    if (current === null) return;
     if (current.driverId !== "d1" || current.status !== "ACCEPTED") return;
     return { ...current, status: "IN_PROGRESS", inProgressAt: 4 };
   }));
@@ -51,7 +51,7 @@ try {
     "driver_active/d1/t1/status": "IN_PROGRESS"
   }));
   const completed = await assertSucceeds(runTransaction(ref(d1, "trips/t1"), current => {
-    if (current === null) return { __transactionProbe: true };
+    if (current === null) return;
     if (current.driverId !== "d1" || current.status !== "IN_PROGRESS") return;
     return { ...current, status: "COMPLETED", completedAt: 5 };
   }));
