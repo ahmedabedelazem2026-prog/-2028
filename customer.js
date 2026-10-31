@@ -42,6 +42,7 @@ if (!ready) {
         name, phone, role: "customer", available: false, createdAt: serverTimestamp()
       });
       message.textContent = "تم إنشاء الحساب.";
+      await loadCustomer(credential.user);
     } catch (error) { message.textContent = error.message; }
   });
 
@@ -54,16 +55,11 @@ if (!ready) {
 
   $("logout").addEventListener("click", () => signOut(auth));
 
-  onAuthStateChanged(auth, async (user) => {
+  async function loadCustomer(user) {
     if (stopRideListener) { stopRideListener(); stopRideListener = null; }
-    if (!user) {
-      authBox.hidden = false; bookingBox.hidden = true; return;
-    }
+    if (!user) { authBox.hidden = false; bookingBox.hidden = true; return; }
     const profileSnap = await getDoc(doc(db, "users", user.uid));
-    if (!profileSnap.exists()) {
-      message.textContent = "بيانات الحساب غير مكتملة. تواصل مع الإدارة.";
-      await signOut(auth); return;
-    }
+    if (!profileSnap.exists()) { message.textContent = "جارٍ تجهيز بيانات الحساب..."; return; }
     const profile = profileSnap.data();
     if (profile.role !== "customer") {
       message.textContent = "هذا الحساب ليس حساب عميل.";
@@ -78,7 +74,9 @@ if (!ready) {
       const labels = { pending: "بانتظار قبول سائق", accepted: "تم قبول الرحلة", in_progress: "الرحلة جارية", completed: "اكتملت الرحلة", cancelled: "أُلغيت الرحلة" };
       rideStatus.textContent = "حالة آخر طلب: " + (labels[latest.status] || latest.status);
     }, (error) => { rideStatus.textContent = "تعذر تحديث حالة الطلب: " + error.message; });
-  });
+  }
+
+  onAuthStateChanged(auth, (user) => { loadCustomer(user).catch(error => { message.textContent = error.message; }); });
 
   $("requestRide").addEventListener("click", async () => {
     const user = auth.currentUser;
