@@ -39,8 +39,8 @@ onAuthStateChanged(auth,async user=>{
  }catch(e){$("message").textContent="تعذر تحميل ملف السائق: "+e.message;}
 });
 async function loadActiveRide(uid){
- const s=await get(ref(db,"trips"));let active=null;
- s.forEach(c=>{const t=c.val();if(t.driverId===uid&&(t.status==="ACCEPTED"||t.status==="IN_PROGRESS"))active={id:c.key,...t};});
+ const s=await get(ref(db,"driver_active/"+uid));let active=null;
+ if(s.exists()){const v=s.val();const key=Object.keys(v)[0];if(key)active={id:key,...v[key]};}
  const root=$("activeRide");root.replaceChildren();
  if(!active){root.textContent="لا توجد رحلة نشطة.";return;}
  const p=document.createElement("p");p.textContent=(active.fromName||active.from)+" ← "+(active.toName||active.to);
@@ -56,7 +56,7 @@ async function accept(id,btn){
    return {...cur,status:"ACCEPTED",driverId:auth.currentUser.uid,driverName:profile.name||"",acceptedAt:Date.now()};
   });
   if(!result.committed)throw Error("سبق سائق آخر إلى قبول هذه الرحلة.");
-  const t=result.snapshot.val(),updates={};updates["customer_trips/"+t.clientId+"/"+id+"/status"]="ACCEPTED";updates["customer_trips/"+t.clientId+"/"+id+"/driverName"]=profile.name||"";updates["customer_trips/"+t.clientId+"/"+id+"/driverId"]=auth.currentUser.uid;updates["customer_trips/"+t.clientId+"/"+id+"/acceptedAt"]=Date.now();updates["driver_requests/"+id]=null;updates["drivers/"+auth.currentUser.uid+"/available"]=false;
+  const t=result.snapshot.val(),updates={};updates["customer_trips/"+t.clientId+"/"+id+"/status"]="ACCEPTED";updates["customer_trips/"+t.clientId+"/"+id+"/driverName"]=profile.name||"";updates["customer_trips/"+t.clientId+"/"+id+"/driverId"]=auth.currentUser.uid;updates["customer_trips/"+t.clientId+"/"+id+"/acceptedAt"]=Date.now();updates["driver_requests/"+id]=null;updates["driver_active/"+auth.currentUser.uid+"/"+id]={fromName:t.fromName||t.from,toName:t.toName||t.to,clientPhone:t.clientPhone||"",clientId:t.clientId,status:"ACCEPTED",createdAt:t.createdAt||Date.now(),acceptedAt:Date.now()};updates["drivers/"+auth.currentUser.uid+"/available"]=false;
   await update(ref(db),updates);profile.available=false;showAvailability();stop();$("rides").textContent="تم قبول الرحلة. راجع تفاصيلها في قسم رحلتي الحالية.";await loadActiveRide(auth.currentUser.uid);
  }catch(e){$("message").textContent=e.message||"تعذر قبول الرحلة.";}finally{btn.disabled=false;}
 }
@@ -65,13 +65,14 @@ async function advance(t,btn){
  try{
   const r=await runTransaction(ref(db,"trips/"+t.id),cur=>{if(!cur||cur.driverId!==auth.currentUser.uid||cur.status!==t.status)return;return {...cur,status:next,[next.toLowerCase()+"At"]:Date.now()};});
   if(!r.committed)throw Error("تغيرت حالة الرحلة. حدّث الصفحة.");
-  await update(ref(db),{["customer_trips/"+t.clientId+"/"+t.id+"/status"]:next,["customer_trips/"+t.clientId+"/"+t.id+"/updatedAt"]:Date.now()});
-  if(next==="COMPLETED"){await update(ref(db,"drivers/"+auth.currentUser.uid),{available:false});profile.available=false;showAvailability();}
+  const changes={["customer_trips/"+t.clientId+"/"+t.id+"/status"]:next,["customer_trips/"+t.clientId+"/"+t.id+"/updatedAt"]:Date.now(),["driver_active/"+auth.currentUser.uid+"/"+t.id+"/status"]:next};
+  if(next==="COMPLETED"){changes["driver_active/"+auth.currentUser.uid+"/"+t.id]=null;changes["drivers/"+auth.currentUser.uid+"/available"]=false;profile.available=false;showAvailability();}
+  await update(ref(db),changes);
   await loadActiveRide(auth.currentUser.uid);$("message").textContent=next==="COMPLETED"?"تم إنهاء الرحلة بنجاح.":"تم بدء الرحلة.";
  }catch(e){$("message").textContent=e.message;}finally{btn.disabled=false;}
 }
 $("toggleAvailable").onclick=async()=>{
- try{if(!profile.available){const s=await get(ref(db,"trips"));let busy=false;s.forEach(c=>{const t=c.val();if(t.driverId===auth.currentUser.uid&&(t.status==="ACCEPTED"||t.status==="IN_PROGRESS"))busy=true;});if(busy)throw Error("لديك رحلة نشطة؛ أنهها أولًا.");}
+ try{if(!profile.available){const s=await get(ref(db,"driver_active/"+auth.currentUser.uid));let busy=false;s.forEach(c=>{if(["ACCEPTED","IN_PROGRESS"].includes(c.val()?.status))busy=true;});if(busy)throw Error("لديك رحلة نشطة؛ أنهها أولًا.");}
  const next=!profile.available;await update(ref(db,"drivers/"+auth.currentUser.uid),{available:next});profile.available=next;showAvailability();if(next)feed();else{stop();$("rides").textContent="تم إيقاف استقبال الرحلات.";}
  }catch(e){$("message").textContent=e.message;}
 };
