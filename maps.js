@@ -1,5 +1,5 @@
 import {ref,onValue} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
-import { GOOGLE_MAPS_API_KEY } from "./maps-config.js";
+import { GOOGLE_MAPS_API_KEY, GOOGLE_MAPS_MAP_ID } from "./maps-config.js";
 const $=id=>document.getElementById(id);
 let map, directionsService, directionsRenderer, pickupMarker, destinationMarker, trafficLayer, transitLayer, bikeLayer, autocompleteReady=false,liveDriverStop=null,liveDriverMarkers={},latestDriverLocations=null;
 const arish={lat:31.1321,lng:33.8033};
@@ -45,7 +45,7 @@ window.initCapitalTaxiMap=async()=>{
   const {Map}=await google.maps.importLibrary("maps");
   await google.maps.importLibrary("places");
   await google.maps.importLibrary("marker");
-  map=new Map($("taxiMap"),{center:arish,zoom:13,mapTypeId:"roadmap",mapTypeControl:true,mapTypeControlOptions:{style:google.maps.MapTypeControlStyle.HORIZONTAL_BAR,position:google.maps.ControlPosition.TOP_LEFT,mapTypeIds:["roadmap","satellite","hybrid","terrain"]},streetViewControl:true,fullscreenControl:true,zoomControl:true,gestureHandling:"greedy"});
+  map=new Map($("taxiMap"),{center:arish,zoom:13,mapTypeId:"roadmap",...(GOOGLE_MAPS_MAP_ID?{mapId:GOOGLE_MAPS_MAP_ID,renderingType:google.maps.RenderingType.VECTOR}:{}),mapTypeControl:true,mapTypeControlOptions:{style:google.maps.MapTypeControlStyle.HORIZONTAL_BAR,position:google.maps.ControlPosition.TOP_LEFT,mapTypeIds:["roadmap","satellite","hybrid","terrain"]},streetViewControl:true,fullscreenControl:true,zoomControl:true,gestureHandling:"greedy"});
   directionsService=new google.maps.DirectionsService();
   directionsRenderer=new google.maps.DirectionsRenderer({map,preserveViewport:false,suppressMarkers:false,polylineOptions:{strokeColor:"#c79e54",strokeWeight:6}});
   trafficLayer=new google.maps.TrafficLayer();transitLayer=new google.maps.TransitLayer();bikeLayer=new google.maps.BicyclingLayer();
@@ -69,6 +69,10 @@ window.initCapitalTaxiMap=async()=>{
    const b=document.createElement("button");b.type="button";b.textContent=label;b.className="gm-layer-button";b.addEventListener("click",()=>{const active=layer.getMap()===map;layer.setMap(active?null:map);b.classList.toggle("active",!active);});layers.append(b);
   });
   map.controls[google.maps.ControlPosition.RIGHT_TOP].push(layers);
+  const view3d=document.createElement("button");view3d.type="button";view3d.className="gm-layer-button";view3d.textContent="عرض ثلاثي الأبعاد";
+  view3d.title=GOOGLE_MAPS_MAP_ID?"تبديل العرض ثلاثي الأبعاد":"يتطلب إعداد Map ID من Google Cloud";
+  view3d.disabled=!GOOGLE_MAPS_MAP_ID;view3d.addEventListener("click",()=>{const active=map.getTilt()>0;map.setMapTypeId("satellite");map.setTilt(active?0:67);map.setHeading(active?0:25);view3d.classList.toggle("active",!active);});
+  layers.append(view3d);
   window.capitalTaxiMap=map;renderLiveDriverMarkers();autocompleteReady=true;
  }catch(e){$("routeSummary").textContent="تعذر تحميل خرائط Google. تحقق من المفتاح وتفعيل Maps JavaScript API وPlaces API.";}
 };
