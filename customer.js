@@ -8,15 +8,24 @@ const labels={PENDING:"نبحث عن سائق متاح لقبول طلبك",ACCE
 function listenTrips(uid){
  if(stopTrips)stopTrips();
  stopTrips=onValue(ref(db,"customer_trips/"+uid),snap=>{
-  const root=$("rideStatus");root.replaceChildren();const list=[];
+  const root=$("rideStatus"),history=$("rideHistory");root.replaceChildren();history.replaceChildren();const list=[];
   snap.forEach(c=>list.push({id:c.key,...c.val()}));list.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
-  if(!list.length){root.textContent="لا توجد رحلات حتى الآن. ابدأ بطلب رحلتك الأولى.";return;}
+  if(!list.length){root.textContent="لا توجد رحلات حتى الآن. ابدأ بطلب رحلتك الأولى.";history.textContent="لم تطلب أي رحلات بعد.";return;}
   const t=list[0],title=document.createElement("strong"),detail=document.createElement("p"),state=document.createElement("span");
   title.textContent="آخر رحلة";detail.textContent=(t.fromName||t.from||"") +" ← "+(t.toName||t.to||"");
   state.className="state "+(t.status==="COMPLETED"?"done":t.status==="CANCELLED"?"muted":"");state.textContent=labels[t.status]||t.status||"حالة غير محددة";
   root.append(title,detail,state);
   if(t.driverName){const d=document.createElement("p");d.textContent="السائق: "+t.driverName;root.append(d);}
-  if(t.status==="PENDING"){const b=document.createElement("button");b.className="secondary";b.textContent="إلغاء الطلب";b.onclick=()=>cancelTrip(t);root.append(b);}
+  list.slice(0,20).forEach(item=>{
+   const card=document.createElement("article");card.className="ride-card";
+   const route=document.createElement("p");route.textContent=(item.fromName||item.from||"غير محدد")+" ← "+(item.toName||item.to||"غير محدد");
+   const meta=document.createElement("small");meta.textContent="التاريخ: "+(item.createdAt?new Date(item.createdAt).toLocaleString("ar-EG"):"غير محدد");
+   const badge=document.createElement("span");badge.className="state "+(item.status==="COMPLETED"?"done":item.status==="CANCELLED"?"muted":"");badge.textContent=labels[item.status]||item.status||"حالة غير محددة";
+   card.append(route,meta,badge);
+   if(item.driverName){const driver=document.createElement("small");driver.textContent="السائق: "+item.driverName;card.append(driver);}
+   if(item.status==="PENDING"){const cancel=document.createElement("button");cancel.className="secondary";cancel.textContent="إلغاء الطلب";cancel.onclick=()=>cancelTrip(item);card.append(cancel);}
+   history.append(card);
+  });
  },e=>$("rideStatus").textContent="تعذر تحميل حالة الرحلة: "+e.message);
 }
 onAuthStateChanged(auth,async user=>{
