@@ -49,6 +49,30 @@
           ".write": "auth != null && (root.child('trips').child($tripId).child('driverId').val() === auth.uid || root.child('admins').child(auth.uid).child('active').val() === true)"
         }
       }
+    },
+    "driver_locations": {
+      ".read": false,
+      ".write": false
+    },
+    "test_connection": {
+      ".read": false,
+      ".write": false
+    },
+    "payments": {
+      ".read": false,
+      ".write": false
+    },
+    "wallets": {
+      ".read": false,
+      ".write": false
+    },
+    "users": {
+      ".read": false,
+      ".write": false
+    },
+    "notifications": {
+      ".read": false,
+      ".write": false
     }
   }
 }
