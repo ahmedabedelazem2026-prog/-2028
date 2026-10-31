@@ -1,6 +1,7 @@
+import {ref,onValue} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
 import { GOOGLE_MAPS_API_KEY } from "./maps-config.js";
 const $=id=>document.getElementById(id);
-let map, directionsService, directionsRenderer, pickupMarker, destinationMarker, trafficLayer, transitLayer, bikeLayer, autocompleteReady=false;
+let map, directionsService, directionsRenderer, pickupMarker, destinationMarker, trafficLayer, transitLayer, bikeLayer, autocompleteReady=false,liveDriverStop=null,liveDriverMarkers={};
 const arish={lat:31.1321,lng:33.8033};
 function setRoutePoint(which,place){
  if(!place||!place.geometry||!place.geometry.location)return;
@@ -24,6 +25,18 @@ function calculateRoute(){
   else $("routeSummary").textContent="تعذر إيجاد مسار. راجع العناوين أو جرّب وسيلة انتقال أخرى.";
  });
 }
+export function watchAvailableDrivers(db){
+ if(liveDriverStop){liveDriverStop();liveDriverStop=null;}
+ liveDriverStop=onValue(ref(db,"driver_locations"),snap=>{
+  const seen=new Set();if(!map)return;
+  snap.forEach(child=>{const v=child.val();if(!v||typeof v.lat!=="number"||typeof v.lng!=="number")return;seen.add(child.key);
+   if(!liveDriverMarkers[child.key])liveDriverMarkers[child.key]=new google.maps.Marker({map,position:{lat:v.lat,lng:v.lng},title:"سائق متاح — تاكسي العاصمة",label:{text:"🚕",fontSize:"20px"}});
+   else liveDriverMarkers[child.key].setPosition({lat:v.lat,lng:v.lng});
+  });
+  Object.keys(liveDriverMarkers).forEach(uid=>{if(!seen.has(uid)){liveDriverMarkers[uid].setMap(null);delete liveDriverMarkers[uid];}});
+ });
+}
+export function stopWatchingAvailableDrivers(){if(liveDriverStop){liveDriverStop();liveDriverStop=null;}Object.values(liveDriverMarkers).forEach(marker=>marker.setMap(null));liveDriverMarkers={};}
 window.initCapitalTaxiMap=async()=>{
  try{
   const {Map}=await google.maps.importLibrary("maps");
@@ -52,7 +65,7 @@ window.initCapitalTaxiMap=async()=>{
    const b=document.createElement("button");b.type="button";b.textContent=label;b.className="gm-layer-button";b.addEventListener("click",()=>{const active=layer.getMap()===map;layer.setMap(active?null:map);b.classList.toggle("active",!active);});layers.append(b);
   });
   map.controls[google.maps.ControlPosition.RIGHT_TOP].push(layers);
-  autocompleteReady=true;
+  window.capitalTaxiMap=map;autocompleteReady=true;
  }catch(e){$("routeSummary").textContent="تعذر تحميل خرائط Google. تحقق من المفتاح وتفعيل Maps JavaScript API وPlaces API.";}
 };
 if(GOOGLE_MAPS_API_KEY&&GOOGLE_MAPS_API_KEY!=="YOUR_GOOGLE_MAPS_API_KEY"){
