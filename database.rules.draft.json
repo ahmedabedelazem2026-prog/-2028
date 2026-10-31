@@ -19,8 +19,7 @@
       "$uid": {
         ".read": "auth != null && (auth.uid === $uid || root.child('admins').child(auth.uid).child('active').val() === true)",
         ".write": "auth != null && (root.child('admins').child(auth.uid).child('active').val() === true || (auth.uid === $uid && ((!data.exists() && newData.child('approved').val() === false && newData.child('available').val() === false && newData.child('role').val() === 'driver' && newData.hasChildren(['name','phone','email','createdAt'])) || (data.exists() && newData.child('approved').val() === data.child('approved').val() && newData.child('role').val() === data.child('role').val() && newData.child('name').val() === data.child('name').val() && newData.child('phone').val() === data.child('phone').val() && newData.child('email').val() === data.child('email').val() && newData.child('createdAt').val() === data.child('createdAt').val())))",
-        ".validate": "newData.hasChildren(['name','phone','email','role','approved','available','createdAt'])",
-        "$other": { ".validate": false }
+        ".validate": "newData.hasChildren(['name','phone','email','role','approved','available','createdAt'])"
       }
     },
     "trips": {
