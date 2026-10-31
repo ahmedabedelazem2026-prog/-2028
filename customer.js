@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
-import { getDatabase, ref, set, push, query, orderByChild, equalTo, onValue } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
+import { getDatabase, ref, set, push, get, query, orderByChild, equalTo, onValue } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
 import { firebaseConfig } from "./firebase-config.js";
 
 const $ = id => document.getElementById(id);
@@ -26,10 +26,9 @@ onAuthStateChanged(auth, async user => {
   $("authBox").hidden = !user; $("bookingBox").hidden = !user;
   if (!user) return;
   const profileRef = ref(db, "customers/" + user.uid);
-  onValue(profileRef, snap => {
-    const p = snap.val() || {};
-    $("welcome").textContent = "أهلًا " + (p.name || user.email || "بك") + " — يمكنك طلب رحلة الآن.";
-  }, { onlyOnce: true });
+  const profileSnap = await get(profileRef);
+  const p = profileSnap.val() || {};
+  $("welcome").textContent = "أهلًا " + (p.name || user.email || "بك") + " — يمكنك طلب رحلة الآن.";
   showTrips(user.uid);
 });
 $("signup").onclick = async () => {
@@ -51,7 +50,7 @@ $("requestRide").onclick = async () => {
   if (!user || !fromName || !toName) { statusBox.textContent="اكتب مكان الركوب والوجهة أولًا."; return; }
   const btn=$("requestRide"); btn.disabled=true;
   try {
-    const pSnap=await new Promise((resolve,reject)=>onValue(ref(db,"customers/"+user.uid),resolve,reject,{onlyOnce:true}));
+    const pSnap=await get(ref(db,"customers/"+user.uid));
     const profile=pSnap.val() || {};
     const tripRef=push(ref(db,"trips"));
     // Legacy-compatible names and status. Coordinates and fare are intentionally not fabricated.
