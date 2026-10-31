@@ -52,7 +52,8 @@ async function accept(id,btn){
  btn.disabled=true;
  try{
   const result=await runTransaction(ref(db,"trips/"+id),cur=>{
-   if(!cur||cur.status!=="PENDING")return;
+   if(cur===null)return {__transactionProbe:true};
+   if(cur.status!=="PENDING")return;
    return {...cur,status:"ACCEPTED",driverId:auth.currentUser.uid,driverName:profile.name||"",acceptedAt:Date.now()};
   });
   if(!result.committed)throw Error("سبق سائق آخر إلى قبول هذه الرحلة.");
