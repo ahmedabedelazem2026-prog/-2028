@@ -29,7 +29,7 @@ $("signupDriver").onclick=async()=>{
     creatingDriver=false;
     $("message").textContent="تم تسجيل طلب السائق. انتظر موافقة الإدارة.";
     await signOut(auth);
-  }catch(e){$("message").textContent=e.message;}
+  }catch(e){creatingDriver=false;$("message").textContent=e.message;}
 };
 $("login").onclick=async()=>{try{await signInWithEmailAndPassword(auth,$("email").value.trim(),$("password").value);}catch(e){$("message").textContent="تعذر الدخول: "+e.message;}};
 $("logout").onclick=()=>signOut(auth);
