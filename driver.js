@@ -17,7 +17,7 @@ function startGps(){
    await set(ref(db,"driver_locations/"+uid),loc);
    $("gpsStatus").textContent="● مشاركة الموقع مفعّلة — دقة تقريبية "+loc.accuracy+" متر";
   }catch(e){$("gpsStatus").textContent="تعذر إرسال الموقع: "+e.message;}
- },err=>{$("gpsStatus").textContent=err.code===1?"لم تسمح بإذن الموقع. فعّله من إعدادات المتصفح.":"تعذر تحديد الموقع؛ تحقق من GPS وإعدادات الهاتف.";},
+ },async err=>{$("gpsStatus").textContent=err.code===1?"لم تسمح بإذن الموقع. فعّله من إعدادات المتصفح.":"تعذر تحديد الموقع؛ تحقق من GPS وإعدادات الهاتف.";try{profile.available=false;await update(ref(db,"drivers/"+auth.currentUser.uid),{available:false});await set(ref(db,"driver_locations/"+auth.currentUser.uid),null);stopGps();showAvailability();}catch(_){}},
  {enableHighAccuracy:true,maximumAge:5000,timeout:20000});
  onDisconnect(ref(db,"driver_locations/"+auth.currentUser.uid)).remove();
 }
