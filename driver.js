@@ -1,64 +1,64 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
-import { getFirestore, doc, getDoc, updateDoc, collection, query, where, orderBy, onSnapshot, runTransaction, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+import { getDatabase, ref, set, get, update, query, orderByChild, equalTo, onValue, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
 import { firebaseConfig } from "./firebase-config.js";
-const $=id=>document.getElementById(id);
-const ready=firebaseConfig?.apiKey&&!firebaseConfig.apiKey.startsWith("YOUR_")&&firebaseConfig?.projectId&&!firebaseConfig.projectId.startsWith("YOUR_");
-if(!ready){$("message").textContent="أضف إعدادات Firebase أولًا في firebase-config.js.";$("login").disabled=true;}
-else{
- const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);let profile=null,stop=null;
- function stopFeed(){if(stop){stop();stop=null;}}
- function startFeed(){
-  stopFeed();
-  const q=query(collection(db,"rides"),where("status","==","pending"),orderBy("createdAt","desc"));
-  stop=onSnapshot(q,s=>{
-   const root=$("rides");root.replaceChildren();
-   if(s.empty){root.textContent="لا توجد طلبات جديدة حاليًا.";return;}
-   s.forEach(d=>{
-    const v=d.data(),card=document.createElement("article");card.className="panel";card.style.margin="12px 0";
-    const info=document.createElement("p");info.textContent="من: "+v.pickup+" — إلى: "+v.destination+" — العميل: "+(v.customerName||"");
-    const btn=document.createElement("button");btn.textContent="قبول الرحلة";btn.onclick=()=>acceptRide(d.id,btn);
-    card.append(info,btn);root.append(card);
-   });
-  },e=>$("message").textContent="خطأ في تحميل الطلبات: "+e.message);
- }
- $("login").onclick=async()=>{try{await signInWithEmailAndPassword(auth,$("email").value.trim(),$("password").value);}catch(e){$("message").textContent="تعذر الدخول: "+e.message;}};
- $("logout").onclick=()=>signOut(auth);
- onAuthStateChanged(auth,async user=>{
-  stopFeed();
-  if(!user){$("driverLogin").hidden=false;$("driverPanel").hidden=true;return;}
-  const snap=await getDoc(doc(db,"users",user.uid));profile=snap.data();
-  if(!profile||profile.role!=="driver"){$("message").textContent="هذا الحساب غير مفعّل كسائق. راجع الإدارة.";await signOut(auth);return;}
-  $("driverLogin").hidden=true;$("driverPanel").hidden=false;
-  $("driverWelcome").textContent="أهلًا "+(profile.name||"بالسائق")+".";
-  $("toggleAvailable").textContent=profile.available?"إيقاف استقبال الرحلات":"تفعيل استقبال الرحلات";
-  if(profile.available)startFeed();else $("rides").textContent="فعّل استقبال الرحلات لعرض الطلبات.";
- });
- $("toggleAvailable").onclick=async()=>{
+const $=id=>document.getElementById(id), app=initializeApp(firebaseConfig), auth=getAuth(app), db=getDatabase(app);
+let profile=null, stopFeed=null;
+function stop(){ if(stopFeed){stopFeed();stopFeed=null;} }
+function feed(){
+  stop();
+  const q=query(ref(db,"trips"),orderByChild("status"),equalTo("PENDING"));
+  stopFeed=onValue(q,s=>{
+    const root=$("rides"); root.replaceChildren();
+    if(!s.exists()){root.textContent="لا توجد طلبات جديدة حاليًا.";return;}
+    s.forEach(child=>{
+      const t=child.val(), card=document.createElement("article"); card.className="panel";
+      const p=document.createElement("p"); p.textContent="من: "+(t.fromName||t.from||"غير محدد")+" — إلى: "+(t.toName||t.to||"غير محدد");
+      const b=document.createElement("button"); b.textContent="قبول الرحلة"; b.onclick=()=>accept(child.key,b);
+      card.append(p,b); root.append(card);
+    });
+  },e=>$("message").textContent="تعذر تحميل الطلبات: "+e.message);
+}
+$("signupDriver").onclick=async()=>{
   try{
-   const next=!profile.available;
-   await updateDoc(doc(db,"users",auth.currentUser.uid),{available:next});
-   profile.available=next;
-   $("toggleAvailable").textContent=next?"إيقاف استقبال الرحلات":"تفعيل استقبال الرحلات";
-   if(next){startFeed();$("message").textContent="أصبحت متاحًا لاستقبال الرحلات.";}
-   else{stopFeed();$("rides").textContent="تم إيقاف استقبال الرحلات.";$("message").textContent="تم إيقاف استقبال الرحلات.";}
-  }catch(e){$("message").textContent="تعذر تحديث الحالة: "+e.message;}
- };
- async function acceptRide(id,btn){
+    const name=$("driverName").value.trim(),phone=$("driverPhone").value.trim(),email=$("email").value.trim(),password=$("password").value;
+    if(!name||!phone||!email||password.length<6) throw new Error("اكتب الاسم والهاتف والبريد وكلمة مرور من 6 أحرف على الأقل.");
+    const c=await createUserWithEmailAndPassword(auth,email,password);
+    await set(ref(db,"drivers/"+c.user.uid),{name,phone,email:c.user.email,role:"driver",approved:false,available:false,createdAt:Date.now()});
+    $("message").textContent="تم تسجيل طلب السائق. انتظر موافقة الإدارة.";
+  }catch(e){$("message").textContent=e.message;}
+};
+$("login").onclick=async()=>{try{await signInWithEmailAndPassword(auth,$("email").value.trim(),$("password").value);}catch(e){$("message").textContent="تعذر الدخول: "+e.message;}};
+$("logout").onclick=()=>signOut(auth);
+onAuthStateChanged(auth,async user=>{
+  stop();
+  if(!user){$("driverLogin").hidden=false;$("driverPanel").hidden=true;return;}
+  try{
+    const snap=await get(ref(db,"drivers/"+user.uid)); profile=snap.val();
+    if(!profile){$("message").textContent="لا يوجد ملف سائق لهذا الحساب. سجّل طلب سائق جديد.";await signOut(auth);return;}
+    if(profile.approved!==true){$("message").textContent="حسابك قيد مراجعة الإدارة ولم تتم الموافقة عليه بعد."; $("driverLogin").hidden=false;$("driverPanel").hidden=true;return;}
+    $("driverLogin").hidden=true;$("driverPanel").hidden=false;
+    $("driverWelcome").textContent="أهلًا "+(profile.name||"بالسائق")+".";
+    $("toggleAvailable").textContent=profile.available?"إيقاف استقبال الرحلات":"تفعيل استقبال الرحلات";
+    if(profile.available)feed();else $("rides").textContent="فعّل استقبال الرحلات لعرض الطلبات.";
+  }catch(e){$("message").textContent="تعذر قراءة ملف السائق: "+e.message;}
+});
+$("toggleAvailable").onclick=async()=>{
+  try{const next=!profile.available;await update(ref(db,"drivers/"+auth.currentUser.uid),{available:next});profile.available=next;$("toggleAvailable").textContent=next?"إيقاف استقبال الرحلات":"تفعيل استقبال الرحلات";if(next)feed();else{stop();$("rides").textContent="تم إيقاف استقبال الرحلات.";} }
+  catch(e){$("message").textContent="تعذر تحديث التوفر: "+e.message;}
+};
+async function accept(id,btn){
   btn.disabled=true;
   try{
-   await runTransaction(db,async tx=>{
-    const rideRef=doc(db,"rides",id),driverRef=doc(db,"users",auth.currentUser.uid);
-    const [r,d]=await Promise.all([tx.get(rideRef),tx.get(driverRef)]);
-    if(!r.exists()||r.data().status!=="pending")throw new Error("سبق سائق آخر إلى قبول الرحلة.");
-    if(!d.exists()||d.data().role!=="driver"||d.data().available!==true)throw new Error("يجب تفعيل التوفر أولًا.");
-    tx.update(rideRef,{status:"accepted",driverId:auth.currentUser.uid,driverName:d.data().name||"",acceptedAt:serverTimestamp()});
-    tx.update(driverRef,{available:false});
-   });
-   profile.available=false;stopFeed();$("toggleAvailable").textContent="تفعيل استقبال الرحلات";
-   $("rides").textContent="تم قبول الرحلة بنجاح، وتوقف استقبال طلبات جديدة حتى تعود متاحًا.";
-   $("message").textContent="تم قبول الرحلة بنجاح.";
+    const result=await runTransaction(ref(db,"trips/"+id),current=>{
+      if(!current||current.status!=="PENDING")return;
+      return {...current,status:"ACCEPTED",driverId:auth.currentUser.uid,driverName:profile.name||"",acceptedAt:Date.now()};
+    });
+    if(!result.committed)throw new Error("سبق سائق آخر إلى قبول الرحلة.");
+    await update(ref(db,"drivers/"+auth.currentUser.uid),{available:false});
+    profile.available=false;stop();$("toggleAvailable").textContent="تفعيل استقبال الرحلات";
+    $("rides").textContent="تم قبول الرحلة بنجاح.";
+    $("message").textContent="تم قبول الرحلة.";
   }catch(e){$("message").textContent=e.message||"تعذر قبول الرحلة.";}
   finally{btn.disabled=false;}
- }
 }
