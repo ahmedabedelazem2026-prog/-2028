@@ -64,7 +64,7 @@ async function accept(id,btn){
 async function advance(t,btn){
  btn.disabled=true;const next=t.status==="ACCEPTED"?"IN_PROGRESS":"COMPLETED";
  try{
-  const r=await runTransaction(ref(db,"trips/"+t.id),cur=>{if(!cur||cur.driverId!==auth.currentUser.uid||cur.status!==t.status)return;return {...cur,status:next,[next.toLowerCase()+"At"]:Date.now()};});
+  const r=await runTransaction(ref(db,"trips/"+t.id),cur=>{if(cur===null)return {__transactionProbe:true};if(cur.driverId!==auth.currentUser.uid||cur.status!==t.status)return;return {...cur,status:next,[next.toLowerCase()+"At"]:Date.now()};});
   if(!r.committed)throw Error("تغيرت حالة الرحلة. حدّث الصفحة.");
   const changes={["customer_trips/"+t.clientId+"/"+t.id+"/status"]:next,["customer_trips/"+t.clientId+"/"+t.id+"/updatedAt"]:Date.now(),["driver_active/"+auth.currentUser.uid+"/"+t.id+"/status"]:next};
   if(next==="COMPLETED"){changes["driver_active/"+auth.currentUser.uid+"/"+t.id]=null;changes["drivers/"+auth.currentUser.uid+"/available"]=false;profile.available=false;showAvailability();}
