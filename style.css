@@ -30,3 +30,11 @@ button{border:0;border-radius:11px;padding:13px 19px;background:linear-gradient(
 .hero:not(.hero-card) p{color:#aebccc;line-height:2;margin:5px 0}
 .panel h3{color:#e8d5a7}
 @media(max-width:620px){.hero:not(.hero-card){padding:25px 19px}}
+
+.history-heading{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:24px 0 10px}
+.history-heading h3{margin:0;color:#f1dfb5;font-size:17px}
+.history-heading span{font-size:11px;color:#93a3b7}
+#rideHistory .ride-card{display:grid;grid-template-columns:1fr auto;align-items:center;gap:7px 14px}
+#rideHistory .ride-card p{grid-column:1/-1;margin:0}
+#rideHistory .ride-card small{margin:0}
+#rideHistory .ride-card button{grid-column:1/-1;justify-self:start;margin-top:7px}
