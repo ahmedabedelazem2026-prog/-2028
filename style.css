@@ -103,3 +103,12 @@ footer{background:#030e1e;color:#b8c6d8;border-color:rgba(240,184,42,.25)}
 footer small{display:block;font-size:10px;color:#8294aa}
 @media(max-width:850px){.hero-card{grid-template-columns:1fr;min-height:auto;background-position:center}.hero-visual{min-height:350px}.hero-photo.arish-scene{height:340px}.hero-copy{padding:15px 8px}.taxi-car-photo{height:42%;width:60%}}
 @media(max-width:620px){.wide{width:100%}.hero-card{padding:25px 18px 20px;border-radius:0 0 18px 18px}.hero h1{font-size:42px}.hero p{font-size:14px}.hero-visual{min-height:260px}.hero-photo.arish-scene{height:250px;border-radius:8px 30px 8px 8px}.taxi-car-photo{height:40%;width:65%;bottom:10%}.floating-card{left:0;bottom:0}.hero-bottom{font-size:10px}.top{position:relative}.brand{font-size:20px}.arish-intro{margin:0 14px 48px}.trust-row{margin:18px 14px 55px}.services-section,.how-section{margin-inline:14px}.booking-panel{margin-inline:14px}.contact-strip{margin-inline:14px}footer{padding:22px 14px}}
+
+/* Prominent booking and contact actions in the hero */
+.hero-actions{display:flex;align-items:center;gap:15px;flex-wrap:wrap;margin-top:25px}
+.hero-actions .button-link{margin:0}
+.hero-phone{display:flex;flex-direction:column;gap:4px;padding:8px 15px;border-right:2px solid #f2b928;color:#fff;text-decoration:none;background:rgba(3,14,31,.68);border-radius:4px}
+.hero-phone span{font-size:10px;color:#f4d47c}
+.hero-phone strong{font:900 21px Arial;letter-spacing:1px;color:#ffdc73}
+.hero-phone:hover{background:rgba(3,14,31,.92);transform:translateY(-2px)}
+@media(max-width:620px){.hero-actions{gap:10px}.hero-phone strong{font-size:18px}}
