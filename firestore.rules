@@ -1,0 +1,52 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function myUser() { return get(/databases/$(database)/documents/users/$(request.auth.uid)).data; }
+    function isAdmin() { return signedIn() && myUser().role == 'admin'; }
+    function isDriver() { return signedIn() && myUser().role == 'driver'; }
+    function isCustomer() { return signedIn() && myUser().role == 'customer'; }
+
+    match /users/{userId} {
+      allow create: if signedIn() && request.auth.uid == userId
+        && request.resource.data.role == 'customer'
+        && request.resource.data.available == false;
+      allow read: if signedIn() && (request.auth.uid == userId || isAdmin());
+      allow update: if isAdmin()
+        || (signedIn() && request.auth.uid == userId
+          && resource.data.role == 'driver'
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['available'])
+          && request.resource.data.available is bool)
+        || (signedIn() && request.auth.uid == userId
+          && resource.data.role == 'customer'
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name','phone']));
+      allow delete: if isAdmin();
+    }
+
+    match /rides/{rideId} {
+      allow create: if isCustomer()
+        && request.resource.data.customerId == request.auth.uid
+        && request.resource.data.status == 'pending'
+        && request.resource.data.driverId == null
+        && request.resource.data.pickup is string
+        && request.resource.data.destination is string
+        && request.resource.data.pickup.size() > 0
+        && request.resource.data.destination.size() > 0;
+      allow read: if signedIn() && (
+        resource.data.customerId == request.auth.uid
+        || isAdmin()
+        || (isDriver() && myUser().available == true && resource.data.status == 'pending')
+        || (isDriver() && resource.data.driverId == request.auth.uid)
+      );
+      allow update: if isAdmin()
+        || (isDriver()
+          && myUser().available == true
+          && resource.data.status == 'pending'
+          && request.resource.data.status == 'accepted'
+          && request.resource.data.driverId == request.auth.uid
+          && request.resource.data.diff(resource.data).affectedKeys()
+             .hasOnly(['status','driverId','driverName','acceptedAt']));
+      allow delete: if isAdmin();
+    }
+  }
+}
