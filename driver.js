@@ -3,7 +3,7 @@ import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, on
 import { getDatabase, ref, set, get, update, query, orderByChild, equalTo, onValue, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
 import { firebaseConfig } from "./firebase-config.js";
 const $=id=>document.getElementById(id), app=initializeApp(firebaseConfig), auth=getAuth(app), db=getDatabase(app);
-let profile=null, stopFeed=null;
+let profile=null, stopFeed=null, creatingDriver=false;
 function stop(){ if(stopFeed){stopFeed();stopFeed=null;} }
 function feed(){
   stop();
@@ -23,14 +23,18 @@ $("signupDriver").onclick=async()=>{
   try{
     const name=$("driverName").value.trim(),phone=$("driverPhone").value.trim(),email=$("email").value.trim(),password=$("password").value;
     if(!name||!phone||!email||password.length<6) throw new Error("اكتب الاسم والهاتف والبريد وكلمة مرور من 6 أحرف على الأقل.");
+    creatingDriver=true;
     const c=await createUserWithEmailAndPassword(auth,email,password);
     await set(ref(db,"drivers/"+c.user.uid),{name,phone,email:c.user.email,role:"driver",approved:false,available:false,createdAt:Date.now()});
+    creatingDriver=false;
     $("message").textContent="تم تسجيل طلب السائق. انتظر موافقة الإدارة.";
+    await signOut(auth);
   }catch(e){$("message").textContent=e.message;}
 };
 $("login").onclick=async()=>{try{await signInWithEmailAndPassword(auth,$("email").value.trim(),$("password").value);}catch(e){$("message").textContent="تعذر الدخول: "+e.message;}};
 $("logout").onclick=()=>signOut(auth);
 onAuthStateChanged(auth,async user=>{
+  if(creatingDriver)return;
   stop();
   if(!user){$("driverLogin").hidden=false;$("driverPanel").hidden=true;return;}
   try{
