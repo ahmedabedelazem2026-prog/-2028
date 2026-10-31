@@ -3,6 +3,8 @@ import { GOOGLE_MAPS_API_KEY } from "./maps-config.js";
 const $=id=>document.getElementById(id);
 let map, directionsService, directionsRenderer, pickupMarker, destinationMarker, trafficLayer, transitLayer, bikeLayer, autocompleteReady=false,liveDriverStop=null,liveDriverMarkers={},latestDriverLocations=null;
 const arish={lat:31.1321,lng:33.8033};
+// Bias address and place searches toward Al-Arish without preventing searches elsewhere.
+const arishSearchBounds={north:31.24,south:31.02,east:33.93,west:33.67};
 function setRoutePoint(which,place){
  if(!place||!place.geometry||!place.geometry.location)return;
  const input=$(which==="pickup"?"pickup":"destination");
@@ -47,8 +49,9 @@ window.initCapitalTaxiMap=async()=>{
   directionsService=new google.maps.DirectionsService();
   directionsRenderer=new google.maps.DirectionsRenderer({map,preserveViewport:false,suppressMarkers:false,polylineOptions:{strokeColor:"#c79e54",strokeWeight:6}});
   trafficLayer=new google.maps.TrafficLayer();transitLayer=new google.maps.TransitLayer();bikeLayer=new google.maps.BicyclingLayer();
-  const p=new google.maps.places.Autocomplete($("pickup"),{fields:["formatted_address","geometry","name"],componentRestrictions:{country:"eg"}});
-  const d=new google.maps.places.Autocomplete($("destination"),{fields:["formatted_address","geometry","name"],componentRestrictions:{country:"eg"}});
+  const localSearch={bounds:arishSearchBounds,strictBounds:false,componentRestrictions:{country:"eg"},fields:["formatted_address","geometry","name"]};
+  const p=new google.maps.places.Autocomplete($("pickup"),localSearch);
+  const d=new google.maps.places.Autocomplete($("destination"),localSearch);
   p.addListener("place_changed",()=>setRoutePoint("pickup",p.getPlace()));
   d.addListener("place_changed",()=>setRoutePoint("destination",d.getPlace()));
   $("showRoute").addEventListener("click",calculateRoute);
@@ -70,5 +73,5 @@ window.initCapitalTaxiMap=async()=>{
  }catch(e){$("routeSummary").textContent="تعذر تحميل خرائط Google. تحقق من المفتاح وتفعيل Maps JavaScript API وPlaces API.";}
 };
 if(GOOGLE_MAPS_API_KEY&&GOOGLE_MAPS_API_KEY!=="YOUR_GOOGLE_MAPS_API_KEY"){
- const script=document.createElement("script");script.src="https://maps.googleapis.com/maps/api/js?key="+encodeURIComponent(GOOGLE_MAPS_API_KEY)+"&loading=async&callback=initCapitalTaxiMap&v=weekly";script.async=true;script.defer=true;script.onerror=()=>{$("routeSummary").textContent="لم يتم تحميل Google Maps. راجع المفتاح وقيود النطاق.";};document.head.append(script);
+ const script=document.createElement("script");script.src="https://maps.googleapis.com/maps/api/js?key="+encodeURIComponent(GOOGLE_MAPS_API_KEY)+"&language=ar&region=EG&loading=async&callback=initCapitalTaxiMap&v=weekly";script.async=true;script.defer=true;script.onerror=()=>{$("routeSummary").textContent="لم يتم تحميل Google Maps. راجع المفتاح وقيود النطاق.";};document.head.append(script);
 }else{$("routeSummary").textContent="الخريطة جاهزة للتفعيل بعد إضافة مفتاح Google Maps المقيّد بنطاق الموقع.";}
