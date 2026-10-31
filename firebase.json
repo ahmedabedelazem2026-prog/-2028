@@ -1,0 +1,10 @@
+{
+  "database": {
+    "rules": "database.rules.draft.json"
+  },
+  "emulators": {
+    "database": {
+      "port": 9000
+    }
+  }
+}
