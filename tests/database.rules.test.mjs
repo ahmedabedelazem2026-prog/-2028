@@ -25,6 +25,9 @@ try {
   await assertSucceeds(set(ref(c1, "customer_trips/c1/t1"), { clientId: "c1", clientPhone: "01000000000", from: "A", fromName: "A", to: "B", toName: "B", carType: "economy", rideWhen: "now", notes: "", status: "PENDING", createdAt: 2 }));
   await assertSucceeds(set(ref(c1, "driver_requests/t1"), { tripId: "t1", clientId: "c1", pickup: "A", destination: "B", carType: "economy", createdAt: 2, status: "PENDING" }));
   await assertSucceeds(get(ref(d1, "driver_requests")));
+  // Prime this client with the server value before starting the transaction.
+  const tripBeforeAccept = await get(ref(d1, "trips/t1"));
+  assert.equal(tripBeforeAccept.val()?.status, "PENDING");
   const accepted = await assertSucceeds(runTransaction(ref(d1, "trips/t1"), current => {
     if (current === null) return;
     if (current.status !== "PENDING") return;
