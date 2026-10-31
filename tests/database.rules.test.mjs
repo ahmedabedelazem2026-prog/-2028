@@ -29,11 +29,15 @@ try {
   const tripBeforeAccept = await get(ref(d1, "trips/t1"));
   assert.equal(tripBeforeAccept.val()?.status, "PENDING");
   const accepted = await assertSucceeds(runTransaction(ref(d1, "trips/t1"), current => {
-    if (current === null) return;
+    // Returning undefined aborts immediately when the local cache starts as null.
+    // Return the unchanged value so RTDB can reconcile with the server value.
+    if (current === null) return null;
     if (current.status !== "PENDING") return;
     return { ...current, status: "ACCEPTED", driverId: "d1", driverName: "Driver", acceptedAt: 3 };
   }));
   assert.equal(accepted.committed, true);
+  assert.equal(accepted.snapshot.val()?.status, "ACCEPTED");
+  assert.equal(accepted.snapshot.val()?.driverId, "d1");
   const liveLocation = { lat: 31.1321, lng: 33.8033, accuracy: 12, updatedAt: 3 };
   await assertSucceeds(set(ref(d1, "trip_locations/t1"), liveLocation));
   await assertSucceeds(get(ref(c1, "trip_locations/t1")));
