@@ -58,3 +58,48 @@ button{border:0;border-radius:11px;padding:13px 19px;background:linear-gradient(
 .arish-intro h2{font-size:clamp(20px,3vw,29px);margin:8px 0}.arish-intro h2 em{font-style:normal;color:var(--gold2)}.arish-intro p{max-width:760px;margin:0;color:var(--muted);font-size:12px;line-height:2}
 .arish-seal{flex:0 0 72px;width:72px;height:72px;display:grid;align-content:center;text-align:center;border:1px solid rgba(215,180,106,.45);border-radius:50%;color:var(--gold2);font:800 14px Arial;line-height:1.35}.arish-seal small{font-size:8px;letter-spacing:1px}
 @media(max-width:620px){.arish-intro{margin:-20px 0 52px;padding:20px;gap:10px}.arish-seal{flex-basis:58px;width:58px;height:58px;font-size:11px}.scene-car{right:20%;transform:scale(.82);transform-origin:right bottom}}
+
+
+/* Capital Taxi — photo-led Al-Arish visual identity */
+:root{--bg:#061326;--panel:#0c1d33;--panel2:#122944;--gold:#f2b928;--gold2:#ffdc73;--text:#fff;--muted:#c2ccda}
+body{background:#061326;color:#fff}
+.top{background:rgba(3,14,31,.96);border-bottom:1px solid rgba(242,185,40,.3);padding-top:11px;padding-bottom:11px}
+.brand{font-size:23px}.brand-mark{border-radius:50%;background:linear-gradient(145deg,#f9d45f,#d28c0c);color:#10213a;border:2px solid #ffe39a;font-size:20px}
+nav a{font-size:13px;color:#f2f4f8}nav .nav-cta{background:linear-gradient(135deg,#ffdf72,#e9a80e);color:#14243a;border-radius:4px 4px 17px 17px}
+.wide{width:min(1320px,96%)}
+.hero-card{grid-template-columns:.76fr 1.24fr;min-height:650px;padding:30px 34px 22px;border-radius:0 0 28px 28px;border:0;border-bottom:3px solid #e7ad22;background:linear-gradient(90deg,rgba(3,13,29,.97) 0%,rgba(3,13,29,.9) 32%,rgba(3,13,29,.12) 78%),url("https://gate.ahram.org.eg/Media/News/2026/4/14/2026-639117586404047807-404.jpg") center/cover;box-shadow:0 24px 70px rgba(0,0,0,.38)}
+.hero-card:after{background:linear-gradient(0deg,rgba(2,11,25,.8),transparent 40%),linear-gradient(90deg,rgba(3,13,29,.5),transparent)}
+.hero-copy{padding:22px 12px}.hero .eyebrow{color:#ffd35c;font-size:14px}
+.hero h1{font-size:clamp(39px,5vw,68px);text-shadow:0 4px 20px #000;line-height:1.4}.hero h1 em{color:#ffc52f;text-shadow:0 4px 18px #000}
+.hero p{color:#fff;font-size:17px;font-weight:700;text-shadow:0 2px 10px #000}
+.hero-points span{background:rgba(3,16,34,.8);border-color:rgba(255,211,92,.4);color:#fff}
+.button-link{background:linear-gradient(135deg,#ffe27c,#f1ae12);border-radius:5px 5px 17px 5px;font-size:15px;padding:16px 24px}
+.hero-visual{min-height:460px;align-items:flex-end}
+.hero-photo.arish-scene{width:100%;height:430px;max-width:680px;transform:none;border:2px solid rgba(255,220,115,.85);border-radius:8px 55px 8px 8px;overflow:hidden;background:#123!important;box-shadow:0 24px 60px rgba(0,0,0,.5)}
+.arish-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.hero-photo-shade{position:absolute;inset:0;background:linear-gradient(0deg,rgba(3,13,28,.75),transparent 55%),linear-gradient(90deg,rgba(3,13,28,.18),transparent)}
+.taxi-car-photo{position:absolute;bottom:12%;left:6%;width:58%;height:44%;filter:drop-shadow(0 16px 15px rgba(0,0,0,.65));}
+.taxi-car-photo img{width:100%;height:100%;object-fit:cover;object-position:center;border:4px solid #f7c638;border-radius:14px;clip-path:polygon(4% 16%,80% 0,100% 12%,100% 88%,88% 100%,0 88%)}
+.taxi-car-photo span{position:absolute;bottom:12px;right:12px;background:#f5bd28;color:#0a1b31;font-weight:1000;padding:8px 15px;border-radius:4px}
+.photo-tag{top:18px;left:18px;background:#06162b;border:1px solid #f3c13c;color:#ffdf7a;font-size:12px}
+.floating-card{right:auto;left:-8px;bottom:12px;background:#07182c;border:1px solid #eebc36;border-radius:8px}
+.hero-bottom{color:#fff;border-color:rgba(255,214,104,.45);font-weight:800}
+.trust-row{margin:24px 0 70px;background:#0a1c32;border:1px solid rgba(240,184,42,.38);border-radius:10px}
+.trust-row strong{color:#ffc52f}.trust-row .trust-note{color:#ffdb70}
+.arish-intro{margin:0 0 68px;background:linear-gradient(100deg,#0a1b30,#112b49);border-color:rgba(240,184,42,.4);border-radius:8px}
+.arish-intro h2 em{color:#ffc52f}.arish-seal{border-color:#eab72d;color:#ffdc73}
+.section-intro h2{color:#fff}.section-intro h2 em{color:#ffc52f}.eyebrow{color:#ffc943}
+.promo-card{border-radius:8px;border:1px solid rgba(241,190,55,.3);min-height:330px}
+.promo-overlay span{color:#ffcf48}.steps-grid article{background:linear-gradient(145deg,#102945,#08182b);border-color:rgba(241,190,55,.22);border-radius:8px}
+.steps-grid article>b{color:#ffcf48;border-color:#e7b42e;border-radius:50%}
+.panel{background:linear-gradient(145deg,#102945,#09182b);border:1px solid rgba(241,190,55,.35);border-radius:10px}
+.panel h2,.history-heading h3{color:#ffdc73}
+input,textarea,select{background:#06162a;border-color:#29425f;border-radius:6px}
+button{background:linear-gradient(135deg,#ffdf72,#e9a80e);border-radius:6px 6px 15px 6px}
+.secondary{background:#18324f;color:#fff;border-color:#35516f}
+.contact-strip{background:linear-gradient(110deg,#122d4b,#07182c);border-color:rgba(241,190,55,.45);border-radius:9px}
+.contact-strip a{background:#e9aa15;color:#101f34;border-radius:5px;font-weight:1000}
+footer{background:#030e1e;color:#b8c6d8;border-color:rgba(240,184,42,.25)}
+footer small{display:block;font-size:10px;color:#8294aa}
+@media(max-width:850px){.hero-card{grid-template-columns:1fr;min-height:auto;background-position:center}.hero-visual{min-height:350px}.hero-photo.arish-scene{height:340px}.hero-copy{padding:15px 8px}.taxi-car-photo{height:42%;width:60%}}
+@media(max-width:620px){.wide{width:100%}.hero-card{padding:25px 18px 20px;border-radius:0 0 18px 18px}.hero h1{font-size:42px}.hero p{font-size:14px}.hero-visual{min-height:260px}.hero-photo.arish-scene{height:250px;border-radius:8px 30px 8px 8px}.taxi-car-photo{height:40%;width:65%;bottom:10%}.floating-card{left:0;bottom:0}.hero-bottom{font-size:10px}.top{position:relative}.brand{font-size:20px}.arish-intro{margin:0 14px 48px}.trust-row{margin:18px 14px 55px}.services-section,.how-section{margin-inline:14px}.booking-panel{margin-inline:14px}.contact-strip{margin-inline:14px}footer{padding:22px 14px}}
