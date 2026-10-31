@@ -36,7 +36,7 @@ onAuthStateChanged(auth,async user=>{
   try{
     const snap=await get(ref(db,"drivers/"+user.uid)); profile=snap.val();
     if(!profile){$("message").textContent="لا يوجد ملف سائق لهذا الحساب. سجّل طلب سائق جديد.";await signOut(auth);return;}
-    if(profile.approved!==true){$("message").textContent="حسابك قيد مراجعة الإدارة ولم تتم الموافقة عليه بعد."; $("driverLogin").hidden=false;$("driverPanel").hidden=true;return;}
+    if(profile.approved!==true){$("message").textContent="حسابك قيد مراجعة الإدارة ولم تتم الموافقة عليه بعد."; $("driverLogin").hidden=false;$("driverPanel").hidden=true;await signOut(auth);return;}
     $("driverLogin").hidden=true;$("driverPanel").hidden=false;
     $("driverWelcome").textContent="أهلًا "+(profile.name||"بالسائق")+".";
     $("toggleAvailable").textContent=profile.available?"إيقاف استقبال الرحلات":"تفعيل استقبال الرحلات";
