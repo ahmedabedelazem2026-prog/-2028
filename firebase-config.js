@@ -1,9 +1,11 @@
-// ضع بيانات مشروع Firebase القديم هنا من إعدادات Project settings > Your apps
+// Firebase web configuration for taxi-alasema-app-2026
+// Restrict the API key to the required APIs and your website domains in Google Cloud.
 export const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyCfcmi-Atjlay550alHXslmmxfm9hFuNgM",
+  authDomain: "taxi-alasema-app-2026.firebaseapp.com",
+  databaseURL: "https://taxi-alasema-app-2026-default-rtdb.firebaseio.com",
+  projectId: "taxi-alasema-app-2026",
+  storageBucket: "taxi-alasema-app-2026.firebasestorage.app",
+  messagingSenderId: "343674981534",
+  appId: "1:343674981534:web:da9dbe1c000999b107bf8f"
 };
