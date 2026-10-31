@@ -39,7 +39,28 @@ try {
     "driver_active/d1/t1": { fromName: "A", toName: "B", clientPhone: "01000000000", clientId: "c1", status: "ACCEPTED", createdAt: 2, acceptedAt: 3 },
     "drivers/d1/available": false
   }));
-  assert.ok(true);
+  const started = await assertSucceeds(runTransaction(ref(d1, "trips/t1"), current => {
+    if (current === null) return { __transactionProbe: true };
+    if (current.driverId !== "d1" || current.status !== "ACCEPTED") return;
+    return { ...current, status: "IN_PROGRESS", inProgressAt: 4 };
+  }));
+  assert.equal(started.committed, true);
+  await assertSucceeds(update(ref(d1), {
+    "customer_trips/c1/t1/status": "IN_PROGRESS",
+    "customer_trips/c1/t1/updatedAt": 4,
+    "driver_active/d1/t1/status": "IN_PROGRESS"
+  }));
+  const completed = await assertSucceeds(runTransaction(ref(d1, "trips/t1"), current => {
+    if (current === null) return { __transactionProbe: true };
+    if (current.driverId !== "d1" || current.status !== "IN_PROGRESS") return;
+    return { ...current, status: "COMPLETED", completedAt: 5 };
+  }));
+  assert.equal(completed.committed, true);
+  await assertSucceeds(update(ref(d1), {
+    "customer_trips/c1/t1/status": "COMPLETED",
+    "customer_trips/c1/t1/updatedAt": 5,
+    "driver_active/d1/t1": null
+  }));
 } finally {
   await env.cleanup();
 }
