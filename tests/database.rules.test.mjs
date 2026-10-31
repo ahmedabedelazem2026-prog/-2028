@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { initializeTestEnvironment, assertSucceeds, assertFails } from "@firebase/rules-unit-testing";
-import { ref, set, get } from "firebase/database";
+import { ref, set, get, runTransaction, update } from "firebase/database";
 import assert from "node:assert/strict";
 
 const env = await initializeTestEnvironment({
@@ -23,6 +23,21 @@ try {
   await assertFails(get(ref(env.authenticatedContext("c2").database(), "customers/c1")));
   await assertSucceeds(get(ref(d1, "trips/t1")));
   await assertSucceeds(set(ref(c1, "customer_trips/c1/t1"), { clientId: "c1", clientPhone: "01000000000", from: "A", fromName: "A", to: "B", toName: "B", carType: "economy", rideWhen: "now", notes: "", status: "PENDING", createdAt: 2 }));
+  await assertSucceeds(set(ref(c1, "driver_requests/t1"), { tripId: "t1", clientId: "c1", pickup: "A", destination: "B", carType: "economy", createdAt: 2, status: "PENDING" }));
+  await assertSucceeds(get(ref(d1, "driver_requests")));
+  const accepted = await assertSucceeds(runTransaction(ref(d1, "trips/t1"), current => {
+    if (!current || current.status !== "PENDING") return;
+    return { ...current, status: "ACCEPTED", driverId: "d1", driverName: "Driver", acceptedAt: 3 };
+  }));
+  assert.equal(accepted.committed, true);
+  await assertSucceeds(update(ref(d1), {
+    "customer_trips/c1/t1/status": "ACCEPTED",
+    "customer_trips/c1/t1/driverName": "Driver",
+    "customer_trips/c1/t1/driverId": "d1",
+    "customer_trips/c1/t1/acceptedAt": 3,
+    "driver_active/d1/t1": { fromName: "A", toName: "B", clientPhone: "01000000000", clientId: "c1", status: "ACCEPTED", createdAt: 2, acceptedAt: 3 },
+    "drivers/d1/available": false
+  }));
   assert.ok(true);
 } finally {
   await env.cleanup();
