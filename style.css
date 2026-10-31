@@ -34,3 +34,78 @@
 .stats strong,.stats span{display:block}.stats strong{font-size:27px;color:var(--gold2)}.stats span{font-size:11px;color:var(--muted)}
 body>footer{padding:24px;text-align:center;border-top:1px solid var(--line);background:#050e1b;color:var(--muted);font-size:11px}
 @media(max-width:650px){.top{align-items:flex-start;flex-direction:column}.top nav{width:100%;justify-content:space-between;gap:8px}.wrap{margin:25px auto 55px}.panel{padding:18px}.wrap>.hero{padding:24px}.stats{grid-template-columns:1fr 1fr}.actions{flex-direction:column}}
+
+
+/* Capital Taxi — premium visual refresh */
+:root{
+ --navy:#06111f;--navy2:#0a1b2d;--panel:#10263d;--gold:#d9b66f;--gold2:#f4e4bd;
+ --muted:#a9b7c8;--line:rgba(220,195,145,.17);
+}
+body{background:radial-gradient(ellipse at 80% 0%,#18314a 0,transparent 34%),#06111f}
+.site-header{height:88px;background:rgba(4,13,25,.88);border-bottom:1px solid rgba(226,195,135,.2);box-shadow:0 12px 35px #0002}
+.brand-icon{width:48px;height:48px;border-radius:16px;font-size:17px;box-shadow:inset 0 1px #ffffff30,0 8px 22px #0005}
+.brand b{font-size:18px;letter-spacing:.1px}
+.main-nav a{font-size:12px;position:relative;padding:9px 0}
+.main-nav a:after{content:"";position:absolute;bottom:0;right:0;width:0;height:2px;background:var(--gold);transition:width .25s}
+.main-nav a:hover:after{width:100%}
+.header-call{border-radius:13px;padding:9px 17px;box-shadow:inset 0 1px #ffffff15,0 8px 20px #0003}
+.hero{min-height:700px;background:#071525}
+.hero-bg{transform:scale(1.02);filter:saturate(.78) contrast(1.08)}
+.hero-overlay{background:linear-gradient(90deg,rgba(3,12,24,.97) 0%,rgba(5,17,32,.88) 39%,rgba(5,17,32,.32) 100%),linear-gradient(0deg,#06111f 0%,transparent 36%,rgba(3,12,24,.15) 100%)}
+.hero-content{max-width:620px}
+.eyebrow{padding:9px 14px;border:1px solid #d9b66f55;border-radius:30px;background:#d9b66f12;backdrop-filter:blur(8px)}
+.hero h1{font-size:clamp(48px,6.8vw,86px);line-height:1.18;text-shadow:0 8px 35px #0007}
+.hero h1 em{background:linear-gradient(110deg,#fff1cb,#d4ad61 72%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero-content>p{font-size:15px;max-width:510px;color:#d7e0eb}
+.hero-buttons{gap:14px}
+.btn-gold{background:linear-gradient(120deg,#f6e7c2 0%,#d9b66f 52%,#b98b42 100%);box-shadow:0 12px 28px #b98b4233,inset 0 1px #fff9;border:1px solid #f7e7c2}
+.btn-glass{border-color:#ffffff55;background:#ffffff0c}
+.hero-car-wrap{width:min(51%,660px);height:390px;left:2%;bottom:35px}
+.hero-car{filter:drop-shadow(0 35px 35px #000b);mix-blend-mode:normal}
+.car-caption{border-color:#d9b66f55;box-shadow:0 15px 35px #0007}
+.quick-stats{margin-bottom:105px;padding:26px 30px;border-radius:0 0 22px 22px;background:linear-gradient(115deg,#122b43,#0b1b2d);border:1px solid #d9b66f55;box-shadow:0 25px 70px #0005}
+.quick-stats>div b{font-size:24px}
+.section-shell{margin-bottom:115px}
+.section-title h2{letter-spacing:-.5px}
+.kicker{letter-spacing:.3px}
+.booking-card,.map-panel,.how-grid article{background:linear-gradient(145deg,rgba(19,43,66,.96),rgba(8,23,39,.98));border:1px solid #d9b66f2b;box-shadow:0 24px 65px #0003}
+.booking-card{padding:30px}
+.auth-heading{padding-bottom:15px;border-bottom:1px solid var(--line)}
+.step-number{width:42px;height:42px;border-radius:14px;background:linear-gradient(145deg,#d9b66f2b,#d9b66f08);box-shadow:inset 0 1px #fff2}
+input,select,textarea{border-radius:12px;background:#071626;border-color:#3a5069;padding:14px 15px}
+input:focus,select:focus,textarea:focus{border-color:#e1c17e;box-shadow:0 0 0 4px #d9b66f20}
+.status-box,.route-summary{border-radius:12px;background:#071626;border-color:#344b63}
+.map-panel{border-radius:20px}
+.map-top{padding:22px 24px}
+#taxiMap{height:440px}
+.map-tools{padding-inline:24px}
+.route-summary{margin-inline:24px}
+.map-legend{padding-inline:24px}
+.service-card{border-color:#d9b66f30;border-radius:20px;background:linear-gradient(145deg,#142b43,#091827);box-shadow:0 18px 45px #0003;transition:transform .3s,border-color .3s,box-shadow .3s}
+.service-card:hover{transform:translateY(-7px);border-color:#d9b66f88;box-shadow:0 25px 55px #0005}
+.service-card img{height:220px;filter:saturate(.85)}
+.service-card>div{padding:23px}
+.service-card h3{font-size:19px}
+.how-grid article{border-radius:18px;transition:transform .25s,border-color .25s}
+.how-grid article:hover{transform:translateY(-5px);border-color:#d9b66f77}
+.how-grid article>b{display:inline-grid;place-items:center;width:52px;height:52px;border-radius:16px;background:#d9b66f15;border:1px solid #d9b66f55}
+.contact-banner{position:relative;overflow:hidden;border-radius:22px;background:radial-gradient(circle at 5% 50%,#d9b66f22,transparent 35%),linear-gradient(110deg,#17344e,#091a2c);box-shadow:0 25px 65px #0004}
+.contact-banner:after{content:"ع";position:absolute;left:28%;top:-75px;font-size:260px;font-weight:900;color:#ffffff08;pointer-events:none}
+.contact-banner>*{position:relative;z-index:1}
+.contact-banner>a{border:1px solid #58b88c66;box-shadow:0 12px 30px #0003;transition:transform .2s}
+.contact-banner>a:hover{transform:translateY(-3px)}
+.site-footer{background:#030b15;border-top-color:#d9b66f2b}
+a:focus-visible,button:focus-visible{outline:2px solid var(--gold2);outline-offset:3px}
+@media(max-width:900px){.hero{min-height:660px}.hero-car-wrap{height:330px}}
+@media(max-width:650px){
+ .site-header{min-height:76px}
+ .hero{min-height:700px;padding-top:55px}
+ .hero h1{font-size:49px}
+ .hero-car-wrap{height:260px;bottom:24px}
+ .quick-stats{margin-bottom:75px;padding:18px}
+ .booking-card{padding:20px}
+ #taxiMap{height:350px}
+ .section-shell{margin-bottom:78px}
+ .service-card img{height:205px}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
