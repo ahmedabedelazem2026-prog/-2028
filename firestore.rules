@@ -26,6 +26,12 @@ service cloud.firestore {
       return signedIn() && getUserData().role == 'driver';
     }
 
+    function isApprovedDriver() {
+      return isDriver() &&
+        exists(/databases/$(database)/documents/drivers/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/drivers/$(request.auth.uid)).data.approved == true;
+    }
+
     function isCustomer() {
       return signedIn() && getUserData().role == 'customer';
     }
@@ -62,8 +68,8 @@ service cloud.firestore {
       // Atomic accept by driver or status progression with immutable price
       allow update: if isAdmin() || (
         signedIn() && request.resource.data.price == resource.data.price && (
-          // Driver accepts
-          (isDriver() && resource.data.status in ['REQUESTED', 'requested', 'searching', 'pending']
+          // Approved Driver accepts
+          (isApprovedDriver() && resource.data.status in ['REQUESTED', 'requested', 'searching', 'pending']
             && request.resource.data.driverId == request.auth.uid
             && request.resource.data.status in ['ACCEPTED', 'accepted']) ||
           // Driver arrives at pickup
@@ -72,10 +78,15 @@ service cloud.firestore {
           // Driver marks in progress or completed
           (resource.data.driverId == request.auth.uid
             && request.resource.data.status in ['IN_PROGRESS', 'in_progress', 'COMPLETED', 'completed']) ||
-          // Customer cancels before acceptance
+          // Customer cancels before acceptance or search timeout
           (resource.data.customerId == request.auth.uid
             && resource.data.status in ['REQUESTED', 'requested', 'searching', 'pending']
-            && request.resource.data.status in ['CANCELLED', 'cancelled'])
+            && request.resource.data.status in ['CANCELLED', 'cancelled', 'no_driver']) ||
+          // Customer rates or tips completed ride
+          (resource.data.customerId == request.auth.uid
+            && resource.data.status in ['COMPLETED', 'completed']
+            && request.resource.data.status in ['COMPLETED', 'completed']
+            && request.resource.data.driverId == resource.data.driverId)
         )
       );
       allow delete: if isAdmin();
@@ -85,6 +96,11 @@ service cloud.firestore {
     match /wallets/{userId} {
       allow read: if signedIn() && (isOwner(userId) || isAdmin());
       allow write: if isAdmin();
+
+      match /transactions/{txId} {
+        allow read: if signedIn() && (isOwner(userId) || isAdmin());
+        allow write: if isAdmin();
+      }
     }
 
     // 4. Drivers Profile & Approvals
@@ -142,9 +158,16 @@ service cloud.firestore {
       allow update, delete: if isAdmin();
     }
 
-    // 7. Admin Logs
+    // 7. Admins & Admin Logs
+    match /admins/{adminId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
     match /admin_logs/{logId} {
-      allow read, write: if isAdmin();
+      allow read: if isAdmin();
+      allow create: if isAdmin();
+      allow update, delete: if false;
     }
   }
 }

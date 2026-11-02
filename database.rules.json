@@ -8,28 +8,39 @@
       }
     },
     "driver_locations": {
-      ".read": true,
+      ".read": "auth != null",
       "$uid": {
         ".write": "auth != null && auth.uid === $uid"
       }
     },
     "driverLocations": {
-      ".read": true,
+      ".read": "auth != null",
       "$uid": {
         ".write": "auth != null && auth.uid === $uid"
       }
     },
     "trips": {
-      ".read": true,
+      ".read": "auth != null",
       "$tripId": {
-        ".write": "auth != null",
-        ".validate": "newData.hasChildren(['status', 'from', 'to', 'price']) && (!data.exists() || newData.child('price').val() === data.child('price').val()) && (!data.exists() || data.child('status').val() !== 'completed' || root.child('admins').child(auth.uid).val() === true)"
+        ".write": "auth != null && (!data.exists() || data.child('customerId').val() === auth.uid || data.child('driverId').val() === auth.uid || (!data.child('driverId').exists() && newData.child('driverId').val() === auth.uid && root.child('drivers').child(auth.uid).child('approved').val() === true) || root.child('admins').child(auth.uid).val() === true)",
+        ".validate": "newData.hasChildren(['status', 'from', 'to', 'price']) && (!data.exists() || newData.child('price').val() === data.child('price').val()) && (!data.exists() || data.child('status').val() !== 'completed' || newData.child('status').val() === 'completed' || root.child('admins').child(auth.uid).val() === true)",
+        "statusTimeline": {
+          "$logId": {
+            ".validate": "!data.exists() && newData.exists()"
+          }
+        }
       }
     },
     "driver_requests": {
-      ".read": true,
+      ".read": "auth != null",
       "$tripId": {
-        ".write": "auth != null"
+        ".write": "auth != null && (!data.exists() || data.child('customerId').val() === auth.uid || root.child('admins').child(auth.uid).val() === true || (auth.uid === newData.child('driverId').val() && root.child('drivers').child(auth.uid).child('approved').val() === true))"
+      }
+    },
+    "scheduled_trips": {
+      ".read": "auth != null",
+      "$tripId": {
+        ".write": "auth != null && (!data.exists() || data.child('customerId').val() === auth.uid || root.child('admins').child(auth.uid).val() === true)"
       }
     },
     "customer_trips": {
@@ -57,6 +68,18 @@
         ".write": "auth != null && root.child('admins').child(auth.uid).val() === true"
       }
     },
+    "reviews": {
+      ".read": true,
+      "$reviewId": {
+        ".write": "auth != null && (!data.exists() || root.child('admins').child(auth.uid).val() === true)"
+      }
+    },
+    "complaints": {
+      ".read": "auth != null",
+      "$complaintId": {
+        ".write": "auth != null && (!data.exists() || data.child('userId').val() === auth.uid || root.child('admins').child(auth.uid).val() === true)"
+      }
+    },
     "pricing": {
       ".read": true,
       ".write": "auth != null && root.child('admins').child(auth.uid).val() === true"
@@ -71,15 +94,20 @@
     },
     "admin_logs": {
       ".read": "auth != null && root.child('admins').child(auth.uid).val() === true",
-      ".write": "auth != null && root.child('admins').child(auth.uid).val() === true"
+      "$logId": {
+        ".write": "auth != null && root.child('admins').child(auth.uid).val() === true",
+        ".validate": "!data.exists() && newData.exists()"
+      }
     },
     "stats": {
       ".read": true,
-      ".write": "auth != null"
+      ".write": "auth != null && root.child('admins').child(auth.uid).val() === true"
     },
     "notifications": {
-      ".read": "auth != null",
-      ".write": "auth != null"
+      "$uid": {
+        ".read": "auth != null && (auth.uid === $uid || root.child('admins').child(auth.uid).val() === true)",
+        ".write": "auth != null"
+      }
     }
   }
 }
