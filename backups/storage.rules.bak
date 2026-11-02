@@ -1,0 +1,27 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    // Driver documents & vehicle licenses (PDF & images up to 10MB)
+    match /driverDocuments/{uid}/{fileName} {
+      allow create: if isOwner(uid)
+        && request.resource.size < 10 * 1024 * 1024
+        && (request.resource.contentType.matches('image/.*') || request.resource.contentType == 'application/pdf');
+      allow read: if isOwner(uid) || request.auth.token.admin == true;
+      allow update, delete: if request.auth.token.admin == true;
+    }
+
+    // Public brand assets & car images
+    match /public/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth.token.admin == true;
+    }
+  }
+}

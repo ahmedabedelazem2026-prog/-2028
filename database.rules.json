@@ -3,7 +3,8 @@
     "drivers": {
       ".read": true,
       "$uid": {
-        ".write": "auth != null && (auth.uid === $uid || root.child('admins').child(auth.uid).val() === true)"
+        ".write": "auth != null && (auth.uid === $uid || root.child('admins').child(auth.uid).val() === true)",
+        ".validate": "!data.exists() || root.child('admins').child(auth.uid).val() === true || (!newData.hasChild('approved') || newData.child('approved').val() === data.child('approved').val()) && (!newData.hasChild('rating') || newData.child('rating').val() === data.child('rating').val()) && (!newData.hasChild('suspended') || newData.child('suspended').val() === data.child('suspended').val())"
       }
     },
     "driver_locations": {
@@ -22,7 +23,7 @@
       ".read": true,
       "$tripId": {
         ".write": "auth != null",
-        ".validate": "newData.hasChildren(['status', 'from', 'to', 'price'])"
+        ".validate": "newData.hasChildren(['status', 'from', 'to', 'price']) && (!data.exists() || newData.child('price').val() === data.child('price').val()) && (!data.exists() || data.child('status').val() !== 'completed' || root.child('admins').child(auth.uid).val() === true)"
       }
     },
     "driver_requests": {
@@ -46,7 +47,14 @@
     "users": {
       ".read": "auth != null",
       "$uid": {
-        ".write": "auth != null && (auth.uid === $uid || root.child('admins').child(auth.uid).val() === true)"
+        ".write": "auth != null && (auth.uid === $uid || root.child('admins').child(auth.uid).val() === true)",
+        ".validate": "!data.exists() || root.child('admins').child(auth.uid).val() === true || (!newData.hasChild('role') || newData.child('role').val() === data.child('role').val())"
+      }
+    },
+    "wallets": {
+      "$uid": {
+        ".read": "auth != null && (auth.uid === $uid || root.child('admins').child(auth.uid).val() === true)",
+        ".write": "auth != null && root.child('admins').child(auth.uid).val() === true"
       }
     },
     "pricing": {
