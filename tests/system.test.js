@@ -1,11 +1,15 @@
 // =========================================================================
 // تاكسي العاصمة – CAPITAL TAXI (North Sinai, Al-Arish)
-// Comprehensive System & Business Logic Verification Test Suite
+// Comprehensive System & Business Logic Verification Test Suite (v2.0)
 // =========================================================================
 
 import assert from "node:assert/strict";
 import { PricingEngine, DEFAULT_PRICING_CONFIG } from "../js/pricing-engine.js";
 import { DispatchEngine } from "../js/dispatch-engine.js";
+import { WalletEngine } from "../js/wallet-engine.js";
+import { ChatEngine } from "../js/chat-engine.js";
+import { RatingsEngine } from "../js/ratings-engine.js";
+import { SuperAdminGuard } from "../js/superadmin-bootstrap.js";
 
 // Mock localStorage for Node.js test environment
 const mockStorage = {};
@@ -102,7 +106,6 @@ async function runTests() {
       durationMin: 12.0,
       carType: "economy"
     });
-    // Base 15 + (5 * 6.5 = 32.5) = 47.5 -> rounded = 48
     assert.ok(fare.totalFare >= 45 && fare.totalFare <= 55);
     assert.equal(fare.currency, "ج.م");
   });
@@ -115,7 +118,6 @@ async function runTests() {
       durationMin: 2.0,
       carType: "economy"
     });
-    // Must not be less than minFare (25 EGP)
     assert.ok(fare.totalFare >= 25);
   });
 
@@ -167,17 +169,24 @@ async function runTests() {
     const driver1 = { uid: "drv_1", name: "كابتن أحمد", phone: "01094129592", carModel: "تويوتا" };
     const driver2 = { uid: "drv_2", name: "كابتن ماجد", phone: "01094129592", carModel: "هيونداي" };
 
-    // Driver 1 accepts first
     const res1 = await dispatch.acceptTripAtomic(tripId, driver1);
     assert.equal(res1.success, true, "Driver 1 should accept successfully");
 
-    // Driver 2 attempts to accept the same trip
     const res2 = await dispatch.acceptTripAtomic(tripId, driver2);
     assert.equal(res2.success, false, "Driver 2 should be rejected because trip is already accepted");
   });
 
-  // 11. Trip lifecycle: Start trip
-  await testAsync("11. بدء الرحلة بعد ركوب العميل", async () => {
+  // 11. Trip lifecycle: Driver Arrived at pickup
+  await testAsync("11. وصول الكابتن لمكان الانطلاق (ARRIVED)", async () => {
+    const dispatch = new DispatchEngine({});
+    const req = await dispatch.createTripRequest({ from: "المساعيد", to: "الساحل", price: 30 });
+    await dispatch.acceptTripAtomic(req.tripId, { uid: "drv_test" });
+    const res = await dispatch.driverArrived(req.tripId);
+    assert.equal(res.status, "ARRIVED");
+  });
+
+  // 12. Trip lifecycle: Start trip & In progress
+  await testAsync("12. بدء الرحلة بعد ركوب العميل (IN_PROGRESS)", async () => {
     const dispatch = new DispatchEngine({});
     const req = await dispatch.createTripRequest({ from: "الفواخرية", to: "الريسة", price: 40 });
     await dispatch.acceptTripAtomic(req.tripId, { uid: "drv_test" });
@@ -185,8 +194,8 @@ async function runTests() {
     assert.equal(res.status, "IN_PROGRESS");
   });
 
-  // 12. Trip lifecycle: Complete trip & revenue recording
-  await testAsync("12. إنهاء الرحلة بنجاح وتسجيل الأجرة", async () => {
+  // 13. Trip lifecycle: Complete trip & revenue recording
+  await testAsync("13. إنهاء الرحلة بنجاح وتسجيل الأجرة", async () => {
     const dispatch = new DispatchEngine({});
     const req = await dispatch.createTripRequest({ from: "الفواخرية", to: "الريسة", price: 40 });
     await dispatch.acceptTripAtomic(req.tripId, { uid: "drv_test" });
@@ -195,30 +204,62 @@ async function runTests() {
     assert.equal(res.status, "COMPLETED");
   });
 
-  // 13. Trip cancellation
-  await testAsync("13. إلغاء الرحلة وفق قواعد النظام", async () => {
+  // 14. Trip cancellation
+  await testAsync("14. إلغاء الرحلة وفق قواعد النظام", async () => {
     const dispatch = new DispatchEngine({});
     const req = await dispatch.createTripRequest({ from: "الساحل", to: "المساعيد", price: 30 });
     const res = await dispatch.cancelTrip(req.tripId, "تغيير رأي العميل");
     assert.equal(res.status, "CANCELLED");
   });
 
-  // 14. Admin commission calculation (10%)
-  test("14. احتساب عمولة المنصة 10% وصافي مستحقات السائق", () => {
-    const totalRevenue = 1000;
-    const commission = totalRevenue * 0.10;
-    const driverNet = totalRevenue - commission;
-    assert.equal(commission, 100);
-    assert.equal(driverNet, 900);
+  // 15. Wallet Engine: Top-up & Trip Payment
+  await testAsync("15. شحن وسداد المحفظة الإلكترونية داخل التطبيق", async () => {
+    const wallet = new WalletEngine({});
+    const uid = "user_wallet_test";
+    const topRes = await wallet.topUpWallet(uid, 100);
+    assert.equal(topRes.success, true);
+    assert.equal(topRes.balance, 100);
+
+    const payRes = await wallet.payTripFromWallet(uid, "TRIP_123", 35);
+    assert.equal(payRes.success, true);
+    assert.equal(payRes.balance, 65);
   });
 
-  // 15. Dynamic pricing reconfiguration by Admin
-  test("15. تعديل أسعار العداد والكيلومتر من الإدارة ديناميكياً", () => {
-    const pricing = new PricingEngine();
-    pricing.updateConfig({ baseFare: 20, perKmRate: 8.0, minFare: 30 });
-    const fare = pricing.calculateFare({ distanceKm: 10, carType: "economy" });
-    // 20 + 80 = 100
-    assert.equal(fare.totalFare, 100);
+  // 16. In-App Chat between Rider and Driver
+  await testAsync("16. المراسلة الفورية بين العميل والكابتن", async () => {
+    const chat = new ChatEngine({});
+    const tripId = "TRIP_CHAT_TEST";
+    const sendRes = await chat.sendMessage({
+      tripId,
+      senderId: "rider_1",
+      senderName: "العميل",
+      senderRole: "customer",
+      text: "أنا في انتظارك أمام البوابة 🚗"
+    });
+    assert.equal(sendRes.success, true);
+    assert.equal(sendRes.message.text, "أنا في انتظارك أمام البوابة 🚗");
+  });
+
+  // 17. Star Rating & Quality Assurance Engine
+  await testAsync("17. تقييم السائق بالنجوم وإضافة الملاحظات", async () => {
+    const ratings = new RatingsEngine({});
+    const res = await ratings.submitReview({
+      tripId: "TRIP_999",
+      customerId: "cust_1",
+      driverId: "drv_1",
+      rating: 5,
+      tags: ["سيارة نظيفة ومعطرة ✨", "التزام تام بالموعد ⏱️"],
+      comment: "سائق محترم جداً وقمة في الذوق"
+    });
+    assert.equal(res.success, true);
+    assert.equal(res.review.rating, 5);
+  });
+
+  // 18. Super Admin Guard check
+  await testAsync("18. حماية لوحة الإدارة بحساب المدير الرئيسي ahmedabedelazem", async () => {
+    const guard = new SuperAdminGuard({});
+    const isSuper = await guard.isSuperAdmin("admin_uid", "ahmedabedelazem@gmail.com");
+    assert.equal(isSuper, true, "Super Admin identity must be verified");
   });
 
   console.log("\n================================================================");

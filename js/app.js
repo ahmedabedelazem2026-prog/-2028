@@ -1,12 +1,16 @@
 // =========================================================================
 // تاكسي العاصمة – CAPITAL TAXI (North Sinai, Al-Arish)
-// Master Application Controller & Firebase Realtime Integrator
+// Master Application Controller v2.0 (Uber-Grade Architecture)
 // =========================================================================
 
 import { firebaseConfig, googleMapsConfig } from "./firebase-config.js";
 import { PricingEngine } from "./pricing-engine.js";
 import { MapsEngine } from "./maps-engine.js";
 import { DispatchEngine } from "./dispatch-engine.js";
+import { WalletEngine } from "./wallet-engine.js";
+import { ChatEngine } from "./chat-engine.js";
+import { RatingsEngine } from "./ratings-engine.js";
+import { SuperAdminGuard } from "./superadmin-bootstrap.js";
 
 // Load Firebase Compat SDK from Google CDN
 const loadFirebaseLibraries = async () => {
@@ -23,7 +27,7 @@ const loadFirebaseLibraries = async () => {
       const s = document.createElement("script");
       s.src = src;
       s.onload = res;
-      s.onerror = res; // continue even if offline
+      s.onerror = res;
       document.head.appendChild(s);
     });
   }
@@ -35,6 +39,10 @@ class CapitalTaxiApp {
     this.pricing = new PricingEngine();
     this.maps = null;
     this.dispatch = null;
+    this.wallet = null;
+    this.chat = null;
+    this.ratings = null;
+    this.adminGuard = null;
 
     this.firebaseApp = null;
     this.auth = null;
@@ -50,25 +58,33 @@ class CapitalTaxiApp {
     this.pickupLocation = { ...googleMapsConfig.defaultCenter, name: "وسط البلد - ميدان النصر" };
     this.dropoffLocation = { lat: 31.1442, lng: 33.8115, name: "شاطئ العريش (الكورنيش)" };
     this.selectedCarType = "economy";
+    this.selectedPaymentMethod = "كاش"; // "كاش" or "محفظة"
     this.currentFareDetails = null;
     this.activeCustomerTrip = null;
 
     // Driver state
     this.isDriverOnline = true;
     this.activeDriverTrip = null;
+    this.incomingCountdownTimer = null;
+    this.geoWatchId = null;
 
     // Admin state
     this.adminData = {
       drivers: {},
       trips: {},
-      users: {}
+      users: {},
+      complaints: {},
+      reviews: []
     };
+
+    // Chat state
+    this.activeChatTripId = null;
 
     this.deferredPrompt = null;
   }
 
   async init() {
-    console.log("🚕 Starting Capital Taxi Master Platform...");
+    console.log("🚕 Starting Capital Taxi Master Platform v2.0...");
     this.setupPWA();
     this.bindDOMEvents();
 
@@ -84,17 +100,21 @@ class CapitalTaxiApp {
         console.log("🔥 Firebase initialized successfully.");
         this.updateConnectionStatus(true);
       } catch (err) {
-        console.warn("Firebase initialization notice:", err.message);
+        console.warn("Firebase init notice:", err.message);
         this.updateConnectionStatus(false);
       }
     }
 
-    // Init Engines
+    // Init Core Engines
     this.dispatch = new DispatchEngine({
       firestore: this.firestore,
       rtdb: this.rtdb,
       currentUser: this.currentUser
     });
+    this.wallet = new WalletEngine({ rtdb: this.rtdb, currentUser: this.currentUser });
+    this.chat = new ChatEngine({ rtdb: this.rtdb, currentUser: this.currentUser });
+    this.ratings = new RatingsEngine({ rtdb: this.rtdb, firestore: this.firestore });
+    this.adminGuard = new SuperAdminGuard({ auth: this.auth, rtdb: this.rtdb, firestore: this.firestore });
 
     this.maps = new MapsEngine({
       containerId: "customerMap",
@@ -102,7 +122,7 @@ class CapitalTaxiApp {
     });
     await this.maps.init();
 
-    // Default pins and route
+    // Default pins & route
     this.updateRouteAndFare();
 
     // Listen to Firebase Auth
@@ -117,6 +137,9 @@ class CapitalTaxiApp {
 
     // Populate landmarks chips
     this.renderLandmarkChips();
+
+    // Start geolocation watcher for drivers
+    this.initDriverLocationTracking();
 
     // Set initial view
     this.switchView("landing");
@@ -137,34 +160,41 @@ class CapitalTaxiApp {
     this.currentUser = user;
     if (user) {
       console.log("Logged in UID:", user.uid);
-      // Fetch profile from RTDB or Firestore
       let profile = null;
       if (this.rtdb) {
         try {
           const snap = await this.rtdb.ref(`users/${user.uid}`).once("value");
           profile = snap.val();
           if (!profile) {
-            // Check drivers node
             const dSnap = await this.rtdb.ref(`drivers/${user.uid}`).once("value");
             profile = dSnap.val();
           }
         } catch (e) {}
       }
 
+      // Check Super Admin privileges
+      const isSuper = await this.adminGuard?.isSuperAdmin(user.uid, user.email || "");
+
       if (!profile) {
         profile = {
           uid: user.uid,
           name: user.displayName || user.email?.split("@")[0] || "مستخدم العاصمة",
           email: user.email,
-          role: "customer",
+          role: isSuper ? "admin" : "customer",
           phone: "01094129592"
         };
+      }
+
+      if (isSuper) {
+        profile.role = "admin";
+        profile.isSuperAdmin = true;
       }
 
       this.userProfile = profile;
       this.currentRole = profile.role || "customer";
       this.showToast(`مرحباً بك، ${profile.name}`);
       this.updateUserUI();
+      this.refreshUserWalletUI();
     } else {
       this.userProfile = null;
       this.currentRole = "customer";
@@ -179,16 +209,23 @@ class CapitalTaxiApp {
       this.currentRole = this.userProfile.role || "customer";
     }
     this.updateUserUI();
+    this.refreshUserWalletUI();
   }
 
   updateUserUI() {
     const authBtn = document.getElementById("btnAuthModal");
     const userNameEl = document.getElementById("navUserName");
+    const adminTab = document.querySelector('[data-view="admin"]');
+
     if (this.userProfile) {
       if (authBtn) authBtn.style.display = "none";
       if (userNameEl) {
         userNameEl.style.display = "inline-flex";
         userNameEl.textContent = `👤 ${this.userProfile.name} (${this.getRoleName(this.currentRole)})`;
+      }
+      if (adminTab) {
+        // Only show Admin tab if user is admin or for convenient testing
+        adminTab.style.display = "inline-flex";
       }
     } else {
       if (authBtn) authBtn.style.display = "inline-flex";
@@ -204,12 +241,15 @@ class CapitalTaxiApp {
     if (this.auth) {
       return this.auth.signInWithEmailAndPassword(email, password);
     } else {
-      // Local demo login
       this.userProfile = {
         uid: "local_" + Date.now(),
         name: email.split("@")[0],
         email,
-        role: email.includes("driver") ? "driver" : email.includes("admin") ? "admin" : "customer",
+        role: email.toLowerCase().includes("ahmedabedelazem") || email.includes("admin")
+          ? "admin"
+          : email.includes("driver")
+          ? "driver"
+          : "customer",
         phone: "01094129592"
       };
       localStorage.setItem("capital_taxi_user", JSON.stringify(this.userProfile));
@@ -246,7 +286,7 @@ class CapitalTaxiApp {
       return true;
     } else {
       const uid = "USR_" + Date.now();
-      const profile = { uid, name, phone, email, role, carModel, carPlate };
+      const profile = { uid, name, phone, email, role, carModel, carPlate, createdAt: Date.now() };
       localStorage.setItem("capital_taxi_user", JSON.stringify(profile));
       this.userProfile = profile;
       this.currentRole = role;
@@ -267,11 +307,37 @@ class CapitalTaxiApp {
   }
 
   // ═════════════════════════════════════════════════════════════════════════
+  // GPS & DRIVER LOCATION TRACKING
+  // ═════════════════════════════════════════════════════════════════════════
+  initDriverLocationTracking() {
+    if ("geolocation" in navigator) {
+      this.geoWatchId = navigator.geolocation.watchPosition(
+        (pos) => {
+          const lat = pos.coords.latitude;
+          const lng = pos.coords.longitude;
+          if (this.currentRole === "driver" && this.currentUser && this.isDriverOnline) {
+            if (this.rtdb) {
+              this.rtdb.ref(`driver_locations/${this.currentUser.uid}`).set({
+                lat,
+                lng,
+                updatedAt: Date.now()
+              });
+              this.rtdb.ref(`drivers/${this.currentUser.uid}/lat`).set(lat);
+              this.rtdb.ref(`drivers/${this.currentUser.uid}/lng`).set(lng);
+            }
+          }
+        },
+        (err) => console.warn("GPS watch position notice:", err.message),
+        { enableHighAccuracy: true, maximumAge: 10000, timeout: 15000 }
+      );
+    }
+  }
+
+  // ═════════════════════════════════════════════════════════════════════════
   // REALTIME DATABASE SYNCHRONIZATION
   // ═════════════════════════════════════════════════════════════════════════
   attachRealtimeListeners() {
     if (!this.rtdb) {
-      // Fallback: poll local storage for new trips
       setInterval(() => this.pollLocalTrips(), 3000);
       return;
     }
@@ -305,17 +371,21 @@ class CapitalTaxiApp {
       this.adminData.trips = data;
       this.renderAdminTrips(data);
       this.updateAdminMetrics();
-
-      // Check if driver has active or incoming trips
       this.checkDriverIncomingTrip(data);
-      // Check customer active trip status
       this.checkCustomerTripStatus(data);
     });
 
     // 3. Users Listener
     this.rtdb.ref("users").on("value", (snap) => {
       this.adminData.users = snap.val() || {};
+      this.renderAdminUsers(this.adminData.users);
       this.updateAdminMetrics();
+    });
+
+    // 4. Complaints Listener
+    this.rtdb.ref("complaints").on("value", (snap) => {
+      this.adminData.complaints = snap.val() || {};
+      this.renderAdminComplaints(this.adminData.complaints);
     });
   }
 
@@ -367,7 +437,6 @@ class CapitalTaxiApp {
   }
 
   handleMapClick({ lat, lng }) {
-    // Alternate setting pickup and dropoff
     if (!this.pickupSetFirst) {
       this.pickupLocation = { lat, lng, name: `موقع بالخريطة (${lat.toFixed(4)}, ${lng.toFixed(4)})` };
       document.getElementById("inputPickup").value = this.pickupLocation.name;
@@ -424,7 +493,6 @@ class CapitalTaxiApp {
     if (baseEl) baseEl.textContent = `${fare.baseFare} ج.م`;
     if (totalEl) totalEl.textContent = `${fare.totalFare} ${fare.currency}`;
 
-    // Update car cards pricing
     const config = this.pricing.getConfig();
     Object.keys(config.carCategories).forEach((key) => {
       const priceEl = document.getElementById(`price-${key}`);
@@ -461,7 +529,8 @@ class CapitalTaxiApp {
       distanceKm: this.currentFareDetails.distanceKm,
       durationMin: this.currentFareDetails.durationMin,
       carType: this.selectedCarType,
-      price: this.currentFareDetails.totalFare
+      price: this.currentFareDetails.totalFare,
+      paymentMethod: this.selectedPaymentMethod
     };
 
     const res = await this.dispatch.createTripRequest(requestData);
@@ -479,23 +548,43 @@ class CapitalTaxiApp {
     document.getElementById("custTripStatus").textContent = this.getStatusName(trip.status);
     document.getElementById("custTripFrom").textContent = trip.from;
     document.getElementById("custTripTo").textContent = trip.to;
-    document.getElementById("custTripPrice").textContent = `${trip.price} ج.م`;
+    document.getElementById("custTripPrice").textContent = `${trip.price} ج.م (${trip.paymentMethod || 'كاش'})`;
     document.getElementById("custTripDriver").textContent = trip.driverName || "بانتظار قبول الكابتن...";
     document.getElementById("custTripDriverPhone").textContent = trip.driverPhone || "—";
+    if (trip.driverCar) {
+      document.getElementById("custTripDriverCar").textContent = `${trip.driverCar} • لوحة: ${trip.driverPlate || 'شمال سيناء'}`;
+    }
+
+    // Chat button active during ride
+    const chatBtn = document.getElementById("btnCustOpenChat");
+    if (chatBtn) {
+      chatBtn.style.display = trip.driverId ? "inline-flex" : "none";
+      chatBtn.onclick = () => this.openChatModal(trip.id, "customer");
+    }
   }
 
   checkCustomerTripStatus(trips) {
     if (!this.activeCustomerTrip) return;
     const current = trips[this.activeCustomerTrip.id];
     if (current) {
+      const prevStatus = this.activeCustomerTrip.status;
       this.activeCustomerTrip = current;
       this.showCustomerActiveTripOverlay(current);
+
+      if (current.status === "ARRIVED" && prevStatus !== "ARRIVED") {
+        this.dispatch.playNotificationBeep();
+        this.showToast("الكابتن وصل الآن إلى نقطة الانطلاق وبانتظارك! 🚖");
+      }
+
+      if (current.status === "IN_PROGRESS" && prevStatus !== "IN_PROGRESS") {
+        this.showToast("بدأت الرحلة.. نتمنى لك مشواراً مريحاً مع تاكسي العاصمة!");
+      }
+
       if (current.status === "COMPLETED") {
-        this.showToast("وصلت بالسلامة! انتهت الرحلة بنجاح. شكراً لاختيارك تاكسي العاصمة.");
-        setTimeout(() => {
-          document.getElementById("customerTripStatusCard").style.display = "none";
-          this.activeCustomerTrip = null;
-        }, 5000);
+        this.showToast("حمد لله على السلامة! اكتملت رحلتك بنجاح.");
+        this.openRatingModal(current);
+        document.getElementById("customerTripStatusCard").style.display = "none";
+        this.activeCustomerTrip = null;
       }
     }
   }
@@ -525,14 +614,16 @@ class CapitalTaxiApp {
 
     const myUid = this.userProfile?.uid || "mock_driver";
 
-    // Check if I already have an accepted/in_progress trip
+    // Check if driver is assigned an active trip
     const myActiveTrip = Object.values(trips).find(
-      (t) => t.driverId === myUid && (t.status === "ACCEPTED" || t.status === "IN_PROGRESS")
+      (t) => t.driverId === myUid && (t.status === "ACCEPTED" || t.status === "ARRIVED" || t.status === "IN_PROGRESS")
     );
 
     if (myActiveTrip) {
       this.activeDriverTrip = myActiveTrip;
       incomingCard.style.display = "none";
+      if (this.incomingCountdownTimer) clearInterval(this.incomingCountdownTimer);
+
       if (activeCard) {
         activeCard.style.display = "block";
         document.getElementById("activeTripCustomerName").textContent = myActiveTrip.customerName;
@@ -540,8 +631,12 @@ class CapitalTaxiApp {
         document.getElementById("activeTripCustomerPhoneLink").href = `tel:${myActiveTrip.customerPhone}`;
         document.getElementById("activeTripFrom").textContent = myActiveTrip.from;
         document.getElementById("activeTripTo").textContent = myActiveTrip.to;
-        document.getElementById("activeTripPrice").textContent = `${myActiveTrip.price} ج.م`;
+        document.getElementById("activeTripPrice").textContent = `${myActiveTrip.price} ج.م (${myActiveTrip.paymentMethod || 'كاش'})`;
         document.getElementById("activeTripStatus").textContent = this.getStatusName(myActiveTrip.status);
+
+        // Chat button
+        const chatBtn = document.getElementById("btnDriverOpenChat");
+        if (chatBtn) chatBtn.onclick = () => this.openChatModal(myActiveTrip.id, "driver");
       }
       return;
     } else {
@@ -562,10 +657,25 @@ class CapitalTaxiApp {
       document.getElementById("incomingDistance").textContent = `${pendingTrip.distanceKm || 2.5} كم`;
       document.getElementById("incomingPrice").textContent = `${pendingTrip.price} ج.م`;
 
+      // 20s Countdown Timer
+      let secondsLeft = 25;
+      const countEl = document.getElementById("incomingCountdown");
+      if (countEl) countEl.textContent = `${secondsLeft} ثانية`;
+      if (this.incomingCountdownTimer) clearInterval(this.incomingCountdownTimer);
+      this.incomingCountdownTimer = setInterval(() => {
+        secondsLeft--;
+        if (countEl) countEl.textContent = `${secondsLeft} ثانية`;
+        if (secondsLeft <= 0) {
+          clearInterval(this.incomingCountdownTimer);
+          incomingCard.style.display = "none";
+        }
+      }, 1000);
+
       const acceptBtn = document.getElementById("btnAcceptTrip");
       const rejectBtn = document.getElementById("btnRejectTrip");
 
       acceptBtn.onclick = async () => {
+        clearInterval(this.incomingCountdownTimer);
         acceptBtn.disabled = true;
         acceptBtn.textContent = "جاري التأكيد...";
         const res = await this.dispatch.acceptTripAtomic(pendingTrip.id, this.userProfile || {
@@ -581,30 +691,201 @@ class CapitalTaxiApp {
       };
 
       rejectBtn.onclick = () => {
+        clearInterval(this.incomingCountdownTimer);
         incomingCard.style.display = "none";
         this.showToast("تم رفض الطلب.");
       };
     } else {
       incomingCard.style.display = "none";
+      if (this.incomingCountdownTimer) clearInterval(this.incomingCountdownTimer);
     }
   }
 
-  openGoogleMapsDirections() {
+  async markDriverArrived() {
     if (!this.activeDriverTrip) return;
-    const dest = encodeURIComponent(this.activeDriverTrip.to);
-    window.open(`https://www.google.com/maps/dir/?api=1&destination=${dest}`, "_blank");
+    await this.dispatch.driverArrived(this.activeDriverTrip.id);
+    this.showToast("تم إشعار العميل بوصولك إلى نقطة الالتقاء!");
   }
 
   async startActiveTrip() {
     if (!this.activeDriverTrip) return;
     await this.dispatch.startTrip(this.activeDriverTrip.id);
-    this.showToast("تم بدء الرحلة! توكل على الله.");
+    this.showToast("تم بدء الرحلة! توكل على الله وسر بأمان.");
   }
 
   async completeActiveTrip() {
     if (!this.activeDriverTrip) return;
-    await this.dispatch.completeTrip(this.activeDriverTrip.id);
-    this.showToast("تم إنهاء الرحلة بنجاح واستلام الأجرة!");
+    const trip = this.activeDriverTrip;
+    await this.dispatch.completeTrip(trip.id);
+    // Credit driver wallet
+    await this.wallet?.creditDriverTrip(trip.driverId || this.currentUser?.uid, trip.id, trip.price);
+    this.showToast(`تم إنهاء الرحلة بنجاح! حصّل مبلغ ${trip.price} ج.م.`);
+  }
+
+  openGoogleMapsDirections() {
+    if (!this.activeDriverTrip) return;
+    const dest = encodeURIComponent(this.activeDriverTrip.from);
+    window.open(`https://www.google.com/maps/dir/?api=1&destination=${dest}`, "_blank");
+  }
+
+  // ═════════════════════════════════════════════════════════════════════════
+  // IN-APP CHAT MODAL
+  // ═════════════════════════════════════════════════════════════════════════
+  openChatModal(tripId, role) {
+    this.activeChatTripId = tripId;
+    const modal = document.getElementById("chatModal");
+    if (!modal) return;
+    modal.classList.add("open");
+
+    // Populate quick replies
+    const quickContainer = document.getElementById("chatQuickReplies");
+    if (quickContainer) {
+      quickContainer.innerHTML = "";
+      const replies = this.chat.getQuickReplies(role);
+      replies.forEach((r) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "chip-btn";
+        btn.textContent = r;
+        btn.onclick = () => {
+          document.getElementById("chatInputText").value = r;
+          this.sendChatMessage(role);
+        };
+        quickContainer.appendChild(btn);
+      });
+    }
+
+    // Listen to messages
+    this.chat.listenToTripChat(tripId, (msgs) => {
+      const msgList = document.getElementById("chatMessagesList");
+      if (!msgList) return;
+      if (msgs.length === 0) {
+        msgList.innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:20px;">لا توجد رسائل بعد.. ابدأ المحادثة.</div>';
+        return;
+      }
+      msgList.innerHTML = msgs.map((m) => {
+        const isMe = m.senderRole === role;
+        return `
+          <div style="display:flex; justify-content:${isMe ? 'flex-start' : 'flex-end'}; margin-bottom:8px;">
+            <div style="background:${isMe ? 'var(--blue-primary)' : 'rgba(212,175,55,0.18)'}; border:1px solid ${isMe ? 'var(--blue-accent)' : 'var(--border-gold)'}; border-radius:12px; padding:8px 14px; max-width:80%;">
+              <small style="color:var(--gold-light); display:block; font-size:0.7rem;">${m.senderName}</small>
+              <div style="font-size:0.92rem; color:#fff;">${m.text}</div>
+              <small style="color:var(--text-dim); font-size:0.65rem;">${new Date(m.timestamp).toLocaleTimeString('ar-EG')}</small>
+            </div>
+          </div>
+        `;
+      }).join("");
+      msgList.scrollTop = msgList.scrollHeight;
+    });
+  }
+
+  async sendChatMessage(role) {
+    const input = document.getElementById("chatInputText");
+    const text = input?.value?.trim();
+    if (!text || !this.activeChatTripId) return;
+
+    await this.chat.sendMessage({
+      tripId: this.activeChatTripId,
+      senderId: this.userProfile?.uid || "anon",
+      senderName: this.userProfile?.name || (role === "driver" ? "الكابتن" : "العميل"),
+      senderRole: role,
+      text
+    });
+    if (input) input.value = "";
+  }
+
+  closeChatModal() {
+    this.chat.stopListening();
+    this.activeChatTripId = null;
+    document.getElementById("chatModal")?.classList.remove("open");
+  }
+
+  // ═════════════════════════════════════════════════════════════════════════
+  // RATINGS & REVIEWS MODAL
+  // ═════════════════════════════════════════════════════════════════════════
+  openRatingModal(trip) {
+    const modal = document.getElementById("ratingModal");
+    if (!modal) return;
+    modal.classList.add("open");
+    modal.dataset.tripId = trip.id;
+    modal.dataset.driverId = trip.driverId || "";
+
+    // Populate review tags
+    const tagsBox = document.getElementById("ratingTagsBox");
+    if (tagsBox) {
+      tagsBox.innerHTML = "";
+      this.ratings.getReviewTags().forEach((tag) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "chip-btn";
+        btn.textContent = tag.label;
+        btn.onclick = () => btn.classList.toggle("active");
+        tagsBox.appendChild(btn);
+      });
+    }
+  }
+
+  async submitDriverRating() {
+    const modal = document.getElementById("ratingModal");
+    if (!modal) return;
+    const tripId = modal.dataset.tripId;
+    const driverId = modal.dataset.driverId;
+    const rating = Number(document.querySelector('input[name="starRating"]:checked')?.value || 5);
+    const comment = document.getElementById("ratingComment")?.value || "";
+
+    const activeTags = [];
+    document.querySelectorAll("#ratingTagsBox .chip-btn.active").forEach((b) => activeTags.push(b.textContent));
+
+    await this.ratings.submitReview({
+      tripId,
+      customerId: this.userProfile?.uid || "guest",
+      customerName: this.userProfile?.name || "عميل",
+      driverId,
+      rating,
+      tags: activeTags,
+      comment
+    });
+
+    modal.classList.remove("open");
+    this.showToast("شكراً لتقييمك! تقييمك يساعدنا في رفع جودة الخدمة دائماً.");
+  }
+
+  // ═════════════════════════════════════════════════════════════════════════
+  // WALLET & TRANSACTIONS
+  // ═════════════════════════════════════════════════════════════════════════
+  async refreshUserWalletUI() {
+    const uid = this.userProfile?.uid;
+    const data = await this.wallet?.getWallet(uid);
+    const balanceEl = document.getElementById("walletBalanceText");
+    const driverBalanceEl = document.getElementById("driverWalletBalanceText");
+    if (balanceEl) balanceEl.textContent = `${data?.balance || 0} ج.م`;
+    if (driverBalanceEl) driverBalanceEl.textContent = `${data?.balance || 0} ج.م`;
+
+    const txList = document.getElementById("walletTransactionsList");
+    if (txList && data?.transactions) {
+      if (data.transactions.length === 0) {
+        txList.innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:10px;">لا توجد معاملات سابقة</div>';
+      } else {
+        txList.innerHTML = data.transactions.map((tx) => `
+          <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border-subtle); font-size:0.85rem;">
+            <div>
+              <b>${tx.description}</b>
+              <small style="color:var(--text-dim); display:block;">${new Date(tx.createdAt).toLocaleDateString('ar-EG')}</small>
+            </div>
+            <strong style="color:${tx.type === 'credit' ? '#34D399' : '#F87171'};">
+              ${tx.type === 'credit' ? '+' : '-'}${tx.amount} ج.م
+            </strong>
+          </div>
+        `).join("");
+      }
+    }
+  }
+
+  async topUpUserWallet(amount) {
+    const uid = this.userProfile?.uid || "guest";
+    await this.wallet?.topUpWallet(uid, amount);
+    await this.refreshUserWalletUI();
+    this.showToast(`تم شحن المحفظة بمبلغ ${amount} ج.م بنجاح!`);
   }
 
   // ═════════════════════════════════════════════════════════════════════════
@@ -616,12 +897,12 @@ class CapitalTaxiApp {
     const users = Object.values(this.adminData.users || {});
 
     const totalTrips = trips.length;
-    const activeTrips = trips.filter((t) => t.status === "IN_PROGRESS" || t.status === "ACCEPTED").length;
+    const activeTrips = trips.filter((t) => t.status === "IN_PROGRESS" || t.status === "ACCEPTED" || t.status === "ARRIVED").length;
     const completedTrips = trips.filter((t) => t.status === "COMPLETED" || t.status === "done").length;
     const cancelledTrips = trips.filter((t) => t.status === "CANCELLED" || t.status === "canceled").length;
 
     const totalRevenue = trips.reduce((sum, t) => sum + (Number(t.price) || 0), 0);
-    const companyCommission = totalRevenue * 0.10; // 10%
+    const companyCommission = totalRevenue * 0.10;
     const driversNet = totalRevenue - companyCommission;
 
     const onlineDrivers = drivers.filter((d) => d.status === "online" || d.available).length;
@@ -661,7 +942,30 @@ class CapitalTaxiApp {
         <td>${d.totalTrips || 0}</td>
         <td>
           <button class="chip-btn" onclick="window.app.toggleDriverApproval('${id}', ${!d.approved})">
-            ${d.approved ? 'إيقاف' : 'اعتماد ✓'}
+            ${d.approved ? 'إيقاف 🛑' : 'اعتماد ✓'}
+          </button>
+        </td>
+      </tr>
+    `).join("");
+  }
+
+  renderAdminUsers(usersObj) {
+    const tbody = document.getElementById("adminUsersTableBody");
+    if (!tbody) return;
+    const list = Object.entries(usersObj);
+    if (list.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5" class="empty-cell">لا يوجد عملاء مسجلون بعد.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = list.map(([id, u]) => `
+      <tr>
+        <td><b>${u.name || "عميل"}</b></td>
+        <td><a href="tel:${u.phone}">${u.phone || "—"}</a></td>
+        <td>${u.email || "—"}</td>
+        <td><span class="status-badge ${u.status === 'blocked' ? 'red' : 'green'}">${u.status === 'blocked' ? 'محظور' : 'نشط'}</span></td>
+        <td>
+          <button class="chip-btn" onclick="window.app.toggleUserBlock('${id}', ${u.status !== 'blocked'})">
+            ${u.status === 'blocked' ? 'فك الحظر' : 'حظر الحساب'}
           </button>
         </td>
       </tr>
@@ -692,10 +996,36 @@ class CapitalTaxiApp {
     `).join("");
   }
 
+  renderAdminComplaints(complaintsObj) {
+    const tbody = document.getElementById("adminComplaintsTableBody");
+    if (!tbody) return;
+    const list = Object.entries(complaintsObj).reverse();
+    if (list.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5" class="empty-cell">لا توجد شكاوى واردة حالياً.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = list.map(([id, c]) => `
+      <tr>
+        <td>${c.userName || "مستخدم"} (${c.userPhone || "—"})</td>
+        <td>${c.tripId ? c.tripId.slice(0,8) : 'عام'}</td>
+        <td>${c.message}</td>
+        <td>${new Date(c.createdAt).toLocaleDateString('ar-EG')}</td>
+        <td><span class="status-badge ${c.resolved ? 'green' : 'yellow'}">${c.resolved ? 'محلولة' : 'قيد المراجعة'}</span></td>
+      </tr>
+    `).join("");
+  }
+
   toggleDriverApproval(driverId, approve) {
     if (this.rtdb) {
       this.rtdb.ref(`drivers/${driverId}/approved`).set(approve);
-      this.showToast(approve ? "تم اعتماد السائق بنجاح" : "تم إيقاف حساب السائق");
+      this.showToast(approve ? "تم اعتماد الكابتن بنجاح" : "تم إيقاف حساب الكابتن");
+    }
+  }
+
+  toggleUserBlock(userId, block) {
+    if (this.rtdb) {
+      this.rtdb.ref(`users/${userId}/status`).set(block ? "blocked" : "active");
+      this.showToast(block ? "تم حظر الحساب" : "تم فك الحظر عن الحساب");
     }
   }
 
@@ -708,9 +1038,9 @@ class CapitalTaxiApp {
 
   exportReportToCSV() {
     const trips = Object.values(this.adminData.trips || {});
-    let csv = "المعرف,العميل,الهاتف,الانطلاق,الوجهة,السعر,الحالة,السائق,التاريخ\n";
+    let csv = "المعرف,العميل,الهاتف,الانطلاق,الوجهة,السعر,طريقة_الدفع,الحالة,السائق,التاريخ\n";
     trips.forEach((t) => {
-      csv += `"${t.id}","${t.customerName}","${t.customerPhone}","${t.from}","${t.to}",${t.price},"${t.status}","${t.driverName || ''}","${new Date(t.createdAt).toLocaleDateString('ar-EG')}"\n`;
+      csv += `"${t.id}","${t.customerName}","${t.customerPhone}","${t.from}","${t.to}",${t.price},"${t.paymentMethod || 'كاش'}","${t.status}","${t.driverName || ''}","${new Date(t.createdAt).toLocaleDateString('ar-EG')}"\n`;
     });
     const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
@@ -738,7 +1068,6 @@ class CapitalTaxiApp {
 
     window.scrollTo({ top: 0, behavior: "smooth" });
 
-    // Refresh maps size when switching to customer view
     if (viewName === "customer" && this.maps) {
       setTimeout(() => {
         if (this.maps.leafletMap) this.maps.leafletMap.invalidateSize();
@@ -752,6 +1081,7 @@ class CapitalTaxiApp {
         REQUESTED: "بانتظار كابتن",
         pending: "قيد الانتظار",
         ACCEPTED: "تم القبول",
+        ARRIVED: "الكابتن وصل للمكان",
         IN_PROGRESS: "الرحلة جارية",
         COMPLETED: "مكتملة",
         CANCELLED: "ملغاة"
@@ -765,6 +1095,7 @@ class CapitalTaxiApp {
         REQUESTED: "yellow",
         pending: "yellow",
         ACCEPTED: "blue",
+        ARRIVED: "green",
         IN_PROGRESS: "blue",
         COMPLETED: "green",
         CANCELLED: "red"
@@ -801,13 +1132,22 @@ class CapitalTaxiApp {
       });
     });
 
-    // Online toggle
+    // Payment method switcher
+    document.querySelectorAll(".payment-method-chip").forEach((chip) => {
+      chip.addEventListener("click", () => {
+        document.querySelectorAll(".payment-method-chip").forEach((c) => c.classList.remove("active"));
+        chip.classList.add("active");
+        this.selectedPaymentMethod = chip.dataset.method;
+      });
+    });
+
+    // Driver availability toggle
     const toggle = document.getElementById("driverOnlineToggle");
     if (toggle) {
       toggle.addEventListener("change", (e) => this.toggleDriverOnline(e.target.checked));
     }
 
-    // Modal close
+    // Modal close handlers
     document.querySelectorAll(".modal-close-btn").forEach((btn) => {
       btn.addEventListener("click", () => {
         document.querySelectorAll(".modal-overlay").forEach((m) => m.classList.remove("open"));

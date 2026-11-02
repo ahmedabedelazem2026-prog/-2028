@@ -1,6 +1,6 @@
 // =========================================================================
 // تاكسي العاصمة – CAPITAL TAXI
-// Trip Dispatching & Atomic Acceptance Engine
+// Trip Dispatching & Atomic Acceptance Engine (v2.0 Uber-Grade)
 // =========================================================================
 
 export class DispatchEngine {
@@ -28,7 +28,7 @@ export class DispatchEngine {
       const gain = this.audioContext.createGain();
 
       osc.type = "sine";
-      // Taxi chime tone: dual pleasant ping (880Hz -> 1320Hz)
+      // Dual-tone harmonic taxi chime
       osc.frequency.setValueAtTime(880, now);
       osc.frequency.exponentialRampToValueAtTime(1320, now + 0.15);
 
@@ -59,8 +59,8 @@ export class DispatchEngine {
       customerId: tripData.customerId || this.currentUser?.uid || "guest",
       customerName: tripData.customerName || "عميل العاصمة",
       customerPhone: tripData.customerPhone || "01094129592",
-      from: tripData.from || "وسط البلد",
-      to: tripData.to || "شاطئ العريش",
+      from: tripData.from || "وسط البلد - ميدان النصر",
+      to: tripData.to || "شاطئ العريش (الكورنيش)",
       fromLat: tripData.fromLat || 31.1316,
       fromLng: tripData.fromLng || 33.8016,
       toLat: tripData.toLat || 31.1442,
@@ -69,13 +69,15 @@ export class DispatchEngine {
       durationMin: tripData.durationMin || 8,
       carType: tripData.carType || "economy",
       price: tripData.price || 30,
+      paymentMethod: tripData.paymentMethod || "كاش",
       currency: "ج.م",
-      status: "REQUESTED", // REQUESTED, ACCEPTED, IN_PROGRESS, COMPLETED, CANCELLED
+      status: "REQUESTED", // REQUESTED, ACCEPTED, ARRIVED, IN_PROGRESS, COMPLETED, CANCELLED
       driverId: null,
       driverName: null,
       driverPhone: null,
       driverCar: null,
       driverPlate: null,
+      driverRating: 5.0,
       createdAt: timestamp,
       updatedAt: timestamp,
       rejectedDrivers: {}
@@ -99,7 +101,7 @@ export class DispatchEngine {
       }
     }
 
-    // 2. Sync with Cloud Firestore if available
+    // 2. Sync with Cloud Firestore
     if (this.firestore && window.firebase?.firestore) {
       try {
         await this.firestore.collection("rides").doc(tripId).set(fullRecord);
@@ -108,7 +110,7 @@ export class DispatchEngine {
       }
     }
 
-    // 3. Fallback to localStorage for mock/offline resilience
+    // 3. Fallback to localStorage
     try {
       const trips = JSON.parse(localStorage.getItem("capital_taxi_trips") || "{}");
       trips[tripId] = fullRecord;
@@ -120,10 +122,7 @@ export class DispatchEngine {
 
   /**
    * ATOMIC ACCEPTANCE: Guarantees ONLY ONE driver can accept a trip.
-   * Uses Firebase Realtime Database Transaction and/or Firestore runTransaction.
-   * @param {string} tripId
-   * @param {object} driverProfile
-   * @returns {Promise<{success: boolean, message: string}>}
+   * Uses Firebase Realtime Database Transaction.
    */
   async acceptTripAtomic(tripId, driverProfile) {
     if (!tripId || !driverProfile) {
@@ -135,47 +134,45 @@ export class DispatchEngine {
     const driverPhone = driverProfile.phone || "01094129592";
     const driverCar = driverProfile.carModel || "تاكسي كود 1";
     const driverPlate = driverProfile.carPlate || "شمال سيناء";
+    const driverRating = driverProfile.rating || 5.0;
 
     // A. RTDB Atomic Transaction
     if (this.rtdb) {
       try {
         const tripRef = this.rtdb.ref(`trips/${tripId}`);
         const result = await tripRef.transaction((current) => {
-          if (current === null) {
-            return current; // Not loaded yet
-          }
-          // If already accepted by someone else or cancelled, abort transaction!
+          if (current === null) return current;
+          // If already accepted or cancelled, ABORT!
           if (current.status !== "REQUESTED" && current.status !== "pending") {
-            return; // ABORT
+            return;
           }
-          // Accept atomically
           current.status = "ACCEPTED";
           current.driverId = driverId;
           current.driverName = driverName;
           current.driverPhone = driverPhone;
           current.driverCar = driverCar;
           current.driverPlate = driverPlate;
+          current.driverRating = driverRating;
           current.acceptedAt = Date.now();
           current.updatedAt = Date.now();
           return current;
         });
 
         if (result.committed) {
-          // Remove from open driver requests queue
+          // Remove from broadcast queue
           await this.rtdb.ref(`driver_requests/${tripId}`).remove().catch(() => {});
-          // Mark driver busy
+          // Mark driver as busy
           await this.rtdb.ref(`drivers/${driverId}/status`).set("busy").catch(() => {});
-
           return { success: true, message: "تم قبول الرحلة بنجاح! توجه إلى العميل." };
         } else {
           return { success: false, message: "عذراً، قام كابتن آخر بقبول هذه الرحلة قبلك!" };
         }
       } catch (err) {
-        console.warn("RTDB Transaction failed, trying local fallback:", err);
+        console.warn("RTDB Transaction notice:", err);
       }
     }
 
-    // B. Local / Offline atomic simulation fallback
+    // B. Local simulation fallback
     try {
       const trips = JSON.parse(localStorage.getItem("capital_taxi_trips") || "{}");
       const trip = trips[tripId];
@@ -199,14 +196,21 @@ export class DispatchEngine {
   }
 
   /**
-   * Driver marks passenger picked up and begins ride
+   * Driver marks "Arrived at pickup location"
+   */
+  async driverArrived(tripId) {
+    return this.updateTripStatus(tripId, "ARRIVED", { arrivedAt: Date.now() });
+  }
+
+  /**
+   * Driver marks passenger boarded and begins trip
    */
   async startTrip(tripId) {
     return this.updateTripStatus(tripId, "IN_PROGRESS", { startedAt: Date.now() });
   }
 
   /**
-   * Driver completes trip and logs final fare and time
+   * Driver completes trip and logs final fare
    */
   async completeTrip(tripId, finalFare = null) {
     const update = {
@@ -224,7 +228,7 @@ export class DispatchEngine {
   }
 
   /**
-   * Cancel trip (by customer or driver)
+   * Cancel trip
    */
   async cancelTrip(tripId, reason = "إلغاء من قبل المستخدم") {
     return this.updateTripStatus(tripId, "CANCELLED", {
@@ -234,7 +238,7 @@ export class DispatchEngine {
   }
 
   /**
-   * Updates trip status in both databases and local cache
+   * Updates trip status in databases & cache
    */
   async updateTripStatus(tripId, newStatus, extraFields = {}) {
     const patch = {
