@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تاكسي العاصمة - لوحة الإدارة</title>
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getDatabase, ref, onValue, get, query, orderByChild, limitToLast } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+    import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    // ✅ إعدادات Firebase الخاصة بك
+    const firebaseConfig = {
+      apiKey: "AIzaSyAXB2HwhJ4IpXq5PhWHrIdlTtzTkNlqxvA",
+      authDomain: "taxi-alasema-app-2026.firebaseapp.com",
+      databaseURL: "https://taxi-alasema-app-2026-default-rtdb.firebaseio.com",
+      projectId: "taxi-alasema-app-2026",
+      storageBucket: "taxi-alasema-app-2026.firebasestorage.app",
+      messagingSenderId: "343674981534",
+      appId: "1:343674981534:android:8741eef2795601d207bf8f"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db  = getDatabase(app);
+    const auth = getAuth(app);
+
+    // ─── مساعدات DOM ────────────────────────────────────────────
+    const setText = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val ?? '—'; };
+    const formatTime = (ts) => {
+      if (!ts) return '—';
+      const d = new Date(typeof ts === 'number' && ts < 1e12 ? ts * 1000 : ts);
+      return d.toLocaleString('ar-EG');
+    };
+    const statusLabel = (s) => ({ active:'نشط', inactive:'غير نشط', online:'متاح', offline:'غير متاح', busy:'مشغول', pending:'قيد الانتظار', completed:'مكتملة', cancelled:'ملغاة', accepted:'مقبولة', in_progress:'جارية' }[s] || s || '—');
+    const statusClass = (s) => ({ active:'stat-green', online:'stat-green', completed:'stat-green', inactive:'stat-red', offline:'stat-gray', cancelled:'stat-red', busy:'stat-orange', pending:'stat-orange', accepted:'stat-blue', in_progress:'stat-blue' }[s] || 'stat-gray');
+
+    // ─── رسم الجدول ─────────────────────────────────────────────
+    function renderTable(tbodyId, rows, emptyMsg = 'لا توجد بيانات') {
+      const tbody = document.getElementById(tbodyId);
+      if (!tbody) return;
+      if (!rows || rows.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="99" class="empty-row">${emptyMsg}</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = rows.join('');
+    }
+
+    // ─── تحديث وقت آخر تحديث ────────────────────────────────────
+    function setLastUpdate() {
+      setText('lastUpdate', new Date().toLocaleTimeString('ar-EG'));
+    }
+
+    // ─── ربط البيانات بعد تسجيل الدخول ─────────────────────────
+    function connectFirebase() {
+
+      // ══════════════════ السائقون ══════════════════
+      onValue(ref(db, 'drivers'), snap => {
+        const data = snap.val() || {};
+        const drivers = Object.entries(data);
+        const total = drivers.length;
+        const online = drivers.filter(([,d]) => d.status === 'online' || d.isOnline === true || d.is_online === true).length;
+        const busy   = drivers.filter(([,d]) => d.status === 'busy').length;
+        const offline = total - online - busy;
+
+        setText('driverTotal',   total);
+        setText('driverOnline',  online);
+        setText('driverBusy',    busy);
+        setText('driverOffline', offline);
+
+        // جدول السائقين (آخر 50)
+        const rows = drivers.slice(0, 50).map(([id, d]) => `
+          <tr>
+            <td class="td-id">${id.slice(0,8)}…</td>
+            <td>${d.name || d.fullName || d.displayName || '—'}</td>
+            <td>${d.phone || d.phoneNumber || '—'}</td>
+            <td>${d.carModel || d.car_model || d.vehicle || '—'}</td>
+            <td>${d.carPlate || d.plate || d.licensePlate || '—'}</td>
+            <td><span class="badge ${statusClass(d.status)}">${statusLabel(d.status || (d.isOnline ? 'online' : 'offline'))}</span></td>
+            <td>${d.rating ? '⭐ ' + parseFloat(d.rating).toFixed(1) : '—'}</td>
+            <td>${d.totalTrips || d.trips_count || '—'}</td>
+          </tr>`);
+        renderTable('driversBody', rows, 'لا يوجد سائقون مسجلون بعد');
+        setLastUpdate();
+      });
+
+      // ══════════════════ العملاء ══════════════════
+      onValue(ref(db, 'users'), snap => {
+        const data = snap.val() || {};
+        const users = Object.entries(data);
+        setText('userTotal', users.length);
+        const active = users.filter(([,u]) => u.status === 'active' || u.isActive === true).length;
+        setText('userActive', active);
+
+        const rows = users.slice(0, 50).map(([id, u]) => `
+          <tr>
+            <td class="td-id">${id.slice(0,8)}…</td>
+            <td>${u.name || u.fullName || u.displayName || '—'}</td>
+            <td>${u.phone || u.phoneNumber || '—'}</td>
+            <td>${u.email || '—'}</td>
+            <td>${formatTime(u.createdAt || u.created_at)}</td>
+            <td>${u.totalTrips || u.trips_count || '—'}</td>
+          </tr>`);
+        renderTable('usersBody', rows, 'لا يوجد عملاء مسجلون بعد');
+        setLastUpdate();
+      });
+
+      // ══════════════════ الرحلات ══════════════════
+      onValue(ref(db, 'trips'), snap => {
+        loadTrips(snap);
+      });
+      // بديل: مسارات أخرى شائعة
+      onValue(ref(db, 'orders'), snap => {
+        if (snap.exists()) loadTrips(snap, 'orders');
+      });
+      onValue(ref(db, 'bookings'), snap => {
+        if (snap.exists()) loadTrips(snap, 'bookings');
+      });
+      onValue(ref(db, 'rides'), snap => {
+        if (snap.exists()) loadTrips(snap, 'rides');
+      });
+
+      function loadTrips(snap, source) {
+        const data = snap.val() || {};
+        const trips = Object.entries(data);
+        if (trips.length === 0) return;
+
+        const total     = trips.length;
+        const completed = trips.filter(([,t]) => t.status === 'completed' || t.status === 'done').length;
+        const cancelled = trips.filter(([,t]) => t.status === 'cancelled' || t.status === 'canceled').length;
+        const pending   = trips.filter(([,t]) => t.status === 'pending').length;
+        const active    = trips.filter(([,t]) => t.status === 'in_progress' || t.status === 'accepted' || t.status === 'active').length;
+
+        setText('tripTotal',     total);
+        setText('tripCompleted', completed);
+        setText('tripCancelled', cancelled);
+        setText('tripPending',   pending);
+        setText('tripActive',    active);
+
+        const rev = trips.reduce((s, [,t]) => s + parseFloat(t.price || t.fare || t.amount || t.cost || 0), 0);
+        setText('totalRevenue', rev.toFixed(2) + ' ج.م');
+
+        const rows = trips.slice(-50).reverse().map(([id, t]) => `
+          <tr>
+            <td class="td-id">${id.slice(0,8)}…</td>
+            <td>${t.from || t.pickup || t.origin || t.pickupAddress || '—'}</td>
+            <td>${t.to   || t.dropoff || t.destination || t.dropoffAddress || '—'}</td>
+            <td>${t.price || t.fare || t.amount || t.cost || '—'}</td>
+            <td><span class="badge ${statusClass(t.status)}">${statusLabel(t.status)}</span></td>
+            <td>${formatTime(t.createdAt || t.created_at || t.timestamp)}</td>
+            <td>${t.driverName || t.driver_name || t.driverId?.slice(0,8) || '—'}</td>
+            <td>${t.userName   || t.user_name   || t.userId?.slice(0,8)   || '—'}</td>
+          </tr>`);
+        renderTable('tripsBody', rows, 'لا توجد رحلات بعد');
+        setLastUpdate();
+      }
+
+      // ══════════════════ إحصائيات سريعة (stats) ══════════════════
+      onValue(ref(db, 'stats'), snap => {
+        const s = snap.val() || {};
+        if (s.totalTrips)   setText('tripTotal', s.totalTrips);
+        if (s.totalDrivers) setText('driverTotal', s.totalDrivers);
+        if (s.totalUsers)   setText('userTotal', s.totalUsers);
+        if (s.totalRevenue) setText('totalRevenue', parseFloat(s.totalRevenue).toFixed(2) + ' ج.م');
+      });
+
+      // ══════════════════ الإشعارات / السجل ══════════════════
+      onValue(ref(db, 'notifications'), snap => {
+        const data = snap.val() || {};
+        const notifs = Object.entries(data).slice(-20).reverse();
+        const rows = notifs.map(([id, n]) => `
+          <tr>
+            <td>${n.title || n.message || '—'}</td>
+            <td>${n.body  || n.description || '—'}</td>
+            <td>${formatTime(n.createdAt || n.timestamp)}</td>
+            <td>${n.type || '—'}</td>
+          </tr>`);
+        renderTable('notifBody', rows, 'لا توجد إشعارات');
+      });
+
+    } // end connectFirebase
+
+    // ─── تسجيل الدخول (مجهول - للقراءة فقط) ────────────────────
+    document.getElementById('fbStatus').textContent = '🔄 جاري الاتصال بـ Firebase…';
+    signInAnonymously(auth).then(() => {
+      document.getElementById('fbStatus').textContent = '✅ متصل بـ Firebase';
+      document.getElementById('fbStatus').className = 'fb-status connected';
+      connectFirebase();
+    }).catch(err => {
+      // إذا فشل الدخول المجهول، جرب الاتصال بدونه
+      document.getElementById('fbStatus').textContent = '⚠️ يعمل بدون مصادقة (تحقق من قواعد Firebase)';
+      document.getElementById('fbStatus').className = 'fb-status warn';
+      connectFirebase();
+    });
+
+  </script>
+
+  <!-- الخطوط العربية -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg:       #070A12;
+      --surface:  #101828;
+      --surface2: #0F172A;
+      --gold:     #D4AF37;
+      --gold2:    #F3D27A;
+      --blue:     #0A2A6B;
+      --text:     #F8FAFC;
+      --muted:    #94A3B8;
+      --border:   rgba(212,175,55,.18);
+      --green:    #10B981;
+      --red:      #EF4444;
+      --orange:   #F59E0B;
+      --indigo:   #6366F1;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Tajawal', 'Cairo', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      direction: rtl;
+      min-height: 100vh;
+    }
+
+    /* ─── HEADER ────────────────────────────────────────────────── */
+    .header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(7,10,18,.92);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 72px;
+    }
+    .header-logo {
+      display: flex; align-items: center; gap: 12px;
+    }
+    .header-logo .logo-icon {
+      width: 44px; height: 44px; border-radius: 12px;
+      background: linear-gradient(135deg, var(--gold), #8A6A10);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+    }
+    .header-logo h1 {
+      font-size: 20px; font-weight: 800; letter-spacing: .02em;
+      background: linear-gradient(100deg, var(--gold), #FFF6D6, var(--gold));
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+    .header-logo p { font-size: 12px; color: var(--muted); }
+    .header-right { display: flex; align-items: center; gap: 16px; }
+    .fb-status {
+      font-size: 13px; padding: 6px 14px; border-radius: 20px;
+      background: rgba(212,175,55,.12); border: 1px solid var(--border);
+      color: var(--gold);
+    }
+    .fb-status.connected { background: rgba(16,185,129,.15); border-color: rgba(16,185,129,.3); color: #34D399; }
+    .fb-status.warn      { background: rgba(245,158,11,.15); border-color: rgba(245,158,11,.3); color: #FCD34D; }
+    .last-update { font-size: 12px; color: var(--muted); }
+
+    /* ─── NAV TABS ───────────────────────────────────────────────── */
+    .nav-tabs {
+      display: flex; gap: 4px; padding: 16px 2rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      overflow-x: auto;
+    }
+    .tab-btn {
+      padding: 10px 20px; border-radius: 10px; border: none; cursor: pointer;
+      font-family: inherit; font-size: 14px; font-weight: 600;
+      background: transparent; color: var(--muted);
+      transition: all .25s; white-space: nowrap;
+    }
+    .tab-btn:hover { background: rgba(212,175,55,.08); color: var(--gold); }
+    .tab-btn.active {
+      background: rgba(212,175,55,.15); color: var(--gold);
+      border: 1px solid var(--border);
+    }
+    .tab-btn .tab-icon { margin-left: 6px; }
+
+    /* ─── MAIN ───────────────────────────────────────────────────── */
+    .main { padding: 2rem; max-width: 1600px; margin: 0 auto; }
+
+    /* ─── SECTION ────────────────────────────────────────────────── */
+    .section { display: none; }
+    .section.active { display: block; }
+
+    /* ─── STATS GRID ─────────────────────────────────────────────── */
+    .stats-grid {
+      display: grid; gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      margin-bottom: 28px;
+    }
+    .stat-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 20px; padding: 22px;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .stat-card:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(212,175,55,.15); }
+    .stat-card .stat-icon { font-size: 32px; margin-bottom: 12px; }
+    .stat-card .stat-num {
+      font-size: 36px; font-weight: 900; line-height: 1;
+      background: linear-gradient(100deg, var(--gold), #FFF6D6);
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+    .stat-card .stat-label { font-size: 14px; color: var(--muted); margin-top: 6px; }
+
+    /* ─── GLASS CARD ─────────────────────────────────────────────── */
+    .card {
+      background: rgba(16,24,40,.72);
+      backdrop-filter: blur(22px);
+      border: 1px solid var(--border);
+      border-radius: 20px; padding: 24px;
+      margin-bottom: 24px;
+    }
+    .card-title {
+      font-size: 18px; font-weight: 700; margin-bottom: 18px;
+      display: flex; align-items: center; gap: 10px;
+      color: var(--gold);
+    }
+    .card-title span { font-size: 22px; }
+
+    /* ─── TABLE ──────────────────────────────────────────────────── */
+    .table-wrap { overflow-x: auto; border-radius: 12px; }
+    table { width: 100%; border-collapse: collapse; }
+    thead th {
+      background: rgba(212,175,55,.08);
+      padding: 12px 14px; text-align: right;
+      font-size: 13px; font-weight: 700; color: var(--gold);
+      white-space: nowrap;
+    }
+    tbody tr { border-bottom: 1px solid rgba(255,255,255,.04); transition: background .15s; }
+    tbody tr:hover { background: rgba(212,175,55,.05); }
+    tbody td { padding: 12px 14px; font-size: 14px; color: var(--text); }
+    .td-id  { font-family: monospace; font-size: 12px; color: var(--muted); }
+    .empty-row { text-align: center; padding: 40px; color: var(--muted); font-size: 15px; }
+
+    /* ─── BADGE ──────────────────────────────────────────────────── */
+    .badge {
+      display: inline-block; padding: 3px 10px; border-radius: 20px;
+      font-size: 12px; font-weight: 600; white-space: nowrap;
+    }
+    .stat-green  { background: rgba(16,185,129,.2);  color: #34D399; }
+    .stat-red    { background: rgba(239,68,68,.2);   color: #FCA5A5; }
+    .stat-orange { background: rgba(245,158,11,.2);  color: #FCD34D; }
+    .stat-blue   { background: rgba(99,102,241,.2);  color: #A5B4FC; }
+    .stat-gray   { background: rgba(148,163,184,.15);color: var(--muted); }
+
+    /* ─── MINI STATS ROW ─────────────────────────────────────────── */
+    .mini-stats {
+      display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px;
+    }
+    .mini-stat {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 12px; padding: 12px 18px; flex: 1; min-width: 120px;
+      text-align: center;
+    }
+    .mini-stat .ms-num { font-size: 24px; font-weight: 800; color: var(--gold); }
+    .mini-stat .ms-lbl { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+    /* ─── LOADING PULSE ──────────────────────────────────────────── */
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+    .loading { animation: pulse 1.5s infinite; }
+
+    /* ─── RESPONSIVE ─────────────────────────────────────────────── */
+    @media (max-width: 768px) {
+      .header { padding: 0 1rem; }
+      .main   { padding: 1rem; }
+      .nav-tabs { padding: 12px 1rem; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══════════════════ HEADER ══════════════════ -->
+  <header class="header">
+    <div class="header-logo">
+      <div class="logo-icon">🚖</div>
+      <div>
+        <h1>تاكسي العاصمة</h1>
+        <p>لوحة الإدارة المركزية</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <span id="fbStatus" class="fb-status loading">🔄 جاري الاتصال…</span>
+      <span class="last-update">آخر تحديث: <b id="lastUpdate">—</b></span>
+    </div>
+  </header>
+
+  <!-- ══════════════════ NAV TABS ══════════════════ -->
+  <nav class="nav-tabs">
+    <button class="tab-btn active" onclick="showTab('dashboard')"><span class="tab-icon">📊</span> الرئيسية</button>
+    <button class="tab-btn"        onclick="showTab('drivers')">  <span class="tab-icon">🚗</span> السائقون</button>
+    <button class="tab-btn"        onclick="showTab('users')">    <span class="tab-icon">👥</span> العملاء</button>
+    <button class="tab-btn"        onclick="showTab('trips')">    <span class="tab-icon">🗺️</span> الرحلات</button>
+    <button class="tab-btn"        onclick="showTab('notifs')">   <span class="tab-icon">🔔</span> الإشعارات</button>
+  </nav>
+
+  <!-- ══════════════════ MAIN ══════════════════ -->
+  <main class="main">
+
+    <!-- ───── DASHBOARD ───── -->
+    <section id="sec-dashboard" class="section active">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">🚗</div>
+          <div class="stat-num loading" id="driverTotal">—</div>
+          <div class="stat-label">إجمالي السائقين</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🟢</div>
+          <div class="stat-num loading" id="driverOnline">—</div>
+          <div class="stat-label">سائقون متاحون</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🔴</div>
+          <div class="stat-num loading" id="driverBusy">—</div>
+          <div class="stat-label">سائقون مشغولون</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">👥</div>
+          <div class="stat-num loading" id="userTotal">—</div>
+          <div class="stat-label">إجمالي العملاء</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">✅</div>
+          <div class="stat-num loading" id="userActive">—</div>
+          <div class="stat-label">عملاء نشطون</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🗺️</div>
+          <div class="stat-num loading" id="tripTotal">—</div>
+          <div class="stat-label">إجمالي الرحلات</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">💰</div>
+          <div class="stat-num loading" id="totalRevenue">—</div>
+          <div class="stat-label">الإيرادات الكلية</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">⚡</div>
+          <div class="stat-num loading" id="tripActive">—</div>
+          <div class="stat-label">رحلات جارية</div>
+        </div>
+      </div>
+
+      <!-- ملخص الرحلات -->
+      <div class="card">
+        <div class="card-title"><span>📊</span> ملخص حالات الرحلات</div>
+        <div class="mini-stats">
+          <div class="mini-stat">
+            <div class="ms-num" id="tripCompleted">—</div>
+            <div class="ms-lbl">مكتملة</div>
+          </div>
+          <div class="mini-stat">
+            <div class="ms-num" id="tripCancelled">—</div>
+            <div class="ms-lbl">ملغاة</div>
+          </div>
+          <div class="mini-stat">
+            <div class="ms-num" id="tripPending">—</div>
+            <div class="ms-lbl">قيد الانتظار</div>
+          </div>
+          <div class="mini-stat">
+            <div class="ms-num" id="driverOffline">—</div>
+            <div class="ms-lbl">سائقون غير متاحين</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- معلومات Firebase -->
+      <div class="card">
+        <div class="card-title"><span>🔥</span> معلومات الاتصال بـ Firebase</div>
+        <table>
+          <tbody>
+            <tr><td style="color:var(--muted);width:180px">Project ID</td><td><code>taxi-alasema-app-2026</code></td></tr>
+            <tr><td style="color:var(--muted)">Database URL</td><td><code>taxi-alasema-app-2026-default-rtdb.firebaseio.com</code></td></tr>
+            <tr><td style="color:var(--muted)">Storage Bucket</td><td><code>taxi-alasema-app-2026.firebasestorage.app</code></td></tr>
+            <tr><td style="color:var(--muted)">حالة الاتصال</td><td id="fbStatusTable">—</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ───── DRIVERS ───── -->
+    <section id="sec-drivers" class="section">
+      <div class="card">
+        <div class="card-title"><span>🚗</span> قائمة السائقين (بيانات حية)</div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>المعرّف</th>
+                <th>الاسم</th>
+                <th>رقم الهاتف</th>
+                <th>السيارة</th>
+                <th>لوحة الترقيم</th>
+                <th>الحالة</th>
+                <th>التقييم</th>
+                <th>عدد الرحلات</th>
+              </tr>
+            </thead>
+            <tbody id="driversBody">
+              <tr><td colspan="8" class="empty-row loading">🔄 جاري تحميل بيانات السائقين…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───── USERS ───── -->
+    <section id="sec-users" class="section">
+      <div class="card">
+        <div class="card-title"><span>👥</span> قائمة العملاء (بيانات حية)</div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>المعرّف</th>
+                <th>الاسم</th>
+                <th>رقم الهاتف</th>
+                <th>البريد الإلكتروني</th>
+                <th>تاريخ التسجيل</th>
+                <th>عدد الرحلات</th>
+              </tr>
+            </thead>
+            <tbody id="usersBody">
+              <tr><td colspan="6" class="empty-row loading">🔄 جاري تحميل بيانات العملاء…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───── TRIPS ───── -->
+    <section id="sec-trips" class="section">
+      <div class="card">
+        <div class="card-title"><span>🗺️</span> سجل الرحلات (بيانات حية)</div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>المعرّف</th>
+                <th>من</th>
+                <th>إلى</th>
+                <th>السعر</th>
+                <th>الحالة</th>
+                <th>التاريخ</th>
+                <th>السائق</th>
+                <th>العميل</th>
+              </tr>
+            </thead>
+            <tbody id="tripsBody">
+              <tr><td colspan="8" class="empty-row loading">🔄 جاري تحميل الرحلات…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───── NOTIFICATIONS ───── -->
+    <section id="sec-notifs" class="section">
+      <div class="card">
+        <div class="card-title"><span>🔔</span> الإشعارات الأخيرة</div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>العنوان</th>
+                <th>النص</th>
+                <th>التاريخ</th>
+                <th>النوع</th>
+              </tr>
+            </thead>
+            <tbody id="notifBody">
+              <tr><td colspan="4" class="empty-row loading">🔄 جاري تحميل الإشعارات…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main><!-- /main -->
+
+  <!-- ─── Navigation Script ─── -->
+  <script>
+    function showTab(name) {
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('sec-' + name).classList.add('active');
+      event.currentTarget.classList.add('active');
+
+      // مزامنة حالة الاتصال
+      const fbEl = document.getElementById('fbStatus');
+      if (fbEl) {
+        document.getElementById('fbStatusTable').textContent = fbEl.textContent;
+      }
+    }
+  </script>
+
+</body>
+</html>

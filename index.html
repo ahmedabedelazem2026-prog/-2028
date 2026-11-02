@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>تاكسي العاصمة | CAPITAL TAXI - العريش وشمال سيناء</title>
+
+  <!-- PWA Meta Tags -->
+  <meta name="theme-color" content="#D4AF37">
+  <meta name="description" content="منصة تاكسي العاصمة الذكية للنقل والرحلات في مدينة العريش وشمال سيناء - كود 1 - خدمة 24 ساعة">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/icons/icon-192.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/jpeg" href="/assets/images/logo-badge.jpg">
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+
+  <!-- ═════════════════════════════════════════════════════════════════════════
+       STICKY HEADER
+       ═════════════════════════════════════════════════════════════════════════ -->
+  <header class="top-header">
+    <div class="header-container">
+      
+      <!-- Brand Logo & Titles -->
+      <div class="brand-wrapper" onclick="window.app.switchView('landing')">
+        <img src="/assets/images/logo-badge.jpg" alt="تاكسي العاصمة كود 1" class="brand-logo-img">
+        <div class="brand-titles">
+          <h1>تاكسي العاصمة</h1>
+          <p>CAPITAL TAXI • كود 1 شمال سيناء</p>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs (Customer, Driver, Admin, Landing) -->
+      <nav class="nav-tabs">
+        <button type="button" class="nav-tab-btn active" data-view="landing">
+          <span>🏠</span> الرئيسية
+        </button>
+        <button type="button" class="nav-tab-btn" data-view="customer">
+          <span>👤</span> اطلب رحلة
+        </button>
+        <button type="button" class="nav-tab-btn" data-view="driver">
+          <span>🚖</span> الكابتن
+        </button>
+        <button type="button" class="nav-tab-btn" data-view="admin">
+          <span>🛡️</span> لوحة الإدارة
+        </button>
+      </nav>
+
+      <!-- Header Actions -->
+      <div class="header-actions">
+        <span id="fbStatusBadge" class="live-badge">
+          <span class="live-dot"></span> متصل بالنظام
+        </span>
+
+        <button id="pwaInstallBtn" class="btn-secondary-outline" style="display:none; padding: 6px 12px; font-size: 0.8rem;">
+          📲 تثبيت التطبيق
+        </button>
+
+        <span id="navUserName" class="feature-pill" style="display:none;"></span>
+
+        <button id="btnAuthModal" class="btn-primary-gold" style="padding: 8px 16px; font-size: 0.85rem;" onclick="document.getElementById('authModal').classList.add('open')">
+          دخول / تسجيل
+        </button>
+
+        <a href="https://wa.me/201094129592" target="_blank" rel="noopener" class="btn-whatsapp-header">
+          <span>💬</span> 01094129592
+        </a>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ═════════════════════════════════════════════════════════════════════════
+       VIEW 1: LANDING & MARKETING PAGE
+       ═════════════════════════════════════════════════════════════════════════ -->
+  <main id="view-landing" class="app-view active">
+    
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="container hero-grid">
+        
+        <div class="hero-content">
+          <div class="hero-badges-row">
+            <span class="feature-pill">📍 العريش – شمال سيناء – مصر</span>
+            <span class="feature-pill">⚡ أسرع استجابة وأفضل الأسعار</span>
+            <span class="feature-pill">🕒 خدمة 24 ساعة متواصلة</span>
+          </div>
+
+          <h2>
+            مع تاكسي العاصمة..<br>
+            <span class="gold-text">رحلتك آمنة، مريحة وموثوقة</span>
+          </h2>
+
+          <p class="hero-lead">
+            المنصة الذكية الأولى في محافظة شمال سيناء. نوفر لك أفضل أسطول سيارات حديث ومكيف داخل مدينة العريش ولكافة المحافظات والجامعات، مع سائقين معتمدين وأسعار واضحة ومحددة مسبقاً.
+          </p>
+
+          <div class="hero-cta-group">
+            <button class="btn-primary-gold" onclick="window.app.switchView('customer')">
+              🚖 احجز مشوارك الآن
+            </button>
+            <button class="btn-secondary-outline" onclick="window.app.switchView('driver')">
+              🚗 انضم ككابتن معنا
+            </button>
+            <a href="tel:01094129592" class="btn-secondary-outline">
+              📞 اتصال مباشر: 01094129592
+            </a>
+          </div>
+        </div>
+
+        <!-- Hero Visual Banner -->
+        <div class="hero-visual-card">
+          <img src="/assets/images/hero-arish-landmarks.jpg" alt="معالم العريش وتاكسي العاصمة" class="hero-banner-img">
+          <div class="floating-stats-pill">
+            <div style="font-size: 1.8rem;">⭐</div>
+            <div>
+              <strong>4.9 / 5.0</strong>
+              <div style="font-size: 0.75rem; color: var(--text-muted);">تقييم أكثر من 5000 مشوار</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Al-Arish Landmarks Strip -->
+    <section class="container">
+      <div class="section-header">
+        <h3>نغطي كافة أحياء ومعالم العريش</h3>
+        <p>اختر وجهتك المفضلة وسنصلك خلال دقائق معدودة</p>
+      </div>
+
+      <div class="landmarks-strip">
+        <div class="landmark-card" onclick="window.app.switchView('customer')">
+          <div class="icon">🏖️</div>
+          <h5>شاطئ العريش</h5>
+          <span>الكورنيش والساحل</span>
+        </div>
+        <div class="landmark-card" onclick="window.app.switchView('customer')">
+          <div class="icon">🏰</div>
+          <h5>قلعة العريش</h5>
+          <span>المعالم التاريخية</span>
+        </div>
+        <div class="landmark-card" onclick="window.app.switchView('customer')">
+          <div class="icon">🕌</div>
+          <h5>مسجد النصر</h5>
+          <span>ميدان النصر ووسط البلد</span>
+        </div>
+        <div class="landmark-card" onclick="window.app.switchView('customer')">
+          <div class="icon">🎓</div>
+          <h5>جامعة العريش</h5>
+          <span>ضاحية السلام والطلاب</span>
+        </div>
+        <div class="landmark-card" onclick="window.app.switchView('customer')">
+          <div class="icon">🏫</div>
+          <h5>جامعة سيناء</h5>
+          <span>المساعيد والساحل</span>
+        </div>
+        <div class="landmark-card" onclick="window.app.switchView('customer')">
+          <div class="icon">🏥</div>
+          <h5>مستشفى العريش</h5>
+          <span>المجمع الطبي العام</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Mobile App Showcase Banner -->
+    <section class="container" style="margin-bottom: 4rem;">
+      <div class="hero-visual-card" style="padding: 0; background: transparent; border: none;">
+        <img src="/assets/images/banner-app-mockup.jpg" alt="تطبيق تاكسي العاصمة" style="width: 100%; border-radius: var(--radius-xl); border: 1px solid var(--border-gold);">
+      </div>
+    </section>
+
+    <!-- Features Grid -->
+    <section class="container">
+      <div class="section-header">
+        <h3>لماذا يفضل أهالي سيناء تاكسي العاصمة؟</h3>
+        <p>معايير فائقة في الأمان، الالتزام بالمواعيد والراحة</p>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-box">
+          <div class="feature-icon-circle">🛡️</div>
+          <h4>أمان وثقة تامة</h4>
+          <p>جميع الكباتن معتمدون رسمياً بعد فحص وتدقيق الرخص والسيارات وسجل القيادة.</p>
+        </div>
+        <div class="feature-box">
+          <div class="feature-icon-circle">⚡</div>
+          <h4>سرعة الاستجابة</h4>
+          <p>توزيع ذكي فوري يربطك بأقرب سيارة متاحة في نطاقك في أقل من دقيقة.</p>
+        </div>
+        <div class="feature-box">
+          <div class="feature-icon-circle">💰</div>
+          <h4>تسعير عادل ومرن</h4>
+          <p>تعرف على تكلفة مشوارك التقديرية بدقة قبل تأكيد الطلب وبدون أي استغلال.</p>
+        </div>
+        <div class="feature-box">
+          <div class="feature-icon-circle">🚗</div>
+          <h4>أسطول سيارات مكيف</h4>
+          <p>خيارات متعددة تناسب المشاوير الفردية، العائلية، وسيارات رجال الأعمال VIP.</p>
+        </div>
+        <div class="feature-box">
+          <div class="feature-icon-circle">🎓</div>
+          <h4>توصيل طلاب الجامعات</h4>
+          <p>اشتراكات ورحلات يومية لجامعة العريش وجامعة سيناء بأسعار مخفضة.</p>
+        </div>
+        <div class="feature-box">
+          <div class="feature-icon-circle">🛣️</div>
+          <h4>سفريات خارج العريش</h4>
+          <p>رحلات مباشرة ومريحة إلى بئر العبد، القنطرة، الإسماعيلية، ومطار القاهرة.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ═════════════════════════════════════════════════════════════════════════
+       VIEW 2: CUSTOMER APP (INTERACTIVE MAP & INSTANT BOOKING)
+       ═════════════════════════════════════════════════════════════════════════ -->
+  <section id="view-customer" class="app-view">
+    <div class="container customer-layout">
+      
+      <!-- Left Booking Form Panel -->
+      <div class="booking-panel">
+        
+        <div class="booking-panel-title">
+          <h3>🚖 احجز تاكسي العاصمة</h3>
+          <span class="feature-pill">كود 1 العريش</span>
+        </div>
+
+        <!-- Pickup Location Input -->
+        <div class="input-group">
+          <label class="input-label">
+            <span>🟢</span> نقطة الانطلاق (مكانك الحالي)
+          </label>
+          <div class="input-field-wrapper">
+            <span class="input-icon">📍</span>
+            <input type="text" id="inputPickup" class="input-field" value="وسط البلد - ميدان النصر" placeholder="اكتب أو اختر من القائمة...">
+          </div>
+          <!-- Quick Chips -->
+          <div id="pickupChips" class="quick-chips-row"></div>
+        </div>
+
+        <!-- Destination Location Input -->
+        <div class="input-group">
+          <label class="input-label">
+            <span>🔴</span> الوجهة (إلى أين تريد الذهاب؟)
+          </label>
+          <div class="input-field-wrapper">
+            <span class="input-icon">🏁</span>
+            <input type="text" id="inputDropoff" class="input-field" value="شاطئ العريش (الكورنيش)" placeholder="حدد وجهتك...">
+          </div>
+          <!-- Quick Chips -->
+          <div id="dropoffChips" class="quick-chips-row"></div>
+        </div>
+
+        <!-- Select Car Category -->
+        <div class="input-group">
+          <label class="input-label">
+            <span>🚘</span> نوع السيارة
+          </label>
+          <div class="car-selector-grid">
+            
+            <div class="car-card-option selected" data-cartype="economy">
+              <div class="car-header">
+                <span class="car-icon">🚕</span>
+                <span id="price-economy" class="car-price">30 ج.م</span>
+              </div>
+              <div class="car-name">اقتصادي</div>
+              <div class="car-desc">سيدان مكيفة لمشاوير المدينة</div>
+            </div>
+
+            <div class="car-card-option" data-cartype="comfort">
+              <div class="car-header">
+                <span class="car-icon">🚗</span>
+                <span id="price-comfort" class="car-price">38 ج.م</span>
+              </div>
+              <div class="car-name">كمفورت</div>
+              <div class="car-desc">موديلات أحدث وراحة أعلى</div>
+            </div>
+
+            <div class="car-card-option" data-cartype="vip">
+              <div class="car-header">
+                <span class="car-icon">✨</span>
+                <span id="price-vip" class="car-price">48 ج.م</span>
+              </div>
+              <div class="car-name">العاصمة VIP</div>
+              <div class="car-desc">سيارات فخمة لرجال الأعمال</div>
+            </div>
+
+            <div class="car-card-option" data-cartype="family">
+              <div class="car-header">
+                <span class="car-icon">🚐</span>
+                <span id="price-family" class="car-price">45 ج.م</span>
+              </div>
+              <div class="car-name">عائلي (7 ركاب)</div>
+              <div class="car-desc">فان تتسع للعائلات والحقائب</div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Coupon Code Input -->
+        <div class="input-group">
+          <label class="input-label">
+            <span>🏷️</span> كوبون خصم (إن وجد)
+          </label>
+          <div style="display:flex; gap:8px;">
+            <input type="text" id="inputCoupon" class="input-field" placeholder="مثال: CAPITAL10 أو ARISH2026">
+            <button type="button" class="btn-secondary-outline" style="padding:0 16px;" onclick="window.app.updateRouteAndFare()">
+              تطبيق
+            </button>
+          </div>
+        </div>
+
+        <!-- Fare Summary Breakdown -->
+        <div class="fare-estimate-box">
+          <div class="fare-row">
+            <span>المسافة التقديرية:</span>
+            <strong id="fareDistance">2.5 كم</strong>
+          </div>
+          <div class="fare-row">
+            <span>الوقت المتوقع:</span>
+            <strong id="fareDuration">8 دقائق تقريباً</strong>
+          </div>
+          <div class="fare-row">
+            <span>فتح العداد الأساسي:</span>
+            <strong id="fareBase">15 ج.م</strong>
+          </div>
+          <div class="fare-row total-row">
+            <span>السعر التقديري الإجمالي:</span>
+            <span id="fareTotal">30 ج.م</span>
+          </div>
+        </div>
+
+        <!-- Customer Contacts -->
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+          <input type="text" id="inputCustomerName" class="input-field" placeholder="اسمك الكريم">
+          <input type="tel" id="inputCustomerPhone" class="input-field" placeholder="رقم هاتفك للتواصل" value="01094129592">
+        </div>
+
+        <!-- Request Ride CTA -->
+        <button type="button" class="btn-primary-gold" style="width: 100%;" onclick="window.app.requestRide()">
+          🚀 تأكيد وإرسال طلب الرحلة
+        </button>
+
+        <!-- Active Ride Status Card (Shown when requested) -->
+        <div id="customerTripStatusCard" class="incoming-trip-card" style="display: none; margin-top: 10px;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h4 style="color:var(--gold-bright);">🚖 تفاصيل رحلتك الحالية</h4>
+            <span id="custTripStatus" class="status-badge yellow">بانتظار كابتن</span>
+          </div>
+          <div style="font-size:0.88rem; color:var(--text-muted);">
+            <div>من: <b id="custTripFrom" style="color:var(--text-main);">—</b></div>
+            <div>إلى: <b id="custTripTo" style="color:var(--text-main);">—</b></div>
+            <div>السعر المطلوب: <b id="custTripPrice" style="color:var(--gold-bright);">—</b></div>
+            <div>الكابتن: <b id="custTripDriver" style="color:var(--status-green);">—</b></div>
+            <div>هاتف الكابتن: <b id="custTripDriverPhone">—</b></div>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <a id="custTripCallBtn" href="tel:01094129592" class="btn-secondary-outline" style="flex:1; text-align:center;">
+              📞 اتصال بالكابتن
+            </a>
+            <button class="btn-reject" style="flex:1;" onclick="window.app.activeCustomerTrip && window.app.dispatch.cancelTrip(window.app.activeCustomerTrip.id); document.getElementById('customerTripStatusCard').style.display='none';">
+              إلغاء الطلب
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Interactive Map Viewport -->
+      <div class="map-viewport-wrapper">
+        <div id="customerMap" class="map-viewport"></div>
+        <div class="map-floating-overlay">
+          <span>📍 خريطة العريش المباشرة</span>
+          <span>• اضغط على الخريطة لتحديد موقعك والوجهة</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═════════════════════════════════════════════════════════════════════════
+       VIEW 3: DRIVER / CAPTAIN APP
+       ═════════════════════════════════════════════════════════════════════════ -->
+  <section id="view-driver" class="app-view">
+    <div class="container driver-dashboard-grid">
+      
+      <!-- Driver Profile & Controls Sidebar -->
+      <div class="driver-sidebar-card">
+        
+        <div class="driver-profile-header">
+          <div class="driver-avatar">🚖</div>
+          <div>
+            <h3 style="font-family:var(--font-heading); font-size:1.2rem; color:var(--gold-light);">كابتن تاكسي العاصمة</h3>
+            <p style="font-size:0.8rem; color:var(--text-muted);">كود 1 • تويوتا كورولا (ط أ س 2026)</p>
+          </div>
+        </div>
+
+        <!-- Availability Switch -->
+        <div class="driver-toggle-online">
+          <div>
+            <strong>حالة التوفر</strong>
+            <p id="driverStatusText" style="font-size:0.75rem; color:var(--status-green);">أنت متصل ومتاح لاستقبال الرحلات</p>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="driverOnlineToggle" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <!-- Today Earnings Stats -->
+        <div class="fare-estimate-box">
+          <div class="fare-row">
+            <span>رحلات اليوم:</span>
+            <strong>8 رحلات</strong>
+          </div>
+          <div class="fare-row">
+            <span>إجمالي الدخل اليومي:</span>
+            <strong style="color:var(--gold-bright);">340 ج.م</strong>
+          </div>
+          <div class="fare-row">
+            <span>عمولة المنصة (10%):</span>
+            <strong style="color:var(--text-dim);">-34 ج.م</strong>
+          </div>
+          <div class="fare-row total-row">
+            <span>صافي أرباحك:</span>
+            <span>306 ج.م</span>
+          </div>
+        </div>
+
+        <!-- Driver Documents Upload Notification -->
+        <div style="background:rgba(212,175,55,0.06); border:1px solid var(--border-gold); padding:12px; border-radius:var(--radius-md); font-size:0.82rem; color:var(--text-muted);">
+          <b>📄 الرخص والسيارة:</b>
+          <p>تم اعتماد رخصتك وسيارتك بنجاح من إدارة تاكسي العاصمة.</p>
+        </div>
+
+      </div>
+
+      <!-- Right Driver Dispatch Workspace -->
+      <div style="display:flex; flex-direction:column; gap:1.5rem;">
+        
+        <!-- INCOMING TRIP CARD (Animated alert with chime) -->
+        <div id="incomingTripCard" class="incoming-trip-card" style="display:none;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h3 style="color:var(--gold-bright); font-size:1.3rem;">⚡ طلب رحلة جديد فوري!</h3>
+            <span class="live-badge"><span class="live-dot"></span> مباشر</span>
+          </div>
+
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:12px; background:rgba(5,8,17,0.7); padding:14px; border-radius:var(--radius-md);">
+            <div>
+              <small style="color:var(--text-muted);">نقطة الانطلاق</small>
+              <div id="incomingFrom" style="font-weight:700; color:var(--text-main);">—</div>
+            </div>
+            <div>
+              <small style="color:var(--text-muted);">الوجهة</small>
+              <div id="incomingTo" style="font-weight:700; color:var(--text-main);">—</div>
+            </div>
+            <div>
+              <small style="color:var(--text-muted);">المسافة التقديرية</small>
+              <div id="incomingDistance" style="font-weight:700; color:var(--text-main);">—</div>
+            </div>
+            <div>
+              <small style="color:var(--text-muted);">الأجرة الصافية</small>
+              <div id="incomingPrice" style="font-size:1.3rem; font-weight:900; color:var(--gold-bright);">—</div>
+            </div>
+          </div>
+
+          <div class="trip-action-buttons">
+            <button id="btnAcceptTrip" class="btn-accept">
+              قبول الرحلة ✓
+            </button>
+            <button id="btnRejectTrip" class="btn-reject">
+              تخطي / رفض
+            </button>
+          </div>
+        </div>
+
+        <!-- ACTIVE ACCEPTED TRIP CARD -->
+        <div id="driverActiveTripCard" class="incoming-trip-card" style="display:none; border-color:var(--status-green); animation:none;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h3 style="color:#34D399; font-size:1.3rem;">🚗 رحلتك الحالية الجارية</h3>
+            <span id="activeTripStatus" class="status-badge green">تم القبول</span>
+          </div>
+
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:12px; background:rgba(5,8,17,0.7); padding:14px; border-radius:var(--radius-md);">
+            <div>
+              <small style="color:var(--text-muted);">اسم العميل</small>
+              <div id="activeTripCustomerName" style="font-weight:700;">—</div>
+            </div>
+            <div>
+              <small style="color:var(--text-muted);">رقم هاتف العميل</small>
+              <div id="activeTripCustomerPhone" style="font-weight:700; color:var(--gold-light);">—</div>
+            </div>
+            <div>
+              <small style="color:var(--text-muted);">من</small>
+              <div id="activeTripFrom" style="font-weight:700;">—</div>
+            </div>
+            <div>
+              <small style="color:var(--text-muted);">إلى</small>
+              <div id="activeTripTo" style="font-weight:700;">—</div>
+            </div>
+            <div>
+              <small style="color:var(--text-muted);">إجمالي الأجرة المطلوب تحصيلها</small>
+              <div id="activeTripPrice" style="font-size:1.3rem; font-weight:900; color:var(--gold-bright);">—</div>
+            </div>
+          </div>
+
+          <div style="display:flex; flex-wrap:wrap; gap:10px;">
+            <a id="activeTripCustomerPhoneLink" href="#" class="btn-secondary-outline" style="flex:1; text-align:center;">
+              📞 اتصال بالعميل
+            </a>
+            <button class="btn-secondary-outline" style="flex:1;" onclick="window.app.openGoogleMapsDirections()">
+              🗺️ فتح مسار الخريطة في Google Maps
+            </button>
+            <button class="btn-primary-gold" style="flex:1;" onclick="window.app.startActiveTrip()">
+              ▶️ بدء الرحلة
+            </button>
+            <button class="btn-accept" style="flex:1;" onclick="window.app.completeActiveTrip()">
+              🏁 إنهاء الرحلة وتحصيل المبلغ
+            </button>
+          </div>
+        </div>
+
+        <!-- Waiting Card when no rides -->
+        <div class="feature-box" style="text-align:center; padding:3rem 1.5rem;">
+          <div style="font-size:3rem; margin-bottom:1rem;">📡</div>
+          <h4 style="font-size:1.4rem; color:var(--gold-light);">جاري مراقبة راديو الرحلات في العريش</h4>
+          <p style="max-width:500px; margin:0 auto; color:var(--text-muted);">
+            بمجرد أن يطلب أي عميل في نطاق العريش أو ضواحيها تاكسي، سيظهر لك الطلب هنا فوراً مصحوباً بنغمة تنبيه ومسافة الانطلاق.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═════════════════════════════════════════════════════════════════════════
+       VIEW 4: ADMIN CENTRAL DASHBOARD
+       ═════════════════════════════════════════════════════════════════════════ -->
+  <section id="view-admin" class="app-view">
+    <div class="container">
+      
+      <!-- Admin Header Bar -->
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:12px;">
+        <div>
+          <h2 style="font-family:var(--font-heading); font-size:1.8rem; color:var(--gold-light);">
+            لوحة الإدارة المركزية • تاكسي العاصمة
+          </h2>
+          <p style="color:var(--text-muted); font-size:0.88rem;">متابعة الأسطول، الرحلات المباشرة، الأسعار، والإيرادات</p>
+        </div>
+
+        <div style="display:flex; gap:10px;">
+          <button class="btn-secondary-outline" onclick="document.getElementById('pricingModal').classList.add('open')">
+            ⚙️ تعديل نظام الأسعار
+          </button>
+          <button class="btn-primary-gold" onclick="window.app.exportReportToCSV()">
+            📥 تصدير تقرير الرحلات (Excel/CSV)
+          </button>
+        </div>
+      </div>
+
+      <!-- 10 Centralized Metrics Grid -->
+      <div class="admin-metrics-grid">
+        
+        <div class="metric-card">
+          <div class="metric-header">
+            <span>إجمالي الرحلات</span>
+            <span>🗺️</span>
+          </div>
+          <div id="adminTotalTrips" class="metric-value">0</div>
+          <div class="metric-sub">جميع الطلبات المسجلة</div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-header">
+            <span>الرحلات الجارية</span>
+            <span>⚡</span>
+          </div>
+          <div id="adminActiveTrips" class="metric-value" style="color:#60A5FA;">0</div>
+          <div class="metric-sub">نشطة ومقبولة الآن</div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-header">
+            <span>الرحلات المكتملة</span>
+            <span>✅</span>
+          </div>
+          <div id="adminCompletedTrips" class="metric-value" style="color:#34D399;">0</div>
+          <div class="metric-sub">تمت بنجاح</div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-header">
+            <span>الرحلات الملغاة</span>
+            <span>❌</span>
+          </div>
+          <div id="adminCancelledTrips" class="metric-value" style="color:#F87171;">0</div>
+          <div class="metric-sub">إلغاء عميل أو كابتن</div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-header">
+            <span>إجمالي الكباتن</span>
+            <span>🚗</span>
+          </div>
+          <div id="adminTotalDrivers" class="metric-value">0</div>
+          <div class="metric-sub">المسجلون بالنظام</div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-header">
+            <span>الكباتن المتاحون</span>
+            <span>🟢</span>
+          </div>
+          <div id="adminOnlineDrivers" class="metric-value" style="color:#34D399;">0</div>
+          <div class="metric-sub">جاهزون للاستقبال</div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-header">
+            <span>إجمالي العملاء</span>
+            <span>👥</span>
+          </div>
+          <div id="adminTotalUsers" class="metric-value">0</div>
+          <div class="metric-sub">حسابات العملاء</div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-header">
+            <span>الإيرادات الكلية</span>
+            <span>💰</span>
+          </div>
+          <div id="adminTotalRevenue" class="metric-value">0 ج.م</div>
+          <div class="metric-sub">قيمة جميع الرحلات</div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-header">
+            <span>عمولة الشركة (10%)</span>
+            <span>🏦</span>
+          </div>
+          <div id="adminCommission" class="metric-value" style="color:var(--gold-bright);">0 ج.م</div>
+          <div class="metric-sub">دخل المنصة الصافي</div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-header">
+            <span>مستحقات الكباتن</span>
+            <span>💳</span>
+          </div>
+          <div id="adminDriversPayout" class="metric-value">0 ج.م</div>
+          <div class="metric-sub">صافي أرباح السائقين</div>
+        </div>
+
+      </div>
+
+      <!-- Drivers Table -->
+      <div class="admin-table-card">
+        <div class="table-header-bar">
+          <h4 style="font-size:1.15rem; color:var(--gold-light);">🚗 أسطول الكباتن والسيارات في العريش</h4>
+          <span class="feature-pill">تحديث لحظي من Firebase</span>
+        </div>
+        <div class="table-responsive">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>اسم الكابتن</th>
+                <th>الهاتف</th>
+                <th>موديل السيارة ورقم اللوحة</th>
+                <th>الحالة</th>
+                <th>التقييم</th>
+                <th>الرحلات</th>
+                <th>الإجراء</th>
+              </tr>
+            </thead>
+            <tbody id="adminDriversTableBody">
+              <tr><td colspan="7" class="empty-cell">جاري تحميل الكباتن...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Trips Table -->
+      <div class="admin-table-card">
+        <div class="table-header-bar">
+          <h4 style="font-size:1.15rem; color:var(--gold-light);">🗺️ سجل الرحلات الحية والسابقة</h4>
+          <span class="feature-pill">سجل العمليات الكامل</span>
+        </div>
+        <div class="table-responsive">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>المعرف</th>
+                <th>العميل</th>
+                <th>خط السير</th>
+                <th>السعر</th>
+                <th>الحالة</th>
+                <th>الكابتن</th>
+                <th>التوقيت</th>
+                <th>إلغاء</th>
+              </tr>
+            </thead>
+            <tbody id="adminTripsTableBody">
+              <tr><td colspan="8" class="empty-cell">جاري تحميل الرحلات...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═════════════════════════════════════════════════════════════════════════
+       MODAL 1: AUTHENTICATION (LOGIN & REGISTRATION)
+       ═════════════════════════════════════════════════════════════════════════ -->
+  <div id="authModal" class="modal-overlay">
+    <div class="modal-dialog">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+        <h3 style="font-family:var(--font-heading); color:var(--gold-light);">تسجيل الدخول / حساب جديد</h3>
+        <button class="modal-close-btn chip-btn">✕ إغلاق</button>
+      </div>
+
+      <!-- Auth Tabs -->
+      <div style="display:flex; gap:8px; margin-bottom:1.5rem;">
+        <button id="tabAuthLogin" class="btn-primary-gold" style="flex:1; padding:8px;" onclick="showAuthTab('login')">تسجيل الدخول</button>
+        <button id="tabAuthRegister" class="btn-secondary-outline" style="flex:1; padding:8px;" onclick="showAuthTab('register')">حساب جديد</button>
+      </div>
+
+      <!-- Login Form -->
+      <form id="loginForm" onsubmit="handleLoginSubmit(event)" style="display:flex; flex-direction:column; gap:12px;">
+        <div class="input-group">
+          <label class="input-label">البريد الإلكتروني أو الهاتف</label>
+          <input type="email" id="loginEmail" class="input-field" placeholder="example@gmail.com" required>
+        </div>
+        <div class="input-group">
+          <label class="input-label">كلمة المرور</label>
+          <input type="password" id="loginPassword" class="input-field" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="btn-primary-gold" style="margin-top:8px;">دخول</button>
+      </form>
+
+      <!-- Register Form -->
+      <form id="registerForm" onsubmit="handleRegisterSubmit(event)" style="display:none; flex-direction:column; gap:12px;">
+        <div class="input-group">
+          <label class="input-label">الاسم بالكامل</label>
+          <input type="text" id="regName" class="input-field" placeholder="الاسم ثلاثي" required>
+        </div>
+        <div class="input-group">
+          <label class="input-label">رقم الهاتف المحمول</label>
+          <input type="tel" id="regPhone" class="input-field" placeholder="01094129592" required>
+        </div>
+        <div class="input-group">
+          <label class="input-label">البريد الإلكتروني</label>
+          <input type="email" id="regEmail" class="input-field" placeholder="example@gmail.com" required>
+        </div>
+        <div class="input-group">
+          <label class="input-label">كلمة المرور</label>
+          <input type="password" id="regPassword" class="input-field" placeholder="••••••••" required>
+        </div>
+        <div class="input-group">
+          <label class="input-label">نوع الحساب</label>
+          <select id="regRole" class="input-field" onchange="toggleDriverRegisterFields(this.value)">
+            <option value="customer">عميل (طلب رحلات وتوصيل)</option>
+            <option value="driver">كابتن (سائق تاكسي)</option>
+          </select>
+        </div>
+
+        <div id="regDriverFields" style="display:none; flex-direction:column; gap:8px;">
+          <input type="text" id="regCarModel" class="input-field" placeholder="موديل السيارة (مثال: تويوتا كورولا 2024)">
+          <input type="text" id="regCarPlate" class="input-field" placeholder="رقم اللوحة (مثال: ط أ س 2026)">
+        </div>
+
+        <button type="submit" class="btn-primary-gold" style="margin-top:8px;">إنشاء الحساب وتفعيله</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ═════════════════════════════════════════════════════════════════════════
+       MODAL 2: PRICING CONFIGURATION (ADMIN)
+       ═════════════════════════════════════════════════════════════════════════ -->
+  <div id="pricingModal" class="modal-overlay">
+    <div class="modal-dialog">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+        <h3 style="font-family:var(--font-heading); color:var(--gold-light);">⚙️ إعدادات تسعير تاكسي العاصمة</h3>
+        <button class="modal-close-btn chip-btn">✕ إغلاق</button>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        <div class="input-group">
+          <label class="input-label">سعر فتح العداد (ج.م)</label>
+          <input type="number" id="cfgBaseFare" class="input-field" value="15">
+        </div>
+        <div class="input-group">
+          <label class="input-label">سعر الكيلومتر (ج.م)</label>
+          <input type="number" step="0.5" id="cfgPerKm" class="input-field" value="6.5">
+        </div>
+        <div class="input-group">
+          <label class="input-label">الحد الأدنى للرحلة (ج.م)</label>
+          <input type="number" id="cfgMinFare" class="input-field" value="25">
+        </div>
+        <div class="input-group">
+          <label class="input-label">رسوم دقيقة الانتظار (ج.م)</label>
+          <input type="number" step="0.5" id="cfgWaiting" class="input-field" value="1.5">
+        </div>
+        <div class="input-group">
+          <label class="input-label">رسوم إضافية للرحلات خارج العريش (ج.م)</label>
+          <input type="number" id="cfgOutOfCity" class="input-field" value="40">
+        </div>
+
+        <button type="button" class="btn-primary-gold" onclick="saveAdminPricingConfig()">
+          حفظ وتطبيق الأسعار الجديدة
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container"></div>
+
+  <!-- Application Logic Scripts -->
+  <script type="module" src="/js/app.js"></script>
+
+  <!-- Auth and Config Handlers -->
+  <script>
+    function showAuthTab(tab) {
+      document.getElementById('loginForm').style.display = tab === 'login' ? 'flex' : 'none';
+      document.getElementById('registerForm').style.display = tab === 'register' ? 'flex' : 'none';
+      document.getElementById('tabAuthLogin').className = tab === 'login' ? 'btn-primary-gold' : 'btn-secondary-outline';
+      document.getElementById('tabAuthRegister').className = tab === 'register' ? 'btn-primary-gold' : 'btn-secondary-outline';
+    }
+
+    function toggleDriverRegisterFields(val) {
+      document.getElementById('regDriverFields').style.display = val === 'driver' ? 'flex' : 'none';
+    }
+
+    async function handleLoginSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value;
+      const pass = document.getElementById('loginPassword').value;
+      try {
+        await window.app.login(email, pass);
+        document.getElementById('authModal').classList.remove('open');
+      } catch (err) {
+        alert("خطأ في تسجيل الدخول: " + err.message);
+      }
+    }
+
+    async function handleRegisterSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('regName').value;
+      const phone = document.getElementById('regPhone').value;
+      const email = document.getElementById('regEmail').value;
+      const password = document.getElementById('regPassword').value;
+      const role = document.getElementById('regRole').value;
+      const carModel = document.getElementById('regCarModel')?.value || '';
+      const carPlate = document.getElementById('regCarPlate')?.value || '';
+
+      try {
+        await window.app.register({ name, phone, email, password, role, carModel, carPlate });
+        document.getElementById('authModal').classList.remove('open');
+      } catch (err) {
+        alert("خطأ في التسجيل: " + err.message);
+      }
+    }
+
+    function saveAdminPricingConfig() {
+      const baseFare = Number(document.getElementById('cfgBaseFare').value) || 15;
+      const perKmRate = Number(document.getElementById('cfgPerKm').value) || 6.5;
+      const minFare = Number(document.getElementById('cfgMinFare').value) || 25;
+      const waitingRatePerMin = Number(document.getElementById('cfgWaiting').value) || 1.5;
+      const outOfCityFlatFee = Number(document.getElementById('cfgOutOfCity').value) || 40;
+
+      window.app.pricing.updateConfig({
+        baseFare,
+        perKmRate,
+        minFare,
+        waitingRatePerMin,
+        outOfCityFlatFee
+      });
+
+      document.getElementById('pricingModal').classList.remove('open');
+      window.app.showToast("تم حفظ وتحديث إعدادات الأسعار بنجاح!");
+      window.app.updateRouteAndFare();
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,128 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return signedIn() && request.auth.uid == userId;
+    }
+
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function isAdmin() {
+      return signedIn() && (
+        getUserData().role in ['admin', 'super_admin'] ||
+        request.auth.token.admin == true
+      );
+    }
+
+    function isDriver() {
+      return signedIn() && getUserData().role == 'driver';
+    }
+
+    function isCustomer() {
+      return signedIn() && getUserData().role == 'customer';
+    }
+
+    // 1. Users collection
+    match /users/{userId} {
+      allow read: if signedIn() && (isOwner(userId) || isAdmin());
+      // Users can create own record with customer or driver role (cannot make self admin)
+      allow create: if signedIn() && isOwner(userId)
+        && request.resource.data.role in ['customer', 'driver']
+        && (request.resource.data.role == 'driver' ? request.resource.data.status in ['pending', 'active'] : true);
+      // Users cannot change their own role or admin privileges
+      allow update: if isAdmin() || (
+        isOwner(userId)
+        && request.resource.data.role == resource.data.role
+        && (!('status' in request.resource.data) || request.resource.data.status == resource.data.status || isAdmin())
+      );
+      allow delete: if isAdmin();
+    }
+
+    // 2. Rides / Trips
+    match /rides/{rideId} {
+      allow read: if signedIn() && (
+        isAdmin() ||
+        resource.data.customerId == request.auth.uid ||
+        resource.data.driverId == request.auth.uid ||
+        (isDriver() && resource.data.status in ['REQUESTED', 'requested', 'pending'])
+      );
+      // Customer creates ride request (cannot dictate driverId or arbitrary confirmed status)
+      allow create: if signedIn()
+        && request.resource.data.customerId == request.auth.uid
+        && request.resource.data.status in ['REQUESTED', 'requested', 'pending']
+        && request.resource.data.driverId == null;
+      // Atomic accept by driver or status progression
+      allow update: if isAdmin() || (
+        signedIn() && (
+          // Driver accepts
+          (isDriver() && resource.data.status in ['REQUESTED', 'requested', 'pending']
+            && request.resource.data.driverId == request.auth.uid
+            && request.resource.data.status in ['ACCEPTED', 'accepted']) ||
+          // Driver marks in progress or completed
+          (resource.data.driverId == request.auth.uid
+            && request.resource.data.status in ['IN_PROGRESS', 'in_progress', 'COMPLETED', 'completed']) ||
+          // Customer cancels before acceptance
+          (resource.data.customerId == request.auth.uid
+            && resource.data.status in ['REQUESTED', 'requested', 'pending']
+            && request.resource.data.status in ['CANCELLED', 'cancelled'])
+        )
+      );
+      allow delete: if isAdmin();
+    }
+
+    // 3. Driver Locations
+    match /driver_locations/{driverId} {
+      allow read: if signedIn();
+      allow write: if isOwner(driverId) || isAdmin();
+    }
+
+    // 4. Notifications
+    match /notifications/{notifId} {
+      allow read: if signedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if signedIn();
+      allow update, delete: if isAdmin();
+    }
+
+    // 5. Pricing, Settings & Discounts
+    match /pricing/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /settings/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /discounts/{code} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // 6. Reviews & Complaints
+    match /reviews/{reviewId} {
+      allow read: if true;
+      allow create: if signedIn() && request.resource.data.customerId == request.auth.uid;
+      allow update, delete: if isAdmin();
+    }
+
+    match /complaints/{complaintId} {
+      allow read: if signedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isAdmin();
+    }
+
+    // 7. Admin Logs
+    match /admin_logs/{logId} {
+      allow read, write: if isAdmin();
+    }
+  }
+}
