@@ -760,19 +760,31 @@ class CapitalTaxiApp {
       this.activeCustomerTrip = current;
       this.showCustomerActiveTripOverlay(current);
 
-      if (current.status === "ARRIVED" && prevStatus !== "ARRIVED") {
+      if ((current.status === "driver_arrived" || current.status === "ARRIVED") && 
+          prevStatus !== "driver_arrived" && prevStatus !== "ARRIVED") {
         this.dispatch.playNotificationBeep();
         this.showToast("الكابتن وصل الآن إلى نقطة الانطلاق وبانتظارك! 🚖");
       }
 
-      if (current.status === "IN_PROGRESS" && prevStatus !== "IN_PROGRESS") {
+      if ((current.status === "in_progress" || current.status === "IN_PROGRESS") && 
+          prevStatus !== "in_progress" && prevStatus !== "IN_PROGRESS") {
         this.showToast("بدأت الرحلة.. نتمنى لك مشواراً مريحاً مع تاكسي العاصمة!");
       }
 
-      if (current.status === "COMPLETED") {
+      if (current.status === "completed" || current.status === "COMPLETED") {
         this.showToast("حمد لله على السلامة! اكتملت رحلتك بنجاح.");
         this.openRatingModal(current);
-        document.getElementById("customerTripStatusCard").style.display = "none";
+        const stCard = document.getElementById("customerTripStatusCard");
+        if (stCard) stCard.style.display = "none";
+        this.activeCustomerTrip = null;
+      }
+
+      if (current.status === "no_driver") {
+        this.showToast("عذراً، لم يتوفر كابتن متاح حالياً. يرجى إعادة المحاولة أو اختيار فئة سيارة أخرى.");
+        const srCard = document.getElementById("customerSearchingCard");
+        if (srCard) srCard.style.display = "none";
+        const btn = document.getElementById("btnConfirmRideMain");
+        if (btn) btn.style.display = "block";
         this.activeCustomerTrip = null;
       }
     }
@@ -803,9 +815,12 @@ class CapitalTaxiApp {
 
     const myUid = this.userProfile?.uid || "mock_driver";
 
+    // Standard active trip statuses for driver
+    const activeDriverStatuses = ["accepted", "ACCEPTED", "driver_arrived", "ARRIVED", "in_progress", "IN_PROGRESS"];
+
     // Check if driver is assigned an active trip
     const myActiveTrip = Object.values(trips).find(
-      (t) => t.driverId === myUid && (t.status === "ACCEPTED" || t.status === "ARRIVED" || t.status === "IN_PROGRESS")
+      (t) => t.driverId === myUid && activeDriverStatuses.includes(t.status)
     );
 
     if (myActiveTrip) {
@@ -833,9 +848,10 @@ class CapitalTaxiApp {
       this.activeDriverTrip = null;
     }
 
-    // Look for pending request
+    // Standard broadcast statuses for pending/searching trip
+    const pendingStatuses = ["searching", "pending", "REQUESTED"];
     const pendingTrip = Object.values(trips).find(
-      (t) => (t.status === "REQUESTED" || t.status === "pending") && !t.rejectedDrivers?.[myUid]
+      (t) => pendingStatuses.includes(t.status) && !t.rejectedDrivers?.[myUid]
     );
 
     if (pendingTrip) {
@@ -1278,13 +1294,20 @@ class CapitalTaxiApp {
   getStatusName(s) {
     return (
       {
-        REQUESTED: "بانتظار كابتن",
         pending: "قيد الانتظار",
-        ACCEPTED: "تم القبول",
-        ARRIVED: "الكابتن وصل للمكان",
+        searching: "جاري البحث عن كابتن",
+        REQUESTED: "جاري البحث عن كابتن",
+        accepted: "تم قبول الرحلة",
+        ACCEPTED: "تم قبول الرحلة",
+        driver_arrived: "وصل الكابتن لنقطة الالتقاء",
+        ARRIVED: "وصل الكابتن لنقطة الالتقاء",
+        in_progress: "الرحلة جارية",
         IN_PROGRESS: "الرحلة جارية",
-        COMPLETED: "مكتملة",
-        CANCELLED: "ملغاة"
+        completed: "مكتملة بنجاح ✓",
+        COMPLETED: "مكتملة بنجاح ✓",
+        cancelled: "ملغاة",
+        CANCELLED: "ملغاة",
+        no_driver: "لم يتوفر سائق متاح حالياً"
       }[s] || s || "—"
     );
   }
@@ -1292,13 +1315,20 @@ class CapitalTaxiApp {
   getStatusBadgeClass(s) {
     return (
       {
-        REQUESTED: "yellow",
         pending: "yellow",
+        searching: "yellow",
+        REQUESTED: "yellow",
+        accepted: "blue",
         ACCEPTED: "blue",
+        driver_arrived: "green",
         ARRIVED: "green",
+        in_progress: "blue",
         IN_PROGRESS: "blue",
+        completed: "green",
         COMPLETED: "green",
-        CANCELLED: "red"
+        cancelled: "red",
+        CANCELLED: "red",
+        no_driver: "red"
       }[s] || "yellow"
     );
   }

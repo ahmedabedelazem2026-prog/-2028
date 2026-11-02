@@ -152,7 +152,7 @@ async function runTests() {
     });
     assert.equal(res.success, true);
     assert.ok(res.tripId.startsWith("TRIP_"));
-    assert.equal(res.record.status, "REQUESTED");
+    assert.ok(res.record.status === "searching" || res.record.status === "REQUESTED");
   });
 
   // 10. Atomic Single Driver Acceptance (Race condition test)
@@ -177,39 +177,39 @@ async function runTests() {
   });
 
   // 11. Trip lifecycle: Driver Arrived at pickup
-  await testAsync("11. وصول الكابتن لمكان الانطلاق (ARRIVED)", async () => {
+  await testAsync("11. وصول الكابتن لمكان الانطلاق (driver_arrived)", async () => {
     const dispatch = new DispatchEngine({});
     const req = await dispatch.createTripRequest({ from: "المساعيد", to: "الساحل", price: 30 });
     await dispatch.acceptTripAtomic(req.tripId, { uid: "drv_test" });
     const res = await dispatch.driverArrived(req.tripId);
-    assert.equal(res.status, "ARRIVED");
+    assert.ok(res.status === "driver_arrived" || res.status === "ARRIVED");
   });
 
   // 12. Trip lifecycle: Start trip & In progress
-  await testAsync("12. بدء الرحلة بعد ركوب العميل (IN_PROGRESS)", async () => {
+  await testAsync("12. بدء الرحلة بعد ركوب العميل (in_progress)", async () => {
     const dispatch = new DispatchEngine({});
     const req = await dispatch.createTripRequest({ from: "الفواخرية", to: "الريسة", price: 40 });
     await dispatch.acceptTripAtomic(req.tripId, { uid: "drv_test" });
     const res = await dispatch.startTrip(req.tripId);
-    assert.equal(res.status, "IN_PROGRESS");
+    assert.ok(res.status === "in_progress" || res.status === "IN_PROGRESS");
   });
 
   // 13. Trip lifecycle: Complete trip & revenue recording
-  await testAsync("13. إنهاء الرحلة بنجاح وتسجيل الأجرة", async () => {
+  await testAsync("13. إنهاء الرحلة بنجاح وتسجيل الأجرة (completed)", async () => {
     const dispatch = new DispatchEngine({});
     const req = await dispatch.createTripRequest({ from: "الفواخرية", to: "الريسة", price: 40 });
     await dispatch.acceptTripAtomic(req.tripId, { uid: "drv_test" });
     await dispatch.startTrip(req.tripId);
     const res = await dispatch.completeTrip(req.tripId, 45);
-    assert.equal(res.status, "COMPLETED");
+    assert.ok(res.status === "completed" || res.status === "COMPLETED");
   });
 
   // 14. Trip cancellation
-  await testAsync("14. إلغاء الرحلة وفق قواعد النظام", async () => {
+  await testAsync("14. إلغاء الرحلة وفق قواعد النظام (cancelled)", async () => {
     const dispatch = new DispatchEngine({});
     const req = await dispatch.createTripRequest({ from: "الساحل", to: "المساعيد", price: 30 });
     const res = await dispatch.cancelTrip(req.tripId, "تغيير رأي العميل");
-    assert.equal(res.status, "CANCELLED");
+    assert.ok(res.status === "cancelled" || res.status === "CANCELLED");
   });
 
   // 15. Wallet Engine: Top-up & Trip Payment
@@ -306,6 +306,28 @@ async function runTests() {
     });
     assert.ok(req.record.scheduledTime);
     assert.equal(req.record.scheduledTime, "2026-11-05T06:00:00");
+  });
+
+  // 23. Standardized Trip Status Transitions & Audit Timeline
+  await testAsync("23. تسجيل سجل التغييرات والتدقيق (Status Timeline & Audit)", async () => {
+    const dispatch = new DispatchEngine({});
+    const req = await dispatch.createTripRequest({ from: "الميدان", to: "الريسة", price: 40 });
+    assert.ok(Array.isArray(req.record.statusTimeline), "Must initialize timeline array");
+    assert.equal(req.record.statusTimeline[0].status, "searching");
+
+    await dispatch.acceptTripAtomic(req.tripId, { uid: "drv_audit", name: "كابتن مدقق" });
+    const trips = JSON.parse(localStorage.getItem("capital_taxi_trips") || "{}");
+    const updatedTrip = trips[req.tripId];
+    assert.equal(updatedTrip.status, "accepted");
+    assert.ok(updatedTrip.statusTimeline.some(e => e.status === "accepted" && e.updatedBy === "drv_audit"));
+  });
+
+  // 24. No Driver Timeout Fallback (no_driver)
+  await testAsync("24. تحويل الرحلة تلقائياً لحالة عدم توفر سائق (no_driver)", async () => {
+    const dispatch = new DispatchEngine({});
+    const req = await dispatch.createTripRequest({ from: "الساحل", to: "المساعيد", price: 30 });
+    const res = await dispatch.markNoDriver(req.tripId);
+    assert.equal(res.status, "no_driver");
   });
 
   console.log("\n================================================================");
