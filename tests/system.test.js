@@ -262,6 +262,52 @@ async function runTests() {
     assert.equal(isSuper, true, "Super Admin identity must be verified");
   });
 
+  // 19. Uber 4-digit Security PIN Code (Generation & Verification)
+  await testAsync("19. إنشاء والتحقق من كود أمان الرحلة (4-Digit PIN Code)", async () => {
+    const dispatch = new DispatchEngine({});
+    const req = await dispatch.createTripRequest({ from: "الميدان", to: "الساحل", price: 30 });
+    assert.ok(req.record.pinCode, "Trip must generate a 4-digit PIN");
+    assert.equal(req.record.pinCode.length, 4, "PIN must be 4 digits");
+
+    // Correct PIN verification
+    const verified = await dispatch.verifyTripPin(req.tripId, req.record.pinCode);
+    assert.equal(verified, true, "Valid PIN must verify successfully");
+
+    // Incorrect PIN verification
+    const invalidVerified = await dispatch.verifyTripPin(req.tripId, "0000");
+    assert.equal(invalidVerified, false, "Wrong PIN must fail verification");
+  });
+
+  // 20. Dynamic Surge Pricing Multipliers
+  test("20. احتساب مضاعف الطلب العالي (Surge Multiplier) بالعريش", () => {
+    const pricing = new PricingEngine();
+    const standardFare = pricing.calculateFare({ distanceKm: 5, durationMin: 10, carType: "economy" });
+    const surgeFare = pricing.calculateFare({ distanceKm: 5, durationMin: 10, carType: "economy", surgeMultiplier: 1.3 });
+    assert.ok(surgeFare.totalFare > standardFare.totalFare, "Surge fare must be higher than standard fare");
+    assert.equal(surgeFare.surgeMultiplier, 1.3);
+  });
+
+  // 21. Driver Tipping (Uber Tip addition)
+  await testAsync("21. إضافة إكرامية للكابتن (Uber Tipping) واعتمادها", async () => {
+    const dispatch = new DispatchEngine({});
+    const req = await dispatch.createTripRequest({ from: "المساعيد", to: "الجامعة", price: 35 });
+    const tipRes = await dispatch.addTripTip(req.tripId, 10);
+    assert.equal(tipRes.success, true);
+  });
+
+  // 22. Scheduled Ride (Uber Reserve)
+  await testAsync("22. حجز رحلة مسبقاً (Uber Reserve) بجدول زمني", async () => {
+    const dispatch = new DispatchEngine({});
+    const req = await dispatch.createTripRequest({
+      from: "العريش",
+      to: "مطار القاهرة",
+      price: 1800,
+      scheduledTime: "2026-11-05T06:00:00"
+    });
+    assert.ok(req.record.scheduledTime);
+    assert.equal(req.record.scheduledTime, "2026-11-05T06:00:00");
+  });
+
   console.log("\n================================================================");
   console.log(`📊 Test Summary: ${passed} / ${total} Tests Passed Successfully!`);
   console.log("================================================================");

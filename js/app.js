@@ -122,6 +122,9 @@ class CapitalTaxiApp {
     });
     await this.maps.init();
 
+    // Start live roaming fleet simulation in Al-Arish (Uber home screen experience)
+    this.maps.startLiveFleetSimulation();
+
     // Default pins & route
     this.updateRouteAndFare();
 
@@ -493,6 +496,9 @@ class CapitalTaxiApp {
     if (baseEl) baseEl.textContent = `${fare.baseFare} ج.م`;
     if (totalEl) totalEl.textContent = `${fare.totalFare} ${fare.currency}`;
 
+    const btnPriceBadge = document.getElementById("btnFarePriceBadge");
+    if (btnPriceBadge) btnPriceBadge.textContent = `${fare.totalFare} ${fare.currency}`;
+
     const config = this.pricing.getConfig();
     Object.keys(config.carCategories).forEach((key) => {
       const priceEl = document.getElementById(`price-${key}`);
@@ -507,6 +513,24 @@ class CapitalTaxiApp {
     });
   }
 
+  setQuickFavorite(type) {
+    const favorites = {
+      home: { name: "وسط البلد - ميدان الرفاعي", lat: 31.1316, lng: 33.8016 },
+      work: { name: "ديوان عام محافظة شمال سيناء - ضاحية السلام", lat: 31.1390, lng: 33.8150 },
+      univ: { name: "جامعة سيناء - حي المساعيد", lat: 31.1210, lng: 33.7820 },
+      beach: { name: "شاطئ النخيل وكورنيش العريش", lat: 31.1442, lng: 33.8115 },
+      hospital: { name: "مستشفى العريش العام - وسط المدينة", lat: 31.1280, lng: 33.7980 }
+    };
+    const fav = favorites[type];
+    if (fav) {
+      this.dropoffLocation = { lat: fav.lat, lng: fav.lng, name: fav.name };
+      const el = document.getElementById("inputDropoff");
+      if (el) el.value = fav.name;
+      this.updateRouteAndFare();
+      this.showToast(`تم اختيار الوجهة: ${fav.name}`);
+    }
+  }
+
   async requestRide() {
     if (!this.currentFareDetails) {
       this.showToast("يرجى تحديد مسار الرحلة أولاً");
@@ -515,6 +539,7 @@ class CapitalTaxiApp {
 
     const customerName = this.userProfile?.name || document.getElementById("inputCustomerName")?.value?.trim() || "عميل العاصمة";
     const customerPhone = this.userProfile?.phone || document.getElementById("inputCustomerPhone")?.value?.trim() || "01094129592";
+    const notesToDriver = document.getElementById("inputTripNotes")?.value?.trim() || "";
 
     const requestData = {
       customerId: this.userProfile?.uid || "guest_" + Date.now(),
@@ -530,37 +555,201 @@ class CapitalTaxiApp {
       durationMin: this.currentFareDetails.durationMin,
       carType: this.selectedCarType,
       price: this.currentFareDetails.totalFare,
-      paymentMethod: this.selectedPaymentMethod
+      paymentMethod: this.selectedPaymentMethod,
+      notesToDriver
     };
 
     const res = await this.dispatch.createTripRequest(requestData);
     if (res.success) {
       this.activeCustomerTrip = res.record;
       this.showCustomerActiveTripOverlay(res.record);
-      this.showToast("تم إرسال طلبك بنجاح! جاري البحث عن أقرب كابتن...");
+      this.showToast("تم إرسال طلبك بنجاح! جاري البحث عن أقرب كابتن في العريش...");
     }
   }
 
   showCustomerActiveTripOverlay(trip) {
-    const card = document.getElementById("customerTripStatusCard");
-    if (!card) return;
-    card.style.display = "block";
-    document.getElementById("custTripStatus").textContent = this.getStatusName(trip.status);
-    document.getElementById("custTripFrom").textContent = trip.from;
-    document.getElementById("custTripTo").textContent = trip.to;
-    document.getElementById("custTripPrice").textContent = `${trip.price} ج.م (${trip.paymentMethod || 'كاش'})`;
-    document.getElementById("custTripDriver").textContent = trip.driverName || "بانتظار قبول الكابتن...";
-    document.getElementById("custTripDriverPhone").textContent = trip.driverPhone || "—";
-    if (trip.driverCar) {
-      document.getElementById("custTripDriverCar").textContent = `${trip.driverCar} • لوحة: ${trip.driverPlate || 'شمال سيناء'}`;
+    const searchingCard = document.getElementById("customerSearchingCard");
+    const matchedCard = document.getElementById("customerTripStatusCard");
+    const confirmBtn = document.getElementById("btnConfirmRideMain");
+
+    if (!trip) {
+      if (searchingCard) searchingCard.style.display = "none";
+      if (matchedCard) matchedCard.style.display = "none";
+      if (confirmBtn) confirmBtn.style.display = "block";
+      return;
     }
 
-    // Chat button active during ride
-    const chatBtn = document.getElementById("btnCustOpenChat");
-    if (chatBtn) {
-      chatBtn.style.display = trip.driverId ? "inline-flex" : "none";
-      chatBtn.onclick = () => this.openChatModal(trip.id, "customer");
+    if (trip.status === "REQUESTED") {
+      if (searchingCard) searchingCard.style.display = "block";
+      if (matchedCard) matchedCard.style.display = "none";
+      if (confirmBtn) confirmBtn.style.display = "none";
+    } else if (trip.status === "ACCEPTED" || trip.status === "ARRIVED" || trip.status === "IN_PROGRESS") {
+      if (searchingCard) searchingCard.style.display = "none";
+      if (matchedCard) matchedCard.style.display = "block";
+      if (confirmBtn) confirmBtn.style.display = "none";
+
+      const statusEl = document.getElementById("custTripStatus");
+      if (statusEl) statusEl.textContent = this.getStatusName(trip.status);
+
+      const fromEl = document.getElementById("custTripFrom");
+      if (fromEl) fromEl.textContent = trip.from;
+
+      const toEl = document.getElementById("custTripTo");
+      if (toEl) toEl.textContent = trip.to;
+
+      const priceEl = document.getElementById("custTripPrice");
+      if (priceEl) priceEl.textContent = `${trip.price} ج.م (${trip.paymentMethod || 'كاش'})`;
+
+      const driverEl = document.getElementById("custTripDriver");
+      if (driverEl) driverEl.textContent = trip.driverName || "كابتن معتمد";
+
+      const driverCarEl = document.getElementById("custTripDriverCar");
+      if (driverCarEl) driverCarEl.textContent = trip.driverCar || "تويوتا كورولا 2024";
+
+      // Egyptian License Plate decomposition
+      const plate = trip.driverPlate || "ط أ س 2026";
+      const lettersMatch = plate.replace(/[0-9]/g, '').trim() || "ط أ س";
+      const numbersMatch = plate.replace(/[^0-9]/g, '').trim() || "2026";
+      const pLetters = document.getElementById("custTripPlateLetters");
+      const pNumbers = document.getElementById("custTripPlateNumbers");
+      if (pLetters) pLetters.textContent = lettersMatch;
+      if (pNumbers) pNumbers.textContent = numbersMatch;
+
+      // 4-Digit Security PIN
+      const pinEl = document.getElementById("custTripPinDisplay");
+      if (pinEl) pinEl.textContent = (trip.pinCode || "4821").split('').join(' ');
+
+      // Phone call
+      const callBtn = document.getElementById("custTripCallBtn");
+      if (callBtn) callBtn.href = `tel:${trip.driverPhone || '01094129592'}`;
+
+      // In-app chat
+      const chatBtn = document.getElementById("btnCustOpenChat");
+      if (chatBtn) {
+        chatBtn.style.display = trip.driverId ? "inline-flex" : "none";
+        chatBtn.onclick = () => this.openChatModal(trip.id, "customer");
+      }
+    } else {
+      if (searchingCard) searchingCard.style.display = "none";
+      if (matchedCard) matchedCard.style.display = "none";
+      if (confirmBtn) confirmBtn.style.display = "block";
     }
+  }
+
+  cancelCustomerSearching() {
+    if (this.activeCustomerTrip) {
+      this.dispatch.cancelTrip(this.activeCustomerTrip.id, "إلغاء البحث من قبل العميل");
+      this.activeCustomerTrip = null;
+    }
+    this.showCustomerActiveTripOverlay(null);
+    this.showToast("تم إلغاء البحث عن سيارة.");
+  }
+
+  cancelActiveTripCustomer() {
+    if (this.activeCustomerTrip) {
+      this.dispatch.cancelTrip(this.activeCustomerTrip.id, "إلغاء المشوار من العميل");
+      this.activeCustomerTrip = null;
+    }
+    this.showCustomerActiveTripOverlay(null);
+    this.showToast("تم إلغاء الرحلة.");
+  }
+
+  shareTripWhatsApp() {
+    const trip = this.activeCustomerTrip;
+    const tripId = trip ? trip.id : "TRIP_LIVE";
+    const driver = trip?.driverName || "كابتن تاكسي العاصمة";
+    const car = trip?.driverCar || "سيارة كود 1";
+    const plate = trip?.driverPlate || "شمال سيناء";
+    const pin = trip?.pinCode || "----";
+    const from = trip?.from || this.pickupLocation.name;
+    const to = trip?.to || this.dropoffLocation.name;
+
+    const message = `🚕 *تاكسي العاصمة - مشاركة مسار الرحلة لأمانك*\n` +
+      `📍 من: ${from}\n` +
+      `🏁 إلى: ${to}\n` +
+      `👨‍✈️ الكابتن: ${driver}\n` +
+      `🚗 السيارة: ${car} (لوحة: ${plate})\n` +
+      `🔐 كود أمان الرحلة PIN: ${pin}\n` +
+      `📡 تتبع مساري مباشرة على الخريطة:\n` +
+      `https://taxi-alasema-app-2026.web.app/?track=${tripId}`;
+
+    const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
+    window.open(url, "_blank");
+  }
+
+  confirmScheduledRide() {
+    const date = document.getElementById("scheduleDate")?.value;
+    const time = document.getElementById("scheduleTime")?.value;
+    const notes = document.getElementById("scheduleNotes")?.value || "";
+
+    if (!date || !time) {
+      this.showToast("يرجى تحديد تاريخ ووقت المشوار أولاً");
+      return;
+    }
+
+    const scheduledRecord = {
+      id: "SCHED_" + Date.now(),
+      customerId: this.userProfile?.uid || "guest",
+      customerName: this.userProfile?.name || "عميل العاصمة",
+      customerPhone: this.userProfile?.phone || "01094129592",
+      from: this.pickupLocation.name,
+      to: this.dropoffLocation.name,
+      date,
+      time,
+      notes,
+      carType: this.selectedCarType,
+      createdAt: Date.now()
+    };
+
+    if (this.rtdb) {
+      this.rtdb.ref(`scheduled_trips/${scheduledRecord.id}`).set(scheduledRecord).catch(() => {});
+    }
+
+    document.getElementById("scheduleModal")?.classList.remove("open");
+    this.showToast(`تم تأكيد حجز الرحلة المسبق ليوم ${date} الساعة ${time} بنجاح! ✓`);
+  }
+
+  selectTip(amount, btnElement) {
+    this.selectedTipAmount = Number(amount) || 0;
+    const buttons = document.querySelectorAll(".tip-chip");
+    buttons.forEach(b => b.classList.remove("active"));
+    if (btnElement) btnElement.classList.add("active");
+  }
+
+  promptDriverPinAndStart() {
+    const modal = document.getElementById("driverPinModal");
+    if (modal) {
+      const pinInput = document.getElementById("inputDriverPinCode");
+      if (pinInput) pinInput.value = "";
+      modal.classList.add("open");
+    }
+  }
+
+  async confirmDriverPinAndStart() {
+    if (!this.activeDriverTrip) return;
+    const pinInput = document.getElementById("inputDriverPinCode");
+    const enteredPin = pinInput?.value?.trim();
+    if (!enteredPin || enteredPin.length < 4) {
+      this.showToast("يرجى إدخال كود PIN المكون من 4 أرقام");
+      return;
+    }
+
+    const res = await this.dispatch.startTrip(this.activeDriverTrip.id, enteredPin);
+    if (res.success) {
+      document.getElementById("driverPinModal")?.classList.remove("open");
+      this.showToast("تم التحقق من هوية الراكب بنجاح وبدء المشوار! ✓");
+    } else {
+      this.showToast(res.message || "رمز PIN غير صحيح");
+    }
+  }
+
+  toggleSurgeZonesAlert() {
+    alert("🔥 مناطق الطلب العالي (Surge) الحالية في العريش:\n\n" +
+      "1. وسط البلد وميدان النصر (مضاعف 1.25x)\n" +
+      "2. جامعة سيناء والمساعيد (مضاعف 1.35x)\n" +
+      "3. جامعة العريش وضاحية السلام (مضاعف 1.30x)\n" +
+      "4. ساحل البحر وكورنيش النخيل (مضاعف 1.20x)\n\n" +
+      "💡 الأسعار ترتفع تلقائياً في هذه المناطق لتعظيم أرباح الكباتن.");
   }
 
   checkCustomerTripStatus(trips) {
@@ -846,6 +1035,15 @@ class CapitalTaxiApp {
       comment
     });
 
+    if (this.selectedTipAmount && this.selectedTipAmount > 0) {
+      await this.dispatch?.addTripTip(tripId, this.selectedTipAmount);
+      if (driverId) {
+        await this.wallet?.creditDriverTrip(driverId, tripId, this.selectedTipAmount);
+      }
+      this.showToast(`تمت إضافة إكرامية ${this.selectedTipAmount} ج.م للكابتن. شكراً لكرمك! ✨`);
+      this.selectedTipAmount = 0;
+    }
+
     modal.classList.remove("open");
     this.showToast("شكراً لتقييمك! تقييمك يساعدنا في رفع جودة الخدمة دائماً.");
   }
@@ -858,8 +1056,10 @@ class CapitalTaxiApp {
     const data = await this.wallet?.getWallet(uid);
     const balanceEl = document.getElementById("walletBalanceText");
     const driverBalanceEl = document.getElementById("driverWalletBalanceText");
+    const miniBalanceEl = document.getElementById("btnWalletMiniBalance");
     if (balanceEl) balanceEl.textContent = `${data?.balance || 0} ج.م`;
     if (driverBalanceEl) driverBalanceEl.textContent = `${data?.balance || 0} ج.م`;
+    if (miniBalanceEl) miniBalanceEl.textContent = `${data?.balance || 0}ج`;
 
     const txList = document.getElementById("walletTransactionsList");
     if (txList && data?.transactions) {

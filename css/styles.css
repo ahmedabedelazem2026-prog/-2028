@@ -1095,6 +1095,241 @@ table.admin-table tbody tr:hover {
 /* ═══════════════════════════════════════════════════════════════════════════
    MOBILE RESPONSIVENESS
    ═══════════════════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════════════════
+   UBER-GRADE INTERACTIVE UI STYLES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Uber Concentric Radar Searching Animation */
+.uber-searching-card {
+  background: rgba(10, 17, 36, 0.95);
+  border: 1px solid var(--border-gold);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  text-align: center;
+  margin-top: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+}
+
+.radar-pulse-animation {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.radar-circle {
+  position: absolute;
+  border-radius: 50%;
+  border: 2px solid var(--gold-bright);
+  opacity: 0;
+  animation: radar-ripple 2.4s infinite cubic-bezier(0.2, 0.6, 0.4, 1);
+}
+
+.radar-circle.circle1 { width: 40px; height: 40px; animation-delay: 0s; }
+.radar-circle.circle2 { width: 70px; height: 70px; animation-delay: 0.8s; }
+.radar-circle.circle3 { width: 100px; height: 100px; animation-delay: 1.6s; }
+
+.radar-center-taxi {
+  font-size: 2rem;
+  z-index: 2;
+  animation: taxi-bob 1.5s infinite ease-in-out;
+}
+
+@keyframes radar-ripple {
+  0% { transform: scale(0.6); opacity: 0.8; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+
+@keyframes taxi-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+/* Uber Matched Driver Card & Authentic Egyptian Plate */
+.uber-driver-card {
+  background: rgba(10, 17, 36, 0.95);
+  border: 1.5px solid var(--gold-bright);
+  border-radius: var(--radius-lg);
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 10px 35px rgba(212, 175, 55, 0.25);
+  animation: slide-up-card 0.4s ease;
+}
+
+@keyframes slide-up-card {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.uber-driver-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 10px;
+}
+
+.driver-avatar-circle {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--blue-primary);
+  border: 2px solid var(--gold-bright);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  box-shadow: var(--gold-glow);
+}
+
+.plate-and-pin-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  align-items: stretch;
+}
+
+/* Authentic Egyptian License Plate */
+.eg-plate-badge {
+  background: #FFFFFF;
+  color: #000000;
+  border: 2.5px solid #1E3A8A;
+  border-radius: 6px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+  font-family: 'Cairo', sans-serif;
+  text-align: center;
+}
+
+.eg-plate-header {
+  background: #1E3A8A;
+  color: #FFFFFF;
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 1px 4px;
+  letter-spacing: 0.5px;
+}
+
+.eg-plate-body {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 4px 6px;
+  font-size: 1.15rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+}
+
+.eg-plate-letters {
+  color: #1E3A8A;
+}
+
+.eg-plate-numbers {
+  color: #111827;
+}
+
+/* Ride Security PIN Badge (Uber Safety PIN) */
+.ride-pin-badge {
+  background: rgba(212, 175, 55, 0.12);
+  border: 1.5px dashed var(--gold-bright);
+  border-radius: var(--radius-sm);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.pin-title {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--gold-light);
+}
+
+.pin-digits {
+  font-size: 1.35rem;
+  font-weight: 900;
+  letter-spacing: 4px;
+  color: var(--gold-bright);
+  font-family: monospace;
+}
+
+.pin-desc {
+  font-size: 0.62rem;
+  color: var(--text-muted);
+}
+
+.trip-meta-box {
+  background: rgba(5, 8, 17, 0.6);
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Driver Daily Quest / Bonus Card */
+.driver-quest-card {
+  background: rgba(10, 17, 36, 0.9);
+  border: 1px solid var(--border-gold);
+  border-radius: var(--radius-md);
+  padding: 12px;
+}
+
+.quest-progress-track {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.quest-progress-fill {
+  height: 100%;
+  background: var(--gold-gradient);
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+/* Turn-by-Turn GPS HUD */
+.turn-by-turn-hud {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+}
+
+/* Tipping chip styles */
+.tip-chip.active {
+  background: var(--gold-gradient) !important;
+  color: #060B17 !important;
+  font-weight: 800;
+  border-color: transparent !important;
+}
+
+.unread-badge {
+  background: var(--status-red);
+  color: #FFFFFF;
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 10px;
+  margin-right: 4px;
+}
+
 @media (max-width: 992px) {
   .customer-layout {
     grid-template-columns: 1fr;

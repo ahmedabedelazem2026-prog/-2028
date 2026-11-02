@@ -11,6 +11,14 @@ export const DEFAULT_PRICING_CONFIG = {
   waitingRatePerMin: 1.5,      // رسوم الانتظار بالدقيقة
   nightSurchargeMultiplier: 1.15, // زيادة الفترة الليلية (12 ص حتى 6 ص)
 
+  // Al-Arish High Demand / Surge Pricing Zones (Uber-Grade Dynamic Multiplier)
+  surgeZones: {
+    "downtown": { name: "وسط البلد وميدان النصر", multiplier: 1.25, active: true },
+    "sinai_univ": { name: "جامعة سيناء والمساعيد", multiplier: 1.35, active: true },
+    "arish_univ": { name: "جامعة العريش وضاحية السلام", multiplier: 1.30, active: true },
+    "corniche": { name: "ساحل البحر والكورنيش", multiplier: 1.20, active: true }
+  },
+
   // Out of Arish / Highway surcharge
   outOfCityFlatFee: 40.0,     // رسوم إضافية للرحلات خارج نطاق المدينة
 
@@ -123,14 +131,18 @@ export class PricingEngine {
     carType = "economy",
     couponCode = "",
     isOutOfCity = false,
-    waitingMinutes = 0
+    waitingMinutes = 0,
+    surgeMultiplier = 1.0,
+    tipAmount = 0
   }) {
     const dKm = Math.max(0.2, Number(distanceKm) || 1.0);
     const dMin = Math.max(1, Number(durationMin) || 5.0);
     const waitMin = Math.max(0, Number(waitingMinutes) || 0);
+    const tip = Math.max(0, Number(tipAmount) || 0);
+    const surge = Math.max(1.0, Number(surgeMultiplier) || 1.0);
 
     const category = this.config.carCategories[carType] || this.config.carCategories.economy;
-    const multiplier = category.multiplier || 1.0;
+    const multiplier = (category.multiplier || 1.0) * surge;
 
     // Base fare + distance cost
     let distanceCost = dKm * this.config.perKmRate;
@@ -180,7 +192,8 @@ export class PricingEngine {
       }
     }
 
-    const finalFare = Math.max(this.config.minFare, Math.round(subtotal - discountAmount));
+    const finalRideFare = Math.max(this.config.minFare, Math.round(subtotal - discountAmount));
+    const totalWithTip = finalRideFare + tip;
 
     return {
       distanceKm: Number(dKm.toFixed(2)),
@@ -192,11 +205,14 @@ export class PricingEngine {
       waitingFee: Math.round(waitingFee),
       outOfCityFee: Math.round(outOfCityFee),
       nightExtra: Math.round(nightExtra),
+      surgeMultiplier: surge,
       isNight,
       discountAmount: Math.round(discountAmount),
       couponApplied,
       subtotal: Math.round(subtotal),
-      totalFare: finalFare,
+      rideFare: finalRideFare,
+      tipAmount: tip,
+      totalFare: totalWithTip,
       currency: "ج.م"
     };
   }

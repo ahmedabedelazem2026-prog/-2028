@@ -223,23 +223,42 @@
   </main>
 
   <!-- ═════════════════════════════════════════════════════════════════════════
-       VIEW 2: CUSTOMER APP (INTERACTIVE MAP & INSTANT BOOKING)
+       VIEW 2: CUSTOMER APP (UBER-GRADE INTERACTIVE MAP & FLOATING DRAWER)
        ═════════════════════════════════════════════════════════════════════════ -->
   <section id="view-customer" class="app-view">
     <div class="container customer-layout">
       
-      <!-- Left Booking Form Panel -->
+      <!-- Left Booking Form Panel (Uber Floating Sheet) -->
       <div class="booking-panel">
         
         <div class="booking-panel-title">
-          <h3>🚖 احجز تاكسي العاصمة</h3>
-          <span class="feature-pill">كود 1 العريش</span>
+          <div>
+            <h3>🚖 احجز تاكسي العاصمة</h3>
+            <span style="font-size:0.75rem; color:var(--text-muted);">كود 1 العريش • تجربة أوبر العالمية</span>
+          </div>
+          <div style="display:flex; gap:6px;">
+            <button type="button" class="chip-btn" onclick="document.getElementById('scheduleModal').classList.add('open')">
+              🕒 حجز مسبق
+            </button>
+            <button type="button" class="chip-btn" onclick="document.getElementById('safetyModal').classList.add('open')">
+              🛡️ الأمان
+            </button>
+          </div>
+        </div>
+
+        <!-- Uber Quick Bookmarks Bar -->
+        <div class="quick-chips-row" style="padding-bottom: 2px;">
+          <button type="button" class="chip-btn" onclick="window.app.setQuickFavorite('home')">🏠 المنزل</button>
+          <button type="button" class="chip-btn" onclick="window.app.setQuickFavorite('work')">💼 العمل</button>
+          <button type="button" class="chip-btn" onclick="window.app.setQuickFavorite('univ')">🎓 جامعة سيناء</button>
+          <button type="button" class="chip-btn" onclick="window.app.setQuickFavorite('beach')">🏖️ كورنيش البحر</button>
+          <button type="button" class="chip-btn" onclick="window.app.setQuickFavorite('hospital')">🏥 مستشفى العريش</button>
         </div>
 
         <!-- Pickup Location Input -->
         <div class="input-group">
           <label class="input-label">
-            <span>🟢</span> نقطة الانطلاق (مكانك الحالي)
+            <span>🟢</span> نقطة الانطلاق (مكان ركوبك)
           </label>
           <div class="input-field-wrapper">
             <span class="input-icon">📍</span>
@@ -262,11 +281,20 @@
           <div id="dropoffChips" class="quick-chips-row"></div>
         </div>
 
-        <!-- Select Car Category -->
+        <!-- Notes to Captain Input (Uber-grade) -->
         <div class="input-group">
           <label class="input-label">
-            <span>🚘</span> نوع السيارة
+            <span>📝</span> تعليمات للكابتن (اختياري)
           </label>
+          <input type="text" id="inputTripNotes" class="input-field" placeholder="مثال: أنا أمام بوابة المحافظة، معي حقائب...">
+        </div>
+
+        <!-- Select Car Category (Uber Ride Options Carousel) -->
+        <div class="input-group">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <label class="input-label"><span>🚘</span> فئات سيارات العاصمة</label>
+            <span style="font-size:0.75rem; color:var(--gold-bright);">تصل خلال 2-5 دقائق</span>
+          </div>
           <div class="car-selector-grid">
             
             <div class="car-card-option selected" data-cartype="economy">
@@ -274,8 +302,8 @@
                 <span class="car-icon">🚕</span>
                 <span id="price-economy" class="car-price">30 ج.م</span>
               </div>
-              <div class="car-name">اقتصادي</div>
-              <div class="car-desc">سيدان مكيفة لمشاوير المدينة</div>
+              <div class="car-name">اقتصادي (Capital Go)</div>
+              <div class="car-desc">سيدان مكيفة • 👤 4 ركاب • أسرع وصول</div>
             </div>
 
             <div class="car-card-option" data-cartype="comfort">
@@ -283,8 +311,8 @@
                 <span class="car-icon">🚗</span>
                 <span id="price-comfort" class="car-price">38 ج.م</span>
               </div>
-              <div class="car-name">كمفورت</div>
-              <div class="car-desc">موديلات أحدث وراحة أعلى</div>
+              <div class="car-name">كمفورت (Comfort)</div>
+              <div class="car-desc">سيارات 2024 بمساحة أوسع وتكييف فائق</div>
             </div>
 
             <div class="car-card-option" data-cartype="vip">
@@ -292,8 +320,8 @@
                 <span class="car-icon">✨</span>
                 <span id="price-vip" class="car-price">48 ج.م</span>
               </div>
-              <div class="car-name">العاصمة VIP</div>
-              <div class="car-desc">سيارات فخمة لرجال الأعمال</div>
+              <div class="car-name">العاصمة VIP (Black)</div>
+              <div class="car-desc">فخامة خاصة لرجال الأعمال والمشاوير الفاخرة</div>
             </div>
 
             <div class="car-card-option" data-cartype="family">
@@ -301,8 +329,8 @@
                 <span class="car-icon">🚐</span>
                 <span id="price-family" class="car-price">45 ج.م</span>
               </div>
-              <div class="car-name">عائلي (7 ركاب)</div>
-              <div class="car-desc">فان تتسع للعائلات والحقائب</div>
+              <div class="car-name">عائلي (Capital XL)</div>
+              <div class="car-desc">فان تتسع لـ 7 ركاب مع حقائب السفر</div>
             </div>
 
           </div>
@@ -318,7 +346,7 @@
               💵 نقداً للكابتن
             </button>
             <button type="button" class="chip-btn payment-method-chip" data-method="محفظة" style="flex:1;">
-              💳 المحفظة الإلكترونية
+              💳 محفظة العاصمة (<span id="btnWalletMiniBalance">150ج</span>)
             </button>
           </div>
         </div>
@@ -326,7 +354,7 @@
         <!-- Coupon Code Input -->
         <div class="input-group">
           <label class="input-label">
-            <span>🏷️</span> كوبون خصم (إن وجد)
+            <span>🏷️</span> كوبون خصم ترويجي
           </label>
           <div style="display:flex; gap:8px;">
             <input type="text" id="inputCoupon" class="input-field" placeholder="مثال: CAPITAL10 أو ARISH2026">
@@ -343,7 +371,7 @@
             <strong id="fareDistance">2.5 كم</strong>
           </div>
           <div class="fare-row">
-            <span>الوقت المتوقع:</span>
+            <span>الوقت المتوقع للوصول:</span>
             <strong id="fareDuration">8 دقائق تقريباً</strong>
           </div>
           <div class="fare-row">
@@ -362,36 +390,88 @@
           <input type="tel" id="inputCustomerPhone" class="input-field" placeholder="رقم هاتفك للتواصل" value="01094129592">
         </div>
 
-        <!-- Request Ride CTA -->
-        <button type="button" class="btn-primary-gold" style="width: 100%;" onclick="window.app.requestRide()">
-          🚀 تأكيد وإرسال طلب الرحلة
+        <!-- Request Ride CTA (Uber Confirmation) -->
+        <button id="btnConfirmRideMain" type="button" class="btn-primary-gold" style="width: 100%; font-size:1.05rem;" onclick="window.app.requestRide()">
+          🚀 تأكيد تاكسي العاصمة • <span id="btnFarePriceBadge">30 ج.م</span>
         </button>
 
-        <!-- Active Ride Status Card (Shown when requested) -->
-        <div id="customerTripStatusCard" class="incoming-trip-card" style="display: none; margin-top: 10px;">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <h4 style="color:var(--gold-bright);">🚖 تفاصيل رحلتك الحالية</h4>
-            <span id="custTripStatus" class="status-badge yellow">بانتظار كابتن</span>
+        <!-- UBER RADAR SEARCHING CARD (Concentric Wave Animation) -->
+        <div id="customerSearchingCard" class="uber-searching-card" style="display:none;">
+          <div class="radar-pulse-animation">
+            <div class="radar-circle circle1"></div>
+            <div class="radar-circle circle2"></div>
+            <div class="radar-circle circle3"></div>
+            <div class="radar-center-taxi">🚕</div>
           </div>
-          <div style="font-size:0.88rem; color:var(--text-muted); display:flex; flex-direction:column; gap:4px;">
-            <div>من: <b id="custTripFrom" style="color:var(--text-main);">—</b></div>
-            <div>إلى: <b id="custTripTo" style="color:var(--text-main);">—</b></div>
-            <div>السعر المطلوب: <b id="custTripPrice" style="color:var(--gold-bright);">—</b></div>
-            <div>الكابتن: <b id="custTripDriver" style="color:var(--status-green);">—</b></div>
-            <div>السيارة: <span id="custTripDriverCar" style="color:var(--text-main);">—</span></div>
-            <div>هاتف الكابتن: <b id="custTripDriverPhone">—</b></div>
+          <h4 style="color:var(--gold-bright); margin-top:12px;">جاري البحث عن أقرب كابتن في العريش...</h4>
+          <p style="font-size:0.8rem; color:var(--text-muted);">يتم إرسال طلبك للسيارات المتاحة في محيطك</p>
+          <button type="button" class="btn-reject" style="margin-top:10px; width:100%;" onclick="window.app.cancelCustomerSearching()">
+            إلغاء البحث
+          </button>
+        </div>
+
+        <!-- UBER MATCHED DRIVER SHEET (Authentic Plate, PIN Code & Safety) -->
+        <div id="customerTripStatusCard" class="uber-driver-card" style="display: none; margin-top: 10px;">
+          
+          <div class="uber-driver-header">
+            <div class="driver-avatar-circle">👨‍✈️</div>
+            <div style="flex:1;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h4 id="custTripDriver" style="color:var(--gold-bright); font-size:1.15rem; margin:0;">كابتن تاكسي العاصمة</h4>
+                <span id="custTripStatus" class="status-badge yellow">الكابتن في الطريق</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:6px; font-size:0.8rem; color:var(--text-muted); margin-top:2px;">
+                <span>⭐ 4.9 (1,420 مشوار)</span>
+                <span>•</span>
+                <span style="color:var(--status-green);">كابتن معتمد رسمياً ✓</span>
+              </div>
+            </div>
           </div>
+
+          <!-- Egyptian License Plate Badge & Ride Security PIN -->
+          <div class="plate-and-pin-row">
+            
+            <!-- Egyptian License Plate Badge -->
+            <div class="eg-plate-badge">
+              <div class="eg-plate-header">مــصــر • EGYPT</div>
+              <div class="eg-plate-body">
+                <span id="custTripPlateLetters" class="eg-plate-letters">ط أ س</span>
+                <span id="custTripPlateNumbers" class="eg-plate-numbers">1 2 3 4</span>
+              </div>
+            </div>
+
+            <!-- Uber 4-Digit Security PIN Code -->
+            <div class="ride-pin-badge">
+              <span class="pin-title">رمز أمان الرحلة (PIN)</span>
+              <span id="custTripPinDisplay" class="pin-digits">4 8 2 1</span>
+              <small class="pin-desc">أعطِ هذا الرمز للكابتن عند الركوب</small>
+            </div>
+
+          </div>
+
+          <!-- Trip details -->
+          <div class="trip-meta-box">
+            <div>السيارة: <b id="custTripDriverCar" style="color:var(--text-main);">تويوتا كورولا 2024</b></div>
+            <div>خط السير: <span id="custTripFrom">—</span> ⬅️ <span id="custTripTo">—</span></div>
+            <div>الأجرة المحددة: <b id="custTripPrice" style="color:var(--gold-bright);">—</b></div>
+          </div>
+
+          <!-- Quick Action Buttons -->
           <div style="display:flex; flex-wrap:wrap; gap:8px;">
             <a id="custTripCallBtn" href="tel:01094129592" class="btn-secondary-outline" style="flex:1; text-align:center;">
               📞 اتصال
             </a>
-            <button id="btnCustOpenChat" class="btn-secondary-outline" style="flex:1; display:none;">
-              💬 محادثة
+            <button id="btnCustOpenChat" class="btn-secondary-outline" style="flex:1;">
+              💬 محادثة <span id="chatUnreadDot" class="unread-badge" style="display:none;">1</span>
             </button>
-            <button class="btn-reject" style="flex:1;" onclick="window.app.activeCustomerTrip && window.app.dispatch.cancelTrip(window.app.activeCustomerTrip.id); document.getElementById('customerTripStatusCard').style.display='none';">
-              إلغاء الطلب
+            <button class="btn-secondary-outline" style="flex:1;" onclick="window.app.shareTripWhatsApp()">
+              🛡️ مشاركة الرحلة
+            </button>
+            <button class="btn-reject" style="flex:1;" onclick="window.app.cancelActiveTripCustomer()">
+              إلغاء الرحلة
             </button>
           </div>
+
         </div>
 
       </div>
@@ -401,7 +481,7 @@
         <div id="customerMap" class="map-viewport"></div>
         <div class="map-floating-overlay">
           <span>📍 خريطة العريش المباشرة</span>
-          <span>• اضغط على الخريطة لتحديد موقعك والوجهة</span>
+          <span>• اضغط على الخريطة لتحديد نقطة الالتقاء والوجهة</span>
         </div>
       </div>
 
@@ -461,6 +541,29 @@
           </div>
         </div>
 
+        <!-- Driver Daily Quest / Bonus Card (Uber-Grade Incentive) -->
+        <div class="driver-quest-card">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong>🎯 مكافأة اليوم (Quest)</strong>
+            <span class="live-badge" style="background:rgba(212,175,55,0.15); color:var(--gold-bright);">+50 ج.م بونص</span>
+          </div>
+          <p style="font-size:0.78rem; color:var(--text-muted); margin:4px 0 8px;">أكمل 5 رحلات اليوم بنجاح للحصول على المكافأة</p>
+          <div class="quest-progress-track">
+            <div id="questProgressBar" class="quest-progress-fill" style="width: 60%;"></div>
+          </div>
+          <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text-muted); margin-top:4px;">
+            <span>3 رحلات مكتملة</span>
+            <span>باقي رحلتين فقط!</span>
+          </div>
+        </div>
+
+        <!-- Surge Heatmap Quick Toggle -->
+        <div style="display:flex; gap:8px;">
+          <button type="button" class="btn-secondary-outline" style="flex:1; padding:8px; font-size:0.8rem;" onclick="window.app.toggleSurgeZonesAlert()">
+            🔥 مناطق الطلب العالي (Surge)
+          </button>
+        </div>
+
         <!-- Driver Documents Upload Status -->
         <div style="background:rgba(212,175,55,0.06); border:1px solid var(--border-gold); padding:12px; border-radius:var(--radius-md); font-size:0.82rem; color:var(--text-muted);">
           <b>📄 رخص القيادة والسيارة:</b>
@@ -473,47 +576,68 @@
       <!-- Right Driver Dispatch Workspace -->
       <div style="display:flex; flex-direction:column; gap:1.5rem;">
         
-        <!-- INCOMING TRIP CARD (Animated alert with chime and countdown) -->
+        <!-- INCOMING TRIP CARD (Uber Driver Radar with Upfront Fare) -->
         <div id="incomingTripCard" class="incoming-trip-card" style="display:none;">
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <h3 style="color:var(--gold-bright); font-size:1.3rem;">⚡ طلب رحلة جديد فوري!</h3>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span class="radar-ping-icon">⚡</span>
+              <h3 style="color:var(--gold-bright); font-size:1.3rem; margin:0;">طلب رحلة جديد فوري!</h3>
+            </div>
             <span id="incomingCountdown" class="live-badge" style="background:rgba(245,158,11,0.2); color:#FCD34D;">25 ثانية</span>
           </div>
 
-          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:12px; background:rgba(5,8,17,0.7); padding:14px; border-radius:var(--radius-md);">
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:12px; background:rgba(5,8,17,0.85); padding:14px; border-radius:var(--radius-md); border:1px solid var(--border-gold);">
             <div>
-              <small style="color:var(--text-muted);">نقطة الانطلاق</small>
+              <small style="color:var(--text-muted);">مكان الركوب (نقطة الانطلاق)</small>
               <div id="incomingFrom" style="font-weight:700; color:var(--text-main);">—</div>
             </div>
             <div>
-              <small style="color:var(--text-muted);">الوجهة</small>
+              <small style="color:var(--text-muted);">الوجهة المقصودة</small>
               <div id="incomingTo" style="font-weight:700; color:var(--text-main);">—</div>
             </div>
             <div>
-              <small style="color:var(--text-muted);">المسافة التقديرية</small>
+              <small style="color:var(--text-muted);">المسافة ووقت الوصول للعميل</small>
               <div id="incomingDistance" style="font-weight:700; color:var(--text-main);">—</div>
             </div>
             <div>
-              <small style="color:var(--text-muted);">الأجرة الصافية</small>
-              <div id="incomingPrice" style="font-size:1.3rem; font-weight:900; color:var(--gold-bright);">—</div>
+              <small style="color:var(--text-muted);">الأجرة الصافية المتوقعة</small>
+              <div id="incomingPrice" style="font-size:1.4rem; font-weight:900; color:var(--gold-bright);">—</div>
             </div>
           </div>
 
-          <div class="trip-action-buttons">
-            <button id="btnAcceptTrip" class="btn-accept">
-              قبول الرحلة ✓
+          <!-- Trip Notes to Captain (if passenger wrote any) -->
+          <div id="incomingNotesBox" style="display:none; font-size:0.85rem; background:rgba(212,175,55,0.1); padding:8px 12px; border-radius:var(--radius-sm); color:var(--gold-light);">
+            <b>ملاحظة العميل:</b> <span id="incomingNotesText"></span>
+          </div>
+
+          <!-- Uber Slide-to-Accept Control -->
+          <div class="slide-to-action-container">
+            <button id="btnAcceptTrip" class="btn-accept" style="width:100%; font-size:1.1rem; padding:14px;">
+              اسحب أو اضغط للقبول الفوري ✓
             </button>
-            <button id="btnRejectTrip" class="btn-reject">
-              تخطي / رفض
+            <button id="btnRejectTrip" class="btn-reject" style="width:100%; margin-top:6px;">
+              تخطي الطلب (رفض)
             </button>
           </div>
         </div>
 
-        <!-- ACTIVE ACCEPTED TRIP CARD -->
+        <!-- ACTIVE ACCEPTED TRIP CARD (Uber In-Trip Experience) -->
         <div id="driverActiveTripCard" class="incoming-trip-card" style="display:none; border-color:var(--status-green); animation:none;">
           <div style="display:flex; justify-content:space-between; align-items:center;">
             <h3 style="color:#34D399; font-size:1.3rem;">🚗 رحلتك الحالية الجارية</h3>
             <span id="activeTripStatus" class="status-badge green">تم القبول</span>
+          </div>
+
+          <!-- Turn-by-Turn GPS HUD Strip -->
+          <div class="turn-by-turn-hud">
+            <div style="font-size:1.8rem;">↗️</div>
+            <div style="flex:1;">
+              <div style="font-size:0.75rem; color:var(--text-muted);">التوجيه التالي للرحلة:</div>
+              <strong id="hudNextDirection" style="color:var(--text-main);">اتجه مباشرة نحو ميدان النصر</strong>
+            </div>
+            <button type="button" class="btn-secondary-outline" style="padding:6px 12px; font-size:0.75rem;" onclick="window.app.openGoogleMapsDirections()">
+              🗺️ الملاحة GPS
+            </button>
           </div>
 
           <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:12px; background:rgba(5,8,17,0.7); padding:14px; border-radius:var(--radius-md);">
@@ -539,6 +663,7 @@
             </div>
           </div>
 
+          <!-- Progress Action Buttons -->
           <div style="display:flex; flex-wrap:wrap; gap:10px;">
             <a id="activeTripCustomerPhoneLink" href="#" class="btn-secondary-outline" style="flex:1; text-align:center;">
               📞 اتصال
@@ -546,16 +671,13 @@
             <button id="btnDriverOpenChat" class="btn-secondary-outline" style="flex:1;">
               💬 محادثة العميل
             </button>
-            <button class="btn-secondary-outline" style="flex:1;" onclick="window.app.openGoogleMapsDirections()">
-              🗺️ فتح المسار في Google Maps
-            </button>
-            <button class="btn-secondary-outline" style="flex:1;" onclick="window.app.markDriverArrived()">
+            <button id="btnDriverArrivedAction" class="btn-secondary-outline" style="flex:1;" onclick="window.app.markDriverArrived()">
               📍 وصلت للعميل
             </button>
-            <button class="btn-primary-gold" style="flex:1;" onclick="window.app.startActiveTrip()">
-              ▶️ بدء المشوار
+            <button id="btnDriverStartAction" class="btn-primary-gold" style="flex:1;" onclick="window.app.promptDriverPinAndStart()">
+              ▶️ إدخال PIN وبدء المشوار
             </button>
-            <button class="btn-accept" style="flex:1;" onclick="window.app.completeActiveTrip()">
+            <button id="btnDriverCompleteAction" class="btn-accept" style="flex:1;" onclick="window.app.completeActiveTrip()">
               🏁 إنهاء وتحصيل المبلغ
             </button>
           </div>
@@ -892,14 +1014,14 @@
   </div>
 
   <!-- ═════════════════════════════════════════════════════════════════════════
-       MODAL 3: RATINGS & REVIEWS
+       MODAL 3: RATINGS & DRIVER TIPPING (UBER-GRADE)
        ═════════════════════════════════════════════════════════════════════════ -->
   <div id="ratingModal" class="modal-overlay">
-    <div class="modal-dialog" style="max-width: 450px;">
-      <div style="text-align:center; margin-bottom:1.5rem;">
-        <div style="font-size:2.8rem; margin-bottom:8px;">⭐</div>
-        <h3 style="font-family:var(--font-heading); color:var(--gold-light);">كيف كانت تجربتك مع الكابتن؟</h3>
-        <p style="font-size:0.85rem; color:var(--text-muted);">رأيك يساعدنا في استمرار تقديم أعلى مستويات الجودة والأمان بالعريش</p>
+    <div class="modal-dialog" style="max-width: 460px;">
+      <div style="text-align:center; margin-bottom:1.2rem;">
+        <div style="font-size:2.8rem; margin-bottom:4px;">⭐</div>
+        <h3 style="font-family:var(--font-heading); color:var(--gold-light);">حمد لله على سلامتك!</h3>
+        <p style="font-size:0.85rem; color:var(--text-muted);">كيف كانت تجربتك ومشوارك مع كابتن تاكسي العاصمة؟</p>
       </div>
 
       <!-- Star Rating Radio Group -->
@@ -911,22 +1033,161 @@
         <label><input type="radio" name="starRating" value="5" checked> ⭐5</label>
       </div>
 
+      <!-- Uber-style Driver Tipping Options -->
+      <div class="input-group" style="margin-bottom:1rem;">
+        <label class="input-label">🎁 هل ترغب بإضافة إكرامية (Tip) للكابتن؟</label>
+        <div class="quick-chips-row" style="display:flex; gap:8px;">
+          <button type="button" class="chip-btn tip-chip active" data-tip="0" onclick="window.app.selectTip(0, this)">بدون إكرامية</button>
+          <button type="button" class="chip-btn tip-chip" data-tip="5" onclick="window.app.selectTip(5, this)">+5 ج.م</button>
+          <button type="button" class="chip-btn tip-chip" data-tip="10" onclick="window.app.selectTip(10, this)">+10 ج.م</button>
+          <button type="button" class="chip-btn tip-chip" data-tip="20" onclick="window.app.selectTip(20, this)">+20 ج.م</button>
+        </div>
+      </div>
+
       <!-- Tag Feedback Chips -->
       <div class="input-group" style="margin-bottom:1rem;">
-        <label class="input-label">ما الذي أعجبك في المشوار؟</label>
+        <label class="input-label">ما الذي نال إعجابك في الرحلة؟</label>
         <div id="ratingTagsBox" class="quick-chips-row" style="flex-wrap:wrap;"></div>
       </div>
 
-      <div class="input-group" style="margin-bottom:1.5rem;">
-        <textarea id="ratingComment" class="input-field" rows="3" placeholder="أضف تعليقك أو ملاحظاتك للكابتن..."></textarea>
+      <div class="input-group" style="margin-bottom:1.2rem;">
+        <textarea id="ratingComment" class="input-field" rows="2" placeholder="أضف تعليقك أو رسالة شكر للكابتن..."></textarea>
       </div>
 
       <div style="display:flex; gap:10px;">
         <button type="button" class="btn-primary-gold" style="flex:1;" onclick="window.app.submitDriverRating()">
-          إرسال التقييم ✓
+          تأكيد وإرسال التقييم ✓
         </button>
         <button type="button" class="btn-secondary-outline" onclick="document.getElementById('ratingModal').classList.remove('open')">
           تخطي
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═════════════════════════════════════════════════════════════════════════
+       MODAL 6: SCHEDULE RIDE FOR LATER (UBER RESERVE)
+       ═════════════════════════════════════════════════════════════════════════ -->
+  <div id="scheduleModal" class="modal-overlay">
+    <div class="modal-dialog" style="max-width: 480px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+        <h3 style="font-family:var(--font-heading); color:var(--gold-light);">🕒 حجز رحلة مسبقاً (Uber Reserve)</h3>
+        <button class="modal-close-btn chip-btn" onclick="document.getElementById('scheduleModal').classList.remove('open')">✕ إغلاق</button>
+      </div>
+
+      <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1rem;">
+        اختر موعد وتاريخ الرحلة لضمان وصول سيارة تاكسي العاصمة في الوقت المحدد بدقة (مناسب لسفريات الفجر، والمطارات، ومواعيد الجامعات).
+      </p>
+
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        <div class="input-group">
+          <label class="input-label">تاريخ المشوار</label>
+          <input type="date" id="scheduleDate" class="input-field">
+        </div>
+        <div class="input-group">
+          <label class="input-label">وقت الانطلاق المطلوب</label>
+          <input type="time" id="scheduleTime" class="input-field">
+        </div>
+        <div class="input-group">
+          <label class="input-label">ملاحظات إضافية (أمتعة سفر / ركاب إضافيون)</label>
+          <input type="text" id="scheduleNotes" class="input-field" placeholder="مثال: رحلة سفر للقاهرة مع حقائب كبيرة">
+        </div>
+
+        <button type="button" class="btn-primary-gold" style="margin-top:8px;" onclick="window.app.confirmScheduledRide()">
+          تأكيد الحجز المسبق 📅
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═════════════════════════════════════════════════════════════════════════
+       MODAL 7: SAFETY TOOLKIT & TRIP SHARING (UBER SAFETY SHIELD)
+       ═════════════════════════════════════════════════════════════════════════ -->
+  <div id="safetyModal" class="modal-overlay">
+    <div class="modal-dialog" style="max-width: 480px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.2rem;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-size:1.6rem;">🛡️</span>
+          <h3 style="font-family:var(--font-heading); color:var(--gold-light); margin:0;">مركز ودرع أمان تاكسي العاصمة</h3>
+        </div>
+        <button class="modal-close-btn chip-btn" onclick="document.getElementById('safetyModal').classList.remove('open')">✕ إغلاق</button>
+      </div>
+
+      <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1.2rem;">
+        سلامتك وأمانك أولويتنا القصوى في كل مشوار داخل شمال سيناء. يمكنك مشاركة مسارك الحي أو الاتصال بالطوارئ بنقرة واحدة.
+      </p>
+
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        
+        <!-- Share Trip live button -->
+        <div class="feature-box" style="padding:14px; display:flex; align-items:center; justify-content:space-between;">
+          <div>
+            <strong>مشاركة تفاصيل الرحلة الحية</strong>
+            <p style="font-size:0.75rem; color:var(--text-muted); margin:0;">أرسل رابط تتبع مسارك عبر واتساب لعائلتك</p>
+          </div>
+          <button type="button" class="btn-whatsapp-header" style="font-size:0.8rem; padding:6px 14px;" onclick="window.app.shareTripWhatsApp()">
+            📲 واتساب
+          </button>
+        </div>
+
+        <!-- Emergency 122 Police Speed Dial -->
+        <div class="feature-box" style="padding:14px; display:flex; align-items:center; justify-content:space-between;">
+          <div>
+            <strong>شرطة النجدة (مصر)</strong>
+            <p style="font-size:0.75rem; color:var(--text-muted); margin:0;">طوارئ وأمن فوري</p>
+          </div>
+          <a href="tel:122" class="btn-secondary-outline" style="color:var(--status-red); border-color:var(--status-red); padding:6px 14px;">
+            📞 122
+          </a>
+        </div>
+
+        <!-- Emergency 123 Ambulance Speed Dial -->
+        <div class="feature-box" style="padding:14px; display:flex; align-items:center; justify-content:space-between;">
+          <div>
+            <strong>هيئة الإسعاف المصرية</strong>
+            <p style="font-size:0.75rem; color:var(--text-muted); margin:0;">حالات الطوارئ الطبية</p>
+          </div>
+          <a href="tel:123" class="btn-secondary-outline" style="color:#60A5FA; border-color:#60A5FA; padding:6px 14px;">
+            🚑 123
+          </a>
+        </div>
+
+        <!-- Capital Taxi 24/7 Hotline -->
+        <div class="feature-box" style="padding:14px; display:flex; align-items:center; justify-content:space-between;">
+          <div>
+            <strong>غرفة عمليات تاكسي العاصمة</strong>
+            <p style="font-size:0.75rem; color:var(--text-muted); margin:0;">خدمة ومتابعة مباشرة 24 ساعة</p>
+          </div>
+          <a href="tel:01094129592" class="btn-primary-gold" style="padding:6px 14px; font-size:0.85rem;">
+            📞 01094129592
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ═════════════════════════════════════════════════════════════════════════
+       MODAL 8: DRIVER PIN ENTRY VERIFICATION
+       ═════════════════════════════════════════════════════════════════════════ -->
+  <div id="driverPinModal" class="modal-overlay">
+    <div class="modal-dialog" style="max-width: 400px; text-align:center;">
+      <div style="font-size:2.5rem; margin-bottom:8px;">🔐</div>
+      <h3 style="font-family:var(--font-heading); color:var(--gold-light); margin-bottom:6px;">التحقق من رمز أمان الرحلة (PIN)</h3>
+      <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:1.2rem;">
+        اطلب من العميل رمز الـ PIN المكون من 4 أرقام والظاهر على شاشة هاتفه لبدء الرحلة والتأكد من صعود الراكب الصحيح.
+      </p>
+
+      <div class="input-group" style="margin-bottom:1.2rem;">
+        <input type="text" id="inputDriverPinCode" maxlength="4" class="input-field" style="text-align:center; font-size:2rem; letter-spacing:10px; font-weight:900;" placeholder="••••">
+      </div>
+
+      <div style="display:flex; gap:8px;">
+        <button type="button" class="btn-primary-gold" style="flex:1;" onclick="window.app.confirmDriverPinAndStart()">
+          تحقق وبدء الرحلة ✓
+        </button>
+        <button type="button" class="btn-secondary-outline" onclick="document.getElementById('driverPinModal').classList.remove('open')">
+          إلغاء
         </button>
       </div>
     </div>

@@ -455,6 +455,66 @@ export class MapsEngine {
   }
 
   /**
+   * Starts realistic live roaming fleet simulation in Al-Arish (Uber home screen experience)
+   */
+  startLiveFleetSimulation() {
+    if (this.fleetSimulationActive) return;
+    this.fleetSimulationActive = true;
+
+    // Al-Arish key patrol waypoints (Midand Al-Refai, Corniche, Assiut st, Masaeed, Downtown)
+    const patrolCars = [
+      { id: "sim_car_1", name: "كابتن أحمد (كورولا)", lat: 31.1316, lng: 33.8016, heading: 45, speed: 0.00015 },
+      { id: "sim_car_2", name: "كابتن محمود (إلنترا)", lat: 31.1380, lng: 33.8080, heading: 120, speed: 0.00018 },
+      { id: "sim_car_3", name: "كابتن سعيد (نيسان)", lat: 31.1270, lng: 33.7950, heading: 210, speed: 0.00014 },
+      { id: "sim_car_4", name: "كابتن إبراهيم (سيراتو)", lat: 31.1442, lng: 33.8115, heading: 300, speed: 0.00020 },
+      { id: "sim_car_5", name: "كابتن تامر (توسان VIP)", lat: 31.1210, lng: 33.7820, heading: 85, speed: 0.00016 }
+    ];
+
+    patrolCars.forEach(car => {
+      this.updateDriverMarker({
+        driverId: car.id,
+        lat: car.lat,
+        lng: car.lng,
+        name: car.name,
+        carModel: "تاكسي العاصمة"
+      });
+    });
+
+    this.fleetInterval = setInterval(() => {
+      patrolCars.forEach(car => {
+        // Slight random heading changes to simulate realistic street turns
+        car.heading += (Math.random() - 0.5) * 20;
+        const rad = (car.heading * Math.PI) / 180;
+        car.lat += Math.cos(rad) * car.speed;
+        car.lng += Math.sin(rad) * car.speed;
+
+        // Keep within Al-Arish boundaries
+        if (car.lat < 31.1000 || car.lat > 31.1600) car.heading += 180;
+        if (car.lng < 33.7600 || car.lng > 33.8300) car.heading += 180;
+
+        this.updateDriverMarker({
+          driverId: car.id,
+          lat: car.lat,
+          lng: car.lng,
+          name: car.name,
+          carModel: "تاكسي العاصمة"
+        });
+      });
+    }, 2500);
+  }
+
+  /**
+   * Stop fleet simulation if requested
+   */
+  stopLiveFleetSimulation() {
+    if (this.fleetInterval) {
+      clearInterval(this.fleetInterval);
+      this.fleetInterval = null;
+    }
+    this.fleetSimulationActive = false;
+  }
+
+  /**
    * Calculates straight line distance in km between two GPS coordinates
    */
   calculateHaversineDistance(p1, p2) {
