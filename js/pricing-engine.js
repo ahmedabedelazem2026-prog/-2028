@@ -21,6 +21,7 @@ export const DEFAULT_PRICING_CONFIG = {
 
   // Out of Arish / Highway surcharge
   outOfCityFlatFee: 40.0,     // رسوم إضافية للرحلات خارج نطاق المدينة
+  commissionRate: 10.0,       // نسبة عمولة المنصة (10%)
 
   // Car categories multiplier
   carCategories: {

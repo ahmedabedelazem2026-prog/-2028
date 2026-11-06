@@ -16,18 +16,21 @@
 
   <!-- Stylesheet -->
   <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/design-system.css">
+  <!-- Swiper CSS (Carousel) -->
+  <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
 </head>
 <body>
 
   <!-- ═════════════════════════════════════════════════════════════════════════
        STICKY HEADER
        ═════════════════════════════════════════════════════════════════════════ -->
-  <header class="top-header">
+  <header class="top-header card">
     <div class="header-container">
       
       <!-- Brand Logo & Titles -->
       <div class="brand-wrapper" onclick="window.app.switchView('landing')">
-        <img src="/assets/images/logo-badge.jpg" alt="تاكسي العاصمة كود 1" class="brand-logo-img">
+        <img src="/assets/images/logo-badge.jpg" alt="تاكسي العاصمة كود 1" class="brand-logo-img" onerror="this.onerror=null; this.src='/assets/images/logo-badge.jpg';">
         <div class="brand-titles">
           <h1>تاكسي العاصمة</h1>
           <p>CAPITAL TAXI • كود 1 شمال سيناء</p>
@@ -45,23 +48,39 @@
         <button type="button" class="nav-tab-btn" data-view="driver">
           <span>🚖</span> الكابتن
         </button>
-        <button type="button" class="nav-tab-btn" data-view="admin">
+        <button type="button" class="nav-tab-btn" data-view="admin" style="display: none;">
           <span>🛡️</span> لوحة الإدارة
         </button>
       </nav>
 
       <!-- Header Actions -->
       <div class="header-actions">
+        <!-- Device View Selector (Mobile / Tablet / Desktop / Auto) -->
+        <div class="device-switcher-bar" title="اختر طريقة عرض التطبيق حسب جهازك">
+          <button type="button" class="device-btn active" data-device="auto" onclick="window.app.setDeviceMode('auto')">🔄 تلقائي</button>
+          <button type="button" class="device-btn" data-device="mobile" onclick="window.app.setDeviceMode('mobile')">📱 جوال</button>
+          <button type="button" class="device-btn" data-device="tablet" onclick="window.app.setDeviceMode('tablet')">📟 تابلت</button>
+          <button type="button" class="device-btn" data-device="desktop" onclick="window.app.setDeviceMode('desktop')">💻 كمبيوتر</button>
+        </div>
+
         <span id="fbStatusBadge" class="live-badge">
           <span class="live-dot"></span> متصل بالنظام
         </span>
 
         <button id="pwaInstallBtn" class="btn-secondary-outline" style="display:none; padding: 6px 12px; font-size: 0.8rem;">
-          📲 تثبيت التطبيق
+          📲 تثبيت
+        </button>
+
+        <button type="button" class="btn-secondary-outline" style="padding: 6px 10px; font-size: 0.8rem;" onclick="document.getElementById('notificationsModal').classList.add('open')" title="الإشعارات">
+          🔔 <span id="bellUnreadDot" class="unread-badge" style="display:none;">2</span>
         </button>
 
         <button type="button" class="btn-secondary-outline" style="padding: 6px 12px; font-size: 0.8rem;" onclick="document.getElementById('walletModal').classList.add('open'); window.app.refreshUserWalletUI();">
           💳 المحفظة
+        </button>
+
+        <button type="button" class="btn-secondary-outline" style="padding: 6px 10px; font-size: 0.8rem;" onclick="document.getElementById('settingsModal').classList.add('open')" title="الإعدادات">
+          ⚙️
         </button>
 
         <span id="navUserName" class="feature-pill" style="display:none;"></span>
@@ -118,12 +137,13 @@
 
         <!-- Hero Visual Banner -->
         <div class="hero-visual-card">
-          <img src="/assets/images/hero-arish-landmarks.jpg" alt="معالم العريش وتاكسي العاصمة" class="hero-banner-img">
+          <img src="/assets/images/hero-arish-landmarks.jpg" alt="معالم العريش وتاكسي العاصمة" class="hero-banner-img" onerror="this.onerror=null; this.src='/assets/images/logo-badge.jpg';">
           <div class="floating-stats-pill">
             <div style="font-size: 1.8rem;">⭐</div>
             <div>
               <strong>4.9 / 5.0</strong>
-              <div style="font-size: 0.75rem; color: var(--text-muted);">تقييم أكثر من 5000 مشوار</div>
+              <div style="font-size: 0.75rem; color: var(--text-muted);">تقييم أسطول العاصمة</div>
+              <span class="demo-notice-pill">بيانات استرشادية تجريبية</span>
             </div>
           </div>
         </div>
@@ -172,14 +192,83 @@
       </div>
     </section>
 
-    <!-- Mobile App Showcase Banner -->
-    <section class="container" style="margin-bottom: 4rem;">
-      <div class="hero-visual-card" style="padding: 0; background: transparent; border: none;">
-        <img src="/assets/images/banner-app-mockup.jpg" alt="تطبيق تاكسي العاصمة" style="width: 100%; border-radius: var(--radius-xl); border: 1px solid var(--border-gold);">
+    <!-- Luxury Visual Showcase Carousel -->
+    <section class="container carousel-section">
+      <div class="section-header">
+        <div class="hero-badges-row" style="justify-content: center; margin-bottom: 0.5rem;">
+          <span class="feature-pill gold-pill">📸 معرض الصور والأسطول المعتمد</span>
+          <span class="feature-pill">🌴 معالم العريش وشمال سيناء</span>
+        </div>
+        <h3>جولة مصورة في العريش مع أسطول تاكسي العاصمة</h3>
+        <p>أسطول حديث ومكيف، وسائقون معتمدون يغطون كافة معالم وشواطئ وأحياء المدينة</p>
+      </div>
+
+      <div class="capital-carousel swiper mySwiper" id="capitalCarousel" aria-label="معرض أسطول ومعالم تاكسي العاصمة">
+        <div class="carousel-track-container">
+          <div class="carousel-track swiper-wrapper">
+            <!-- Slide 1 -->
+            <div class="carousel-slide swiper-slide active">
+              <img src="/assets/images/hero-arish-landmarks.jpg" loading="eager" alt="معالم العريش وأسطول تاكسي العاصمة" onerror="this.onerror=null; this.src='/assets/images/logo-badge.jpg';">
+              <div class="slide-overlay-caption">
+                <span class="slide-caption-tag">📍 معالم العريش</span>
+                <h4>أسطول تاكسي العاصمة في خدمة أهالي سيناء</h4>
+                <p>تغطية شاملة 24 ساعة من المساعيد حتى ضاحية السلام وساحل الكورنيش</p>
+              </div>
+            </div>
+            <!-- Slide 2 -->
+            <div class="carousel-slide swiper-slide">
+              <img src="/assets/images/arish-beach-palms.jpg" loading="lazy" alt="كورنيش وشاطئ النخيل بالعريش" onerror="this.onerror=null; this.src='/assets/images/logo-badge.jpg';">
+              <div class="slide-overlay-caption">
+                <span class="slide-caption-tag">🌴 شاطئ النخيل</span>
+                <h4>مشاوير الكورنيش والساحل السريعة والمريحة</h4>
+                <p>سيارات حديثة ومكيفة تضمن لك رحلة آمنة ومريحة بجوار نسيم البحر</p>
+              </div>
+            </div>
+            <!-- Slide 3 -->
+            <div class="carousel-slide swiper-slide">
+              <img src="/assets/images/arish-city-panoramic.jpg" loading="lazy" alt="بانوراما مدينة العريش" onerror="this.onerror=null; this.src='/assets/images/logo-badge.jpg';">
+              <div class="slide-overlay-caption">
+                <span class="slide-caption-tag">🏙️ بانوراما العريش</span>
+                <h4>الربط بين كافة أحياء وميادين المدينة</h4>
+                <p>من ميدان النصر وسوق البلد القديم إلى الجامعات والمصالح الحكومية</p>
+              </div>
+            </div>
+            <!-- Slide 4 -->
+            <div class="carousel-slide swiper-slide">
+              <img src="/assets/images/arish-coast-beach.jpg" loading="lazy" alt="ساحل البحر الأبيض المتوسط بالعريش" onerror="this.onerror=null; this.src='/assets/images/logo-badge.jpg';">
+              <div class="slide-overlay-caption">
+                <span class="slide-caption-tag">🏖️ ساحل البحر</span>
+                <h4>رحلات سريعة بأسعار واضحة ومحددة</h4>
+                <p>احتساب دقيق للأجرة بدون مبالغة أو استغلال مع إمكانية التتبع المباشر</p>
+              </div>
+            </div>
+            <!-- Slide 5 -->
+            <div class="carousel-slide swiper-slide">
+              <img src="/assets/images/banner-app-mockup.jpg" loading="lazy" alt="تطبيق تاكسي العاصمة كود 1" onerror="this.onerror=null; this.src='/assets/images/logo-badge.jpg';">
+              <div class="slide-overlay-caption">
+                <span class="slide-caption-tag">📲 تطبيق الويب الذكي</span>
+                <h4>تجربة حجز رقمية متكاملة كود 1</h4>
+                <p>تحديد الموقع عبر GPS، كود PIN للأمان، والمراسلة المباشرة مع الكابتن</p>
+              </div>
+            </div>
+            <!-- Slide 6 -->
+            <div class="carousel-slide swiper-slide">
+              <img src="/assets/images/service-city.jpg" loading="lazy" alt="أسطول سيارات تاكسي العاصمة الحديثة" onerror="this.onerror=null; this.src='/assets/images/logo-badge.jpg';">
+              <div class="slide-overlay-caption">
+                <span class="slide-caption-tag">🚕 أسطول السيارات الحديثة</span>
+                <h4>تاكسي العاصمة • CAPITAL TAXI</h4>
+                <p>المنصة الذكية الأولى المتخصصة في شمال سيناء بسيارات حديثة ومجهزة</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button type="button" class="carousel-btn carousel-btn-prev swiper-button-prev" aria-label="الشريحة السابقة">‹</button>
+        <button type="button" class="carousel-btn carousel-btn-next swiper-button-next" aria-label="الشريحة التالية">›</button>
+        <div class="carousel-indicators swiper-pagination"></div>
       </div>
     </section>
 
-    <!-- Features Grid -->
+<!-- Features Grid -->
     <section class="container">
       <div class="section-header">
         <h3>لماذا يفضل أهالي سيناء تاكسي العاصمة؟</h3>
@@ -203,16 +292,25 @@
           <p>تعرف على تكلفة مشوارك التقديرية بدقة قبل تأكيد الطلب وبدون أي استغلال.</p>
         </div>
         <div class="feature-box">
+          <div class="service-card-media">
+            <img src="/assets/images/service-city.jpg" alt="أسطول سيارات مكيف تاكسي العاصمة" loading="lazy" onerror="this.onerror=null; this.src='/assets/images/logo-badge.jpg';">
+          </div>
           <div class="feature-icon-circle">🚗</div>
           <h4>أسطول سيارات مكيف</h4>
           <p>خيارات متعددة تناسب المشاوير الفردية، العائلية، وسيارات رجال الأعمال VIP.</p>
         </div>
         <div class="feature-box">
+          <div class="service-card-media">
+            <img src="/assets/images/service-students.jpg" alt="توصيل طلاب الجامعات بالعريش" loading="lazy" onerror="this.onerror=null; this.src='/assets/images/logo-badge.jpg';">
+          </div>
           <div class="feature-icon-circle">🎓</div>
           <h4>توصيل طلاب الجامعات</h4>
           <p>اشتراكات ورحلات يومية لجامعة العريش وجامعة سيناء بأسعار مخفضة.</p>
         </div>
         <div class="feature-box">
+          <div class="service-card-media">
+            <img src="/assets/images/service-intercity.jpg" alt="سفريات خارج العريش والمحافظات" loading="lazy" onerror="this.onerror=null; this.src='/assets/images/logo-badge.jpg';">
+          </div>
           <div class="feature-icon-circle">🛣️</div>
           <h4>سفريات خارج العريش</h4>
           <p>رحلات مباشرة ومريحة إلى بئر العبد، القنطرة، الإسماعيلية، ومطار القاهرة.</p>
@@ -231,18 +329,77 @@
       <!-- Left Booking Form Panel (Uber Floating Sheet) -->
       <div class="booking-panel">
         
+        <!-- Al-Arish Authentic Photography Banner Card -->
+        <div class="arish-photo-hero-card">
+          <img id="arishHeroImg" src="/assets/images/hero-arish-landmarks.jpg" alt="كورنيش وشواطئ العريش الحقيقية" onerror="this.onerror=null; this.src='/assets/images/logo-badge.jpg';">
+          <div class="arish-photo-hero-overlay">
+            <span class="arish-badge-tag">📍 صور فوتوغرافية حقيقية لمدينة العريش</span>
+            <h4 class="arish-photo-title">تاكسي العاصمة • كود 1 شمال سيناء</h4>
+            <p class="arish-photo-subtitle">خدمة فاخرة تغطي العريش، الشواطئ، الجامعات، والخطوط الخارجية 24 ساعة</p>
+          </div>
+        </div>
+
         <div class="booking-panel-title">
           <div>
             <h3>🚖 احجز تاكسي العاصمة</h3>
-            <span style="font-size:0.75rem; color:var(--text-muted);">كود 1 العريش • تجربة أوبر العالمية</span>
+            <span style="font-size:0.75rem; color:var(--text-muted);">كود 1 العريش • تجربة نقل ذكي عالمية</span>
           </div>
           <div style="display:flex; gap:6px;">
             <button type="button" class="chip-btn" onclick="document.getElementById('scheduleModal').classList.add('open')">
               🕒 حجز مسبق
             </button>
+            <button type="button" class="chip-btn" onclick="document.getElementById('historyModal').classList.add('open'); window.app.renderTripHistory();">
+              📜 سجل الرحلات
+            </button>
+            <button type="button" class="chip-btn" onclick="document.getElementById('promosModal').classList.add('open')">
+              🏷️ العروض
+            </button>
             <button type="button" class="chip-btn" onclick="document.getElementById('safetyModal').classList.add('open')">
               🛡️ الأمان
             </button>
+          </div>
+        </div>
+
+        <!-- Al-Arish Authentic Landmarks Interactive Photo Strip -->
+        <div class="input-label" style="margin-bottom: 4px; display:flex; justify-content:space-between; align-items:center;">
+          <span>🏖️ معالم العريش السريعة (اضغط للتحديد الفوري)</span>
+          <span style="font-size:0.7rem; color:var(--gold-bright);">إحداثيات حقيقية 100%</span>
+        </div>
+        <div class="arish-landmarks-scroll-row">
+          <div class="landmark-photo-chip" onclick="window.app.selectAlArishLandmark('beach')" title="شاطئ العريش والكورنيش">
+            <img src="/assets/images/arish-beach-palms.jpg" class="landmark-photo-thumb" alt="شاطئ النخيل" loading="lazy" onerror="this.onerror=null; this.src='/assets/images/logo-badge.jpg';">
+            <div>
+              <div style="font-size:0.8rem; font-weight:700; color:var(--text-main);">شاطئ النخيل والكورنيش</div>
+              <div style="font-size:0.68rem; color:var(--gold-bright);">الساحل السياحي</div>
+            </div>
+          </div>
+          <div class="landmark-photo-chip" onclick="window.app.selectAlArishLandmark('univ_sinai')" title="جامعة سيناء">
+            <img src="/assets/images/arish-coast-beach.jpg" class="landmark-photo-thumb" alt="جامعة سيناء" loading="lazy" onerror="this.onerror=null; this.src='/assets/images/logo-badge.jpg';">
+            <div>
+              <div style="font-size:0.8rem; font-weight:700; color:var(--text-main);">جامعة سيناء (المساعيد)</div>
+              <div style="font-size:0.68rem; color:var(--text-muted);">حي المساعيد</div>
+            </div>
+          </div>
+          <div class="landmark-photo-chip" onclick="window.app.selectAlArishLandmark('nasr_mosque')" title="ميدان ومسجد النصر">
+            <img src="/assets/images/arish-city-panoramic.jpg" class="landmark-photo-thumb" alt="ميدان النصر" loading="lazy" onerror="this.onerror=null; this.src='/assets/images/logo-badge.jpg';">
+            <div>
+              <div style="font-size:0.8rem; font-weight:700; color:var(--text-main);">ميدان النصر وسط البلد</div>
+              <div style="font-size:0.68rem; color:var(--text-muted);">المركز التجاري</div>
+            </div>
+          </div>
+          <div class="landmark-photo-chip" onclick="window.app.selectAlArishLandmark('univ_arish')" title="جامعة العريش">
+            <img src="/assets/images/hero-arish-landmarks.jpg" class="landmark-photo-thumb" alt="جامعة العريش" loading="lazy" onerror="this.onerror=null; this.src='/assets/images/logo-badge.jpg';">
+            <div>
+              <div style="font-size:0.8rem; font-weight:700; color:var(--text-main);">جامعة العريش</div>
+              <div style="font-size:0.68rem; color:var(--text-muted);">ضاحية السلام</div>
+            </div>
+          </div>
+          <div class="landmark-photo-chip" onclick="window.app.selectAlArishLandmark('hospital_general')" title="مستشفى العريش العام">
+            <img src="/assets/images/landmark-hospital.jpg" class="landmark-photo-thumb" alt="مستشفى العريش العام" loading="lazy" onerror="this.onerror=null; this.src='/assets/images/logo-badge.jpg';">
+            <div>
+              <div style="font-size:0.8rem; font-weight:700; color:var(--text-main);">مستشفى العريش العام</div>
+              <div style="font-size:0.68rem; color:var(--text-muted);">شارع الجيش</div>
+            </div>
           </div>
         </div>
 
@@ -255,30 +412,90 @@
           <button type="button" class="chip-btn" onclick="window.app.setQuickFavorite('hospital')">🏥 مستشفى العريش</button>
         </div>
 
-        <!-- Pickup Location Input -->
-        <div class="input-group">
-          <label class="input-label">
-            <span>🟢</span> نقطة الانطلاق (مكان ركوبك)
+        <!-- GPS Auto Location Action Bar -->
+        <div style="display:flex; gap:8px; margin: 8px 0 10px;">
+          <button type="button" id="btnDetectGps" class="btn-primary-gold" style="flex:1; padding:9px 12px; font-size:0.85rem; display:flex; align-items:center; justify-content:center; gap:6px;" onclick="window.app.detectUserGpsLocation()">
+            <span>📡</span> تحديد موقعي الحالي تلقائياً (GPS)
+          </button>
+          <button type="button" class="btn-secondary-outline" style="padding:9px 12px; font-size:0.85rem;" title="إعادة ضبط الخريطة إلى مركز العريش" onclick="window.app.resetMapToCenter()">
+            🎯 وسط البلد
+          </button>
+        </div>
+        <div id="gpsStatusMessage" style="display:none; font-size:0.75rem; color:var(--gold-bright); margin-bottom:8px; text-align:center;"></div>
+
+        <!-- Pickup Location Input (with Autocomplete Dropdown & Draggable Pin) -->
+        <div class="input-group" style="position:relative;">
+          <label class="input-label" for="inputPickup">
+            <span>🟢</span> مكان الانطلاق
+            <small style="color:var(--text-muted); font-size:0.72rem;">(تلقائي عبر GPS أو اكتب يدويًا أو اسحب الدبوس الأخضر على الخريطة)</small>
           </label>
           <div class="input-field-wrapper">
             <span class="input-icon">📍</span>
-            <input type="text" id="inputPickup" class="input-field" value="وسط البلد - ميدان النصر" placeholder="اكتب أو اختر من القائمة...">
+            <input type="text" id="inputPickup" class="input-field" value="وسط البلد - ميدان النصر" placeholder="اكتب أو ابحث عن مكان الانطلاق بالعريش..." autocomplete="off">
+            <button type="button" class="chip-btn" style="padding:4px 8px; font-size:0.72rem;" onclick="window.app.detectUserGpsLocation()" title="تحديث الـ GPS">📡 GPS</button>
           </div>
+          <!-- Live Autocomplete Suggestions Dropdown -->
+          <div id="pickupAutocomplete" class="autocomplete-dropdown" style="display:none;"></div>
           <!-- Quick Chips -->
           <div id="pickupChips" class="quick-chips-row"></div>
         </div>
 
-        <!-- Destination Location Input -->
-        <div class="input-group">
-          <label class="input-label">
-            <span>🔴</span> الوجهة (إلى أين تريد الذهاب؟)
+        <!-- Destination Location Input (with Autocomplete Dropdown & Draggable Pin) -->
+        <div class="input-group" style="position:relative;">
+          <label class="input-label" for="inputDropoff">
+            <span>🔴</span> إلى أين تريد الذهاب؟
+            <small style="color:var(--text-muted); font-size:0.72rem;">(ابحث بالاسم أو اختر من الاقتراحات أو اسحب الدبوس الأحمر)</small>
           </label>
           <div class="input-field-wrapper">
             <span class="input-icon">🏁</span>
-            <input type="text" id="inputDropoff" class="input-field" value="شاطئ العريش (الكورنيش)" placeholder="حدد وجهتك...">
+            <input type="text" id="inputDropoff" class="input-field" value="شاطئ العريش (الكورنيش)" placeholder="حدد وجهتك (جامعة، مستشفى، ساحل، حي...)" autocomplete="off">
           </div>
+          <!-- Live Autocomplete Suggestions Dropdown -->
+          <div id="dropoffAutocomplete" class="autocomplete-dropdown" style="display:none;"></div>
           <!-- Quick Chips -->
           <div id="dropoffChips" class="quick-chips-row"></div>
+        </div>
+
+        <!-- Route Review Card (Uber Trip Overview) -->
+        <div id="routeReviewCard" class="card-elev">>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:6px;">
+            <span style="font-size:0.85rem; font-weight:800; color:var(--gold-bright);">📋 تفاصيل مسار الرحلة بالعريش</span>
+            <span id="routeSummaryBadge" class="status-badge green">مسار مباشر</span>
+          </div>
+          <div class="route-point-row">
+            <div class="route-point-label">
+              <span>🟢</span>
+              <div>
+                <div style="font-size:0.72rem; color:var(--text-muted);">مكان الانطلاق:</div>
+                <strong id="reviewPickupText" style="color:var(--text-main);">وسط البلد - ميدان النصر</strong>
+              </div>
+            </div>
+            <button type="button" class="edit-point-btn" onclick="document.getElementById('inputPickup').focus()">✏️ تعديل</button>
+          </div>
+          <div class="route-point-row">
+            <div class="route-point-label">
+              <span>🔴</span>
+              <div>
+                <div style="font-size:0.72rem; color:var(--text-muted);">وجهة الوصول:</div>
+                <strong id="reviewDropoffText" style="color:var(--text-main);">شاطئ العريش (الكورنيش)</strong>
+              </div>
+            </div>
+            <button type="button" class="edit-point-btn" onclick="document.getElementById('inputDropoff').focus()">✏️ تعديل</button>
+          </div>
+          <div style="display:flex; gap:12px; margin-top:8px; background:rgba(0,0,0,0.25); padding:8px 12px; border-radius:8px;">
+            <div style="flex:1; text-align:center;">
+              <span style="font-size:0.7rem; color:var(--text-muted);">المسافة التقديرية</span>
+              <div id="reviewDistanceBadge" style="font-weight:800; color:var(--gold-bright);">2.5 كم</div>
+            </div>
+            <div style="flex:1; text-align:center; border-right:1px solid var(--border-subtle); border-left:1px solid var(--border-subtle);">
+              <span style="font-size:0.7rem; color:var(--text-muted);">الوقت المتوقع</span>
+              <div id="reviewDurationBadge" style="font-weight:800; color:var(--text-main);">8 دقائق</div>
+            </div>
+            <div style="flex:1; text-align:center;">
+              <span style="font-size:0.7rem; color:var(--text-muted);">السعر المعتمد</span>
+              <div id="reviewFareBadge" style="font-weight:800; color:var(--gold-bright);">30 ج.م</div>
+            </div>
+          </div>
         </div>
 
         <!-- Notes to Captain Input (Uber-grade) -->
@@ -298,6 +515,9 @@
           <div class="car-selector-grid">
             
             <div class="car-card-option selected" data-cartype="economy">
+              <div class="car-img-wrapper">
+                <img src="/assets/images/car-economy.jpg" alt="اقتصادي Capital Go" loading="lazy" onerror="this.onerror=null; this.src='/assets/images/logo-badge.jpg';">
+              </div>
               <div class="car-header">
                 <span class="car-icon">🚕</span>
                 <span id="price-economy" class="car-price">30 ج.م</span>
@@ -307,6 +527,9 @@
             </div>
 
             <div class="car-card-option" data-cartype="comfort">
+              <div class="car-img-wrapper">
+                <img src="/assets/images/car-comfort.jpg" alt="كمفورت Comfort" loading="lazy" onerror="this.onerror=null; this.src='/assets/images/logo-badge.jpg';">
+              </div>
               <div class="car-header">
                 <span class="car-icon">🚗</span>
                 <span id="price-comfort" class="car-price">38 ج.م</span>
@@ -316,6 +539,9 @@
             </div>
 
             <div class="car-card-option" data-cartype="vip">
+              <div class="car-img-wrapper">
+                <img src="/assets/images/car-vip.jpg" alt="العاصمة VIP Black" loading="lazy" onerror="this.onerror=null; this.src='/assets/images/logo-badge.jpg';">
+              </div>
               <div class="car-header">
                 <span class="car-icon">✨</span>
                 <span id="price-vip" class="car-price">48 ج.م</span>
@@ -325,6 +551,9 @@
             </div>
 
             <div class="car-card-option" data-cartype="family">
+              <div class="car-img-wrapper">
+                <img src="/assets/images/car-family.jpg" alt="عائلي Capital XL" loading="lazy" onerror="this.onerror=null; this.src='/assets/images/logo-badge.jpg';">
+              </div>
               <div class="car-header">
                 <span class="car-icon">🚐</span>
                 <span id="price-family" class="car-price">45 ج.م</span>
@@ -414,7 +643,9 @@
         <div id="customerTripStatusCard" class="uber-driver-card" style="display: none; margin-top: 10px;">
           
           <div class="uber-driver-header">
-            <div class="driver-avatar-circle">👨‍✈️</div>
+            <div class="driver-avatar-circle">
+              <img src="/assets/images/driver-avatar.jpg" alt="صورة الكابتن" class="driver-avatar-img" onerror="this.onerror=null; this.src='/assets/images/logo-badge.jpg';">
+            </div>
             <div style="flex:1;">
               <div style="display:flex; justify-content:space-between; align-items:center;">
                 <h4 id="custTripDriver" style="color:var(--gold-bright); font-size:1.15rem; margin:0;">كابتن تاكسي العاصمة</h4>
@@ -498,11 +729,18 @@
       <div class="driver-sidebar-card">
         
         <div class="driver-profile-header">
-          <div class="driver-avatar">🚖</div>
+          <div class="driver-avatar">
+            <img src="/assets/images/driver-avatar.jpg" alt="صورة الكابتن" class="driver-avatar-img" onerror="this.onerror=null; this.src='/assets/images/logo-badge.jpg';">
+          </div>
           <div>
             <h3 style="font-family:var(--font-heading); font-size:1.2rem; color:var(--gold-light);">كابتن تاكسي العاصمة</h3>
             <p style="font-size:0.8rem; color:var(--text-muted);">كود 1 • تويوتا كورولا (ط أ س 2026)</p>
           </div>
+        </div>
+
+        <!-- Driver Verification Status Notice -->
+        <div id="driverApprovalAlert" style="display:none; background:rgba(239,68,68,0.15); border:1px solid var(--status-red); padding:10px; border-radius:var(--radius-md); font-size:0.8rem; color:#FCA5A5; margin-bottom:10px;">
+          ⚠️ <b>حسابك قيد المراجعة:</b> لم يتم اعتماد حسابك من قبل الإدارة بعد. لن تتمكن من استقبال الطلبات حتى يعتمد المشرف رخصتك وسجل قيادتك.
         </div>
 
         <!-- Availability Switch -->
@@ -611,6 +849,9 @@
           </div>
 
           <!-- Uber Slide-to-Accept Control -->
+          <div style="font-size:0.75rem; color:var(--gold-bright); text-align:center; margin-bottom:6px; background:rgba(212,175,55,0.08); padding:6px; border-radius:6px;">
+            🔒 القبول الذري الآمن (يتطلب Cloud Functions في الإنتاج لمنع قبول أكثر من سائق، ومتاح للتجربة محلياً)
+          </div>
           <div class="slide-to-action-container">
             <button id="btnAcceptTrip" class="btn-accept" style="width:100%; font-size:1.1rem; padding:14px;">
               اسحب أو اضغط للقبول الفوري ✓
@@ -690,6 +931,17 @@
           <p style="max-width:500px; margin:0 auto; color:var(--text-muted);">
             بمجرد أن يطلب أي عميل في نطاق العريش أو ضواحيها تاكسي، سيظهر لك الطلب هنا فوراً مصحوباً بنغمة تنبيه وعداد زمني.
           </p>
+        </div>
+
+        <!-- Driver Completed Trips History -->
+        <div class="admin-table-card" style="margin-top: 1rem;">
+          <div class="table-header-bar">
+            <h4 style="font-size:1.15rem; color:var(--gold-light);">📜 سجل رحلات الكابتن السابقة</h4>
+            <span class="feature-pill">تاريخ الرحلات والأرباح</span>
+          </div>
+          <div id="driverTripHistoryContainer" style="max-height: 280px; overflow-y:auto; padding: 10px;">
+            <div style="text-align:center; color:var(--text-muted); padding:1.5rem;">لا توجد رحلات سابقة مسجلة.</div>
+          </div>
         </div>
 
       </div>
@@ -905,14 +1157,15 @@
             <thead>
               <tr>
                 <th>صاحب الشكوى</th>
-                <th>رقم الرحلة</th>
+                <th>نوع الشكوى</th>
                 <th>نص الشكوى والملاحظات</th>
                 <th>التاريخ</th>
                 <th>الحالة</th>
+                <th>الإجراء</th>
               </tr>
             </thead>
             <tbody id="adminComplaintsTableBody">
-              <tr><td colspan="5" class="empty-cell">لا توجد شكاوى واردة حالياً.</td></tr>
+              <tr><td colspan="6" class="empty-cell">لا توجد شكاوى واردة حالياً.</td></tr>
             </tbody>
           </table>
         </div>
@@ -1205,14 +1458,20 @@
 
       <!-- Balance Card -->
       <div class="fare-estimate-box" style="text-align:center; padding:1.5rem; margin-bottom:1.2rem;">
-        <small style="color:var(--text-muted);">رصيدك الحالي المتاح</small>
-        <div id="walletBalanceText" style="font-size:2.4rem; font-weight:900; color:var(--gold-bright);">150 ج.م</div>
-        <p style="font-size:0.75rem; color:var(--text-dim);">يمكنك استخدام الرصيد لدفع المشاوير دون الحاجة للسيولة النقدية</p>
+        <small style="color:var(--text-muted);">رصيدك المعتمد في السيرفر (للقراءة فقط)</small>
+        <div id="walletBalanceText" style="font-size:2.4rem; font-weight:900; color:var(--gold-bright);">0.00 ج.م</div>
+        <p style="font-size:0.75rem; color:var(--text-dim); margin-top:4px;">الرصيد يُقرأ ويُدقق سحابياً من Firebase للحفاظ على النزاهة المالية</p>
       </div>
 
       <!-- Top Up Quick Actions -->
       <div class="input-group" style="margin-bottom:1.5rem;">
-        <label class="input-label">شحن رصيد المحفظة</label>
+        <label class="input-label" style="display:flex; justify-content:space-between; align-items:center;">
+          <span>شحن رصيد المحفظة</span>
+          <span style="font-size:0.72rem; color:var(--gold-bright); background:rgba(212,175,55,0.1); padding:2px 6px; border-radius:4px;">يتطلب خادم معتمد</span>
+        </label>
+        <div style="background:rgba(239,68,68,0.1); border:1px dashed var(--danger); border-radius:var(--radius-sm); padding:8px 10px; margin-bottom:10px; font-size:0.78rem; color:#fca5a5;">
+          🔒 تعديل الرصيد المالي المباشر من المتصفح معطل برمجياً. يتم إيداع وسحب الأرصدة حصرياً عبر الإدارة المعتمدة لمنع أي تعديل غير مصرح به.
+        </div>
         <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px;">
           <button type="button" class="btn-secondary-outline" onclick="window.app.topUpUserWallet(50)">+50 ج.م</button>
           <button type="button" class="btn-secondary-outline" onclick="window.app.topUpUserWallet(100)">+100 ج.م</button>
@@ -1257,6 +1516,10 @@
           <input type="number" step="0.5" id="cfgWaiting" class="input-field" value="1.5">
         </div>
         <div class="input-group">
+          <label class="input-label">نسبة عمولة المنصة (%)</label>
+          <input type="number" step="1" id="cfgCommission" class="input-field" value="10">
+        </div>
+        <div class="input-group">
           <label class="input-label">رسوم إضافية للرحلات خارج العريش (ج.م)</label>
           <input type="number" id="cfgOutOfCity" class="input-field" value="40">
         </div>
@@ -1268,10 +1531,368 @@
     </div>
   </div>
 
+  <!-- ═════════════════════════════════════════════════════════════════════════
+       MODAL: DEVICE VIEW SELECTOR (MOBILE / TABLET / DESKTOP / AUTO)
+       ═════════════════════════════════════════════════════════════════════════ -->
+  <div id="deviceModeModal" class="modal-overlay">
+    <div class="modal-dialog" style="max-width: 480px; text-align:center;">
+      <div style="font-size: 2.4rem; margin-bottom: 6px;">📱💻</div>
+      <h3 style="font-family:var(--font-heading); color:var(--gold-light); margin-bottom: 6px;">اختر طريقة عرض تاكسي العاصمة</h3>
+      <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom: 1.2rem;">
+        صُمم التطبيق ليتكيف مع كافة أجهزتك. يمكنك تخصيص الواجهة لتناسب هاتفك، جهازك اللوحي، أو شاشة الكمبيوتر، أو تركها تلقائية.
+      </p>
+
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1.2rem;">
+        <button type="button" class="feature-box" style="padding:14px; text-align:center; cursor:pointer;" onclick="window.app.setDeviceMode('auto'); document.getElementById('deviceModeModal').classList.remove('open');">
+          <div style="font-size:1.8rem; margin-bottom:4px;">🔄</div>
+          <strong style="color:var(--text-main); font-size:0.9rem;">تلقائي (Auto)</strong>
+          <p style="font-size:0.7rem; color:var(--text-muted); margin:0;">يتكيف حسب حجم شاشتك</p>
+        </button>
+
+        <button type="button" class="feature-box" style="padding:14px; text-align:center; cursor:pointer;" onclick="window.app.setDeviceMode('mobile'); document.getElementById('deviceModeModal').classList.remove('open');">
+          <div style="font-size:1.8rem; margin-bottom:4px;">📱</div>
+          <strong style="color:var(--gold-bright); font-size:0.9rem;">هاتف محمول (Mobile)</strong>
+          <p style="font-size:0.7rem; color:var(--text-muted); margin:0;">شاشة جوال مريحة للمس</p>
+        </button>
+
+        <button type="button" class="feature-box" style="padding:14px; text-align:center; cursor:pointer;" onclick="window.app.setDeviceMode('tablet'); document.getElementById('deviceModeModal').classList.remove('open');">
+          <div style="font-size:1.8rem; margin-bottom:4px;">📟</div>
+          <strong style="color:var(--text-main); font-size:0.9rem;">جهاز لوحي (Tablet)</strong>
+          <p style="font-size:0.7rem; color:var(--text-muted); margin:0;">عرض متوازن للخريطة والبيانات</p>
+        </button>
+
+        <button type="button" class="feature-box" style="padding:14px; text-align:center; cursor:pointer;" onclick="window.app.setDeviceMode('desktop'); document.getElementById('deviceModeModal').classList.remove('open');">
+          <div style="font-size:1.8rem; margin-bottom:4px;">💻</div>
+          <strong style="color:var(--text-main); font-size:0.9rem;">كمبيوتر (Desktop)</strong>
+          <p style="font-size:0.7rem; color:var(--text-muted); margin:0;">واجهة احترافية عريضة</p>
+        </button>
+      </div>
+
+      <button type="button" class="btn-secondary-outline" style="width:100%;" onclick="document.getElementById('deviceModeModal').classList.remove('open')">
+        متابعة العرض الحالي ✓
+      </button>
+    </div>
+  </div>
+
+  <!-- ═════════════════════════════════════════════════════════════════════════
+       MODAL: PHONE OTP VERIFICATION
+       ═════════════════════════════════════════════════════════════════════════ -->
+  <div id="otpModal" class="modal-overlay">
+    <div class="modal-dialog" style="max-width: 440px; text-align:center;">
+      <div style="font-size: 2.2rem; margin-bottom: 6px;">📲</div>
+      <h3 style="font-family:var(--font-heading); color:var(--gold-light); margin-bottom: 6px;">التحقق من رقم الهاتف (معاينة)</h3>
+      <div style="background:rgba(234,179,8,0.12); border:1px solid var(--gold-bright); border-radius:var(--radius-sm); padding:10px; margin-bottom:12px; font-size:0.78rem; color:var(--text-main); text-align:right; line-height:1.5;">
+        ⚠️ <strong>تنبيه أمني:</strong> خدمة الرسائل النصية القصيرة (SMS) الحقيقية غير مفعلة في الخطة المجانية الحالية (Spark)، ولن يتم اعتماد توثيق رقم الهاتف بالسيرفر دون Phone Auth حقيقي. هذه الواجهة للمعاينة التجريبية فقط.
+      </div>
+      <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom: 1.2rem;">
+        أدخل الرمز التجريبي المكون من 4 أرقام:
+      </p>
+
+      <div class="otp-boxes-group">
+        <input type="text" maxlength="1" class="otp-digit-input" id="otp1" oninput="window.app.handleOtpInput(this, 'otp2')">
+        <input type="text" maxlength="1" class="otp-digit-input" id="otp2" oninput="window.app.handleOtpInput(this, 'otp3')">
+        <input type="text" maxlength="1" class="otp-digit-input" id="otp3" oninput="window.app.handleOtpInput(this, 'otp4')">
+        <input type="text" maxlength="1" class="otp-digit-input" id="otp4" oninput="window.app.handleOtpInput(this, null)">
+      </div>
+
+      <div style="margin-bottom: 1.2rem; font-size: 0.8rem; color: var(--text-muted);">
+        الرمز الفعلي يتطلب تفعيل Firebase Phone Auth
+      </div>
+
+      <div style="display:flex; gap:8px;">
+        <button type="button" class="btn-primary-gold" style="flex:1;" onclick="window.app.verifyOtpCode()">
+          معاينة فحص الرمز
+        </button>
+        <button type="button" class="btn-secondary-outline" onclick="document.getElementById('otpModal').classList.remove('open')">
+          إغلاق
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═════════════════════════════════════════════════════════════════════════
+       MODAL: RIDE HISTORY & PREVIOUS TRIPS
+       ═════════════════════════════════════════════════════════════════════════ -->
+  <div id="historyModal" class="modal-overlay">
+    <div class="modal-dialog" style="max-width: 560px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.2rem;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-size:1.4rem;">📜</span>
+          <h3 style="font-family:var(--font-heading); color:var(--gold-light); margin:0;">سجل رحلاتي السابقة</h3>
+        </div>
+        <button class="modal-close-btn chip-btn" onclick="document.getElementById('historyModal').classList.remove('open')">✕ إغلاق</button>
+      </div>
+
+      <div style="display:flex; gap:8px; margin-bottom:12px;">
+        <button type="button" class="chip-btn active" style="flex:1;" onclick="window.app.filterHistory('all')">الكل</button>
+        <button type="button" class="chip-btn" style="flex:1;" onclick="window.app.filterHistory('completed')">المكتملة</button>
+        <button type="button" class="chip-btn" style="flex:1;" onclick="window.app.filterHistory('cancelled')">الملغاة</button>
+      </div>
+
+      <div id="tripHistoryContainer" style="max-height: 380px; overflow-y:auto; padding-right:4px;">
+        <!-- Populated via renderTripHistory() -->
+        <div style="text-align:center; padding:2rem; color:var(--text-muted);">
+          <span>🚖</span><br>جاري تحميل سجل الرحلات...
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═════════════════════════════════════════════════════════════════════════
+       MODAL: NOTIFICATIONS CENTER
+       ═════════════════════════════════════════════════════════════════════════ -->
+  <div id="notificationsModal" class="modal-overlay">
+    <div class="modal-dialog" style="max-width: 480px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.2rem;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-size:1.4rem;">🔔</span>
+          <h3 style="font-family:var(--font-heading); color:var(--gold-light); margin:0;">مركز الإشعارات والتنبيهات</h3>
+        </div>
+        <button class="modal-close-btn chip-btn" onclick="document.getElementById('notificationsModal').classList.remove('open')">✕ إغلاق</button>
+      </div>
+
+      <div id="notificationsList" style="display:flex; flex-direction:column; gap:10px; max-height:360px; overflow-y:auto;">
+        <div class="trip-history-item" style="border-right: 3px solid var(--gold-bright);">
+          <div class="trip-history-header">
+            <strong style="color:var(--gold-bright);">🎉 مرحباً بك في تاكسي العاصمة!</strong>
+            <small>اليوم</small>
+          </div>
+          <p style="font-size:0.8rem; color:var(--text-main); margin:0;">
+            استخدم كود الخصم <b>CAPITAL10</b> واحصل على خصم 10% على كافة مشاويرك داخل مدينة العريش وشمال سيناء.
+          </p>
+        </div>
+
+        <div class="trip-history-item" style="border-right: 3px solid var(--status-green);">
+          <div class="trip-history-header">
+            <strong style="color:var(--status-green);">🛡️ درع الأمان وكود PIN مفعل</strong>
+            <small>أمس</small>
+          </div>
+          <p style="font-size:0.8rem; color:var(--text-main); margin:0;">
+            تم تفعيل ميزة رمز أمان الرحلة (4-Digit PIN) لحمايتك والتأكد من صعود السيارة الصحيحة دائماً.
+          </p>
+        </div>
+
+        <div class="trip-history-item" style="border-right: 3px solid var(--status-blue);">
+          <div class="trip-history-header">
+            <strong style="color:var(--status-blue);">📍 تغطية كاملة لكافة جامعات سيناء</strong>
+            <small>هذا الأسبوع</small>
+          </div>
+          <p style="font-size:0.8rem; color:var(--text-main); margin:0;">
+            خدمة نقل سريعة ومنتظمة على مدار الساعة لطلاب جامعة العريش وجامعة سيناء بأسعار تفضيلية.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═════════════════════════════════════════════════════════════════════════
+       MODAL: CUSTOMER PROFILE & SAVED PLACES
+       ═════════════════════════════════════════════════════════════════════════ -->
+  <div id="profileModal" class="modal-overlay">
+    <div class="modal-dialog" style="max-width: 480px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.2rem;">
+        <h3 style="font-family:var(--font-heading); color:var(--gold-light); margin:0;">👤 حسابي الشخصي</h3>
+        <button class="modal-close-btn chip-btn" onclick="document.getElementById('profileModal').classList.remove('open')">✕ إغلاق</button>
+      </div>
+
+      <div style="text-align:center; margin-bottom:1.2rem;">
+        <div style="width:70px; height:70px; border-radius:50%; background:var(--gold-gradient); color:#060B17; font-size:2rem; font-weight:800; display:flex; align-items:center; justify-content:center; margin:0 auto 8px; border:2px solid #FFF;">
+          👤
+        </div>
+        <h4 id="profDisplayName" style="color:var(--text-main); margin:0;">عميل تاكسي العاصمة</h4>
+        <span class="feature-pill" style="margin-top:4px; display:inline-block;">🌟 عميل ذهبي بالعريش</span>
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">الاسم الكامل</label>
+        <input type="text" id="profNameInput" class="input-field" value="أحمد عبد العظيم">
+      </div>
+      <div class="input-group">
+        <label class="input-label">رقم الهاتف</label>
+        <input type="tel" id="profPhoneInput" class="input-field" value="01094129592" readonly style="opacity:0.8;">
+      </div>
+      <div class="input-group">
+        <label class="input-label">الأماكن المفضلة (المنزل / العمل)</label>
+        <input type="text" id="profHomeInput" class="input-field" value="حي المساعيد، العريش" placeholder="عنوان المنزل">
+      </div>
+
+      <button type="button" class="btn-primary-gold" style="width:100%; margin-top:8px;" onclick="window.app.saveProfileInfo()">
+        حفظ بيانات الحساب ✓
+      </button>
+    </div>
+  </div>
+
+  <!-- ═════════════════════════════════════════════════════════════════════════
+       MODAL: SETTINGS (DEVICE VIEW, NOTIFICATIONS, MAP)
+       ═════════════════════════════════════════════════════════════════════════ -->
+  <div id="settingsModal" class="modal-overlay">
+    <div class="modal-dialog" style="max-width: 480px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.2rem;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-size:1.4rem;">⚙️</span>
+          <h3 style="font-family:var(--font-heading); color:var(--gold-light); margin:0;">إعدادات التطبيق</h3>
+        </div>
+        <button class="modal-close-btn chip-btn" onclick="document.getElementById('settingsModal').classList.remove('open')">✕ إغلاق</button>
+      </div>
+
+      <div class="input-group" style="margin-bottom:14px;">
+        <label class="input-label">طريقة عرض التطبيق حسب الجهاز (Responsive Device Mode)</label>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:4px;">
+          <button type="button" class="chip-btn" id="setDevAuto" onclick="window.app.setDeviceMode('auto')">🔄 تلقائي (Auto)</button>
+          <button type="button" class="chip-btn" id="setDevMobile" onclick="window.app.setDeviceMode('mobile')">📱 هاتف محمول (Mobile)</button>
+          <button type="button" class="chip-btn" id="setDevTablet" onclick="window.app.setDeviceMode('tablet')">📟 جهاز لوحي (Tablet)</button>
+          <button type="button" class="chip-btn" id="setDevDesktop" onclick="window.app.setDeviceMode('desktop')">💻 كمبيوتر (Desktop)</button>
+        </div>
+      </div>
+
+      <div class="input-group" style="margin-bottom:14px;">
+        <label class="input-label">المظهر واللغة</label>
+        <div style="display:flex; gap:8px;">
+          <button type="button" class="chip-btn active" style="flex:1;">🌙 الوضع الليلي الفاخر</button>
+          <button type="button" class="chip-btn active" style="flex:1;">🇪🇬 العربية (مصر)</button>
+        </div>
+      </div>
+
+      <div class="input-group" style="margin-bottom:14px;">
+        <label class="input-label">إشعارات المشاوير والرسائل</label>
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0;">
+          <span style="font-size:0.85rem;">صوت تنبيه وصول الكابتن والرسائل</span>
+          <input type="checkbox" checked style="width:20px; height:20px; accent-color:var(--gold-bright);">
+        </div>
+      </div>
+
+      <button type="button" class="btn-secondary-outline" style="width:100%;" onclick="document.getElementById('settingsModal').classList.remove('open')">
+        إغلاق الإعدادات
+      </button>
+    </div>
+  </div>
+
+  <!-- ═════════════════════════════════════════════════════════════════════════
+       MODAL: SUPPORT & COMPLAINTS
+       ═════════════════════════════════════════════════════════════════════════ -->
+  <div id="supportModal" class="modal-overlay">
+    <div class="modal-dialog" style="max-width: 480px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.2rem;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-size:1.4rem;">🎧</span>
+          <h3 style="font-family:var(--font-heading); color:var(--gold-light); margin:0;">المساعدة وخدمة العملاء</h3>
+        </div>
+        <button class="modal-close-btn chip-btn" onclick="document.getElementById('supportModal').classList.remove('open')">✕ إغلاق</button>
+      </div>
+
+      <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1.2rem;">
+        فريق الدعم الفني لتاكسي العاصمة في خدمتكم 24 ساعة للإجابة على الاستفسارات وحل أي شكاوى مباشرة في العريش.
+      </p>
+
+      <div style="display:flex; gap:8px; margin-bottom:1.2rem;">
+        <a href="tel:01094129592" class="btn-primary-gold" style="flex:1; text-align:center; font-size:0.85rem; padding:10px;">
+          📞 اتصال مباشر: 01094129592
+        </a>
+        <a href="https://wa.me/201094129592" target="_blank" rel="noopener" class="btn-whatsapp-header" style="flex:1; text-align:center; font-size:0.85rem; padding:10px;">
+          💬 واتساب فوري
+        </a>
+      </div>
+
+      <form id="complaintForm" onsubmit="window.app.submitComplaint(event)">
+        <div class="input-group">
+          <label class="input-label">نوع الشكوى أو الملاحظة</label>
+          <select id="complaintCategory" class="input-field">
+            <option value="driver">ملاحظة على سلوك الكابتن أو القيادة</option>
+            <option value="fare">استفسار أو اعتراض على تسعير المشوار</option>
+            <option value="lost">فقدت شيئاً داخل السيارة (مفقودات)</option>
+            <option value="app">اقتراح لتطوير التطبيق أو الخدمات</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label class="input-label">تفاصيل الشكوى أو الملاحظة</label>
+          <textarea id="complaintDetails" class="input-field" rows="3" placeholder="اكتب تفاصيل الشكوى مع رقم الرحلة إن وُجد..." required></textarea>
+        </div>
+        <button type="submit" class="btn-primary-gold" style="width:100%;">
+          إرسال الشكوى للإدارة 📨
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ═════════════════════════════════════════════════════════════════════════
+       MODAL: PROMOTIONS & COUPONS
+       ═════════════════════════════════════════════════════════════════════════ -->
+  <div id="promosModal" class="modal-overlay">
+    <div class="modal-dialog" style="max-width: 480px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.2rem;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-size:1.4rem;">🏷️</span>
+          <h3 style="font-family:var(--font-heading); color:var(--gold-light); margin:0;">العروض وكوبونات الخصم</h3>
+        </div>
+        <button class="modal-close-btn chip-btn" onclick="document.getElementById('promosModal').classList.remove('open')">✕ إغلاق</button>
+      </div>
+
+      <div class="promo-card">
+        <div>
+          <span class="arish-badge-tag">عرض مميز 10%</span>
+          <div class="promo-code-badge">CAPITAL10</div>
+          <p style="font-size:0.75rem; color:var(--text-muted); margin:4px 0 0;">خصم 10% على كافة الرحلات داخل العريش</p>
+        </div>
+        <button type="button" class="btn-secondary-outline" style="padding:6px 14px;" onclick="window.app.applyCouponDirect('CAPITAL10')">
+          تطبيق الكوبون
+        </button>
+      </div>
+
+      <div class="promo-card">
+        <div>
+          <span class="arish-badge-tag">وفر 20 ج.م</span>
+          <div class="promo-code-badge">ARISH2026</div>
+          <p style="font-size:0.75rem; color:var(--text-muted); margin:4px 0 0;">خصم 20 ج.م على رحلتك القادمة</p>
+        </div>
+        <button type="button" class="btn-secondary-outline" style="padding:6px 14px;" onclick="window.app.applyCouponDirect('ARISH2026')">
+          تطبيق الكوبون
+        </button>
+      </div>
+
+      <div class="promo-card">
+        <div>
+          <span class="arish-badge-tag">طلاب الجامعات</span>
+          <div class="promo-code-badge">STUDENT15</div>
+          <p style="font-size:0.75rem; color:var(--text-muted); margin:4px 0 0;">خصم 15% لطلاب جامعة العريش وجامعة سيناء</p>
+        </div>
+        <button type="button" class="btn-secondary-outline" style="padding:6px 14px;" onclick="window.app.applyCouponDirect('STUDENT15')">
+          تطبيق الكوبون
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═════════════════════════════════════════════════════════════════════════
+       MOBILE FLOATING BOTTOM NAVIGATION BAR (FOR MOBILE & TOUCH SCREENS)
+       ═════════════════════════════════════════════════════════════════════════ -->
+  <nav class="mobile-bottom-nav">
+    <button type="button" class="bottom-nav-item active" onclick="window.app.switchView('customer')">
+      <span class="icon">🚖</span>
+      <span>اطلب رحلة</span>
+    </button>
+    <button type="button" class="bottom-nav-item" onclick="document.getElementById('historyModal').classList.add('open'); window.app.renderTripHistory();">
+      <span class="icon">📜</span>
+      <span>رحلاتي</span>
+    </button>
+    <button type="button" class="bottom-nav-item" onclick="document.getElementById('walletModal').classList.add('open'); window.app.refreshUserWalletUI();">
+      <span class="icon">💳</span>
+      <span>المحفظة</span>
+    </button>
+    <button type="button" class="bottom-nav-item" onclick="document.getElementById('promosModal').classList.add('open')">
+      <span class="icon">🏷️</span>
+      <span>العروض</span>
+    </button>
+    <button type="button" class="bottom-nav-item" onclick="document.getElementById('settingsModal').classList.add('open')">
+      <span class="icon">⚙️</span>
+      <span>الإعدادات</span>
+    </button>
+  </nav>
+
   <!-- Toast Container -->
   <div id="toast-container"></div>
 
   <!-- Application Logic Scripts -->
+  <script type="module" src="/js/carousel.js"></script>
   <script type="module" src="/js/app.js"></script>
 
   <!-- Auth and Config Handlers -->
@@ -1323,14 +1944,28 @@
       const minFare = Number(document.getElementById('cfgMinFare').value) || 25;
       const waitingRatePerMin = Number(document.getElementById('cfgWaiting').value) || 1.5;
       const outOfCityFlatFee = Number(document.getElementById('cfgOutOfCity').value) || 40;
+      const commissionRate = Number(document.getElementById('cfgCommission')?.value) || 10;
 
       window.app.pricing.updateConfig({
         baseFare,
         perKmRate,
         minFare,
         waitingRatePerMin,
-        outOfCityFlatFee
+        outOfCityFlatFee,
+        commissionRate
       });
+
+      if (window.app.rtdb) {
+        window.app.rtdb.ref('system_config/pricing').set({
+          baseFare,
+          perKmRate,
+          minFare,
+          waitingRatePerMin,
+          outOfCityFlatFee,
+          commissionRate,
+          updatedAt: Date.now()
+        }).catch(() => {});
+      }
 
       document.getElementById('pricingModal').classList.remove('open');
       window.app.showToast("تم حفظ وتحديث إعدادات الأسعار بنجاح!");

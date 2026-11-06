@@ -109,6 +109,7 @@ export class DispatchEngine {
         await this.rtdb.ref(`trips/${tripId}`).set(fullRecord);
         await this.rtdb.ref(`driver_requests/${tripId}`).set({
           tripId,
+          customerId: creatorId,
           status: "searching",
           from: fullRecord.from,
           to: fullRecord.to,
@@ -190,7 +191,7 @@ export class DispatchEngine {
         });
 
         if (result.committed) {
-          // Remove from broadcast queue
+          // Remove from broadcast queue only after acceptance is proven committed
           await this.rtdb.ref(`driver_requests/${tripId}`).remove().catch(() => {});
           // Mark driver as busy and unavailable
           await this.rtdb.ref(`drivers/${driverId}/status`).set("busy").catch(() => {});
@@ -201,6 +202,7 @@ export class DispatchEngine {
         }
       } catch (err) {
         console.warn("RTDB Transaction notice:", err);
+        return { success: false, message: "تعذر قبول الرحلة: " + (err.message || "خطأ في الاتصال أو الصلاحيات") };
       }
     }
 

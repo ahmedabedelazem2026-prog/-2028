@@ -42,6 +42,7 @@ service cloud.firestore {
       // Users can create own record with customer or driver role (cannot make self admin)
       allow create: if signedIn() && isOwner(userId)
         && request.resource.data.role in ['customer', 'driver']
+        && (!('isSuperAdmin' in request.resource.data) || request.resource.data.isSuperAdmin == false)
         && (request.resource.data.role == 'driver' ? request.resource.data.status in ['pending', 'active'] : true);
       // Users cannot change their own role or admin privileges
       allow update: if isAdmin() || (
@@ -106,7 +107,7 @@ service cloud.firestore {
     // 4. Drivers Profile & Approvals
     match /drivers/{driverId} {
       allow read: if true;
-      allow create: if signedIn() && isOwner(driverId);
+      allow create: if signedIn() && isOwner(driverId) && request.resource.data.approved == false;
       allow update: if isAdmin() || (
         isOwner(driverId)
         && (!('approved' in request.resource.data) || request.resource.data.approved == resource.data.approved)

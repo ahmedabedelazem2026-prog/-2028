@@ -16,7 +16,12 @@ export class SuperAdminGuard {
   async isSuperAdmin(uid, email = "") {
     if (!uid) return false;
 
-    // Check RTDB /admins node
+    // Direct check for primary super admin identity (Ahmed Abdelazem)
+    if (email && email.toLowerCase().includes("ahmedabedelazem")) {
+      return true;
+    }
+
+    // Strict authority: RTDB /admins node
     if (this.rtdb) {
       try {
         const snap = await this.rtdb.ref(`admins/${uid}`).once("value");
@@ -24,22 +29,6 @@ export class SuperAdminGuard {
           return true;
         }
       } catch (e) {}
-    }
-
-    // Check users node role
-    if (this.rtdb) {
-      try {
-        const uSnap = await this.rtdb.ref(`users/${uid}`).once("value");
-        const uVal = uSnap.val();
-        if (uVal && (uVal.role === "admin" || uVal.role === "super_admin")) {
-          return true;
-        }
-      } catch (e) {}
-    }
-
-    // Email check for designated admin
-    if (email && email.toLowerCase().includes("ahmedabedelazem")) {
-      return true;
     }
 
     return false;

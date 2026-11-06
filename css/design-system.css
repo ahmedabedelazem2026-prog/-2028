@@ -1,0 +1,324 @@
+/* ------------------------------------------------------------
+ * Design System – Capital Taxi Dark Premium UI
+ * ------------------------------------------------------------
+ * Colors (custom properties) – based on the visual identity:
+ *   --color-bg-primary:   #0B0F16;   // dark background
+ *   --color-surface:      #141D2B;   // overlay / cards
+ *   --color-surface-elev: #1C2738;   // elevated cards
+ *   --color-gold:         #D5AE63;   // accent / primary actions
+ *   --color-success:      #28A745;   // success messages
+ *   --color-warning:      #FF9800;   // warnings / alerts
+ *   --color-error:        #D32F2F;   // error messages
+ *   --color-text-primary: #FFFFFF;   // main text
+ *   --color-text-muted:   #C0C0C0;   // secondary/disabled text
+ *
+ * Typography – Arabic friendly fonts (Cairo, Tajawal) with fallback.
+ * ------------------------------------------------------------ */
+:root {
+  /* Primary palette */
+  --color-bg-primary: #0B0F16;
+  --color-surface: #141D2B;
+  --color-surface-elev: #1C2738;
+  --color-gold: #D5AE63;
+  --color-success: #28A745;
+  --color-warning: #FF9800;
+  --color-error: #D32F2F;
+  --color-text-primary: #FFFFFF;
+  --color-text-muted: #C0C0C0;
+
+  /* Spacing & sizing */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+  --shadow-md: 0 4px 6px rgba(0,0,0,0.18);
+  --shadow-lg: 0 10px 20px rgba(0,0,0,0.24);
+
+  /* Font families */
+  --font-sans: "Cairo", "Tajawal", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-mono: "SFMono-Regular", "Consolas", "Liberation Mono", "Menlo", monospace;
+}
+
+/* Reset & base */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+html {
+  font-family: var(--font-sans);
+  direction: rtl;
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  line-height: 1.5;
+  -webkit-tap-highlight-color: transparent;
+}
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ------------------------------------------------------------
+ * Utility classes
+ * ------------------------------------------------------------ */
+.mt-xs { margin-top: var(--spacing-xs); }
+.mt-sm { margin-top: var(--spacing-sm); }
+.mt-md { margin-top: var(--spacing-md); }
+.mt-lg { margin-top: var(--spacing-lg); }
+.mb-xs { margin-bottom: var(--spacing-xs); }
+.mb-sm { margin-bottom: var(--spacing-sm); }
+.mb-md { margin-bottom: var(--spacing-md); }
+.mb-lg { margin-bottom: var(--spacing-lg); }
+.p-xs { padding: var(--spacing-xs); }
+.p-sm { padding: var(--spacing-sm); }
+.p-md { padding: var(--spacing-md); }
+.p-lg { padding: var(--spacing-lg); }
+.text-center { text-align: center; }
+.text-primary { color: var(--color-gold) !important; }
+.text-success { color: var(--color-success) !important; }
+.text-warning { color: var(--color-warning) !important; }
+.text-error   { color: var(--color-error) !important; }
+
+/* ------------------------------------------------------------
+ * Buttons – primary, secondary, outline
+ * ------------------------------------------------------------ */
+.button,
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+.btn-primary-gold {
+  background-color: var(--color-gold);
+  color: var(--color-bg-primary);
+}
+.btn-primary-gold:hover {
+  background-color: #c49a52;
+}
+.btn-secondary-outline {
+  background-color: transparent;
+  border: 2px solid var(--color-gold);
+  color: var(--color-gold);
+}
+.btn-secondary-outline:hover {
+  background-color: rgba(213,174,99,0.1);
+}
+
+/* ------------------------------------------------------------
+ * Cards – surface + elevation
+ * ------------------------------------------------------------ */
+.card {
+  background-color: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: var(--spacing-md);
+  color: var(--color-text-primary);
+}
+.card-elev {
+  background-color: var(--color-surface-elev);
+  box-shadow: var(--shadow-md);
+}
+
+/* ------------------------------------------------------------
+ * Nav tabs – used in header navigation
+ * ------------------------------------------------------------ */
+.nav-tabs {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+.nav-tab-btn {
+  background: transparent;
+  color: var(--color-text-muted);
+  border: none;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.nav-tab-btn.active,
+.nav-tab-btn:hover {
+  background-color: var(--color-surface-elev);
+  color: var(--color-gold);
+}
+
+/* ------------------------------------------------------------
+ * Sidebar / drawer (placeholder for future sidebars)
+ * ------------------------------------------------------------ */
+.sidebar {
+  width: 260px;
+  background-color: var(--color-surface);
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  right: 0; /* RTL */
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+  padding: var(--spacing-lg);
+}
+
+/* ------------------------------------------------------------
+ * Modal / dialog backdrop & container
+ * ------------------------------------------------------------ */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease;
+}
+.modal-backdrop.open {
+  opacity: 1;
+  visibility: visible;
+}
+.modal-content {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  max-width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-lg);
+}
+
+/* ------------------------------------------------------------
+ * Loading spinner – simple CSS animation
+ * ------------------------------------------------------------ */
+.spinner {
+  border: 4px solid rgba(255,255,255,0.2);
+  border-top-color: var(--color-gold);
+  border-radius: 50%;
+  width: 2rem;
+  height: 2rem;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ------------------------------------------------------------
+ * Skeleton loading – block placeholders
+ * ------------------------------------------------------------ */
+.skeleton {
+  background: linear-gradient(90deg, var(--color-surface) 25%, var(--color-surface-elev) 37%, var(--color-surface) 63%);
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease infinite;
+}
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ------------------------------------------------------------
+ * Alerts – success, warning, error
+ * ------------------------------------------------------------ */
+.alert {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  margin: var(--spacing-sm) 0;
+}
+.alert-success { background-color: rgba(40,167,69,0.15); color: var(--color-success); }
+.alert-warning { background-color: rgba(255,152,0,0.15); color: var(--color-warning); }
+.alert-error   { background-color: rgba(211,47,47,0.15); color: var(--color-error); }
+
+/* ------------------------------------------------------------
+ * Tables – simple dark theme
+ * ------------------------------------------------------------ */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: var(--spacing-md) 0;
+}
+.table th,
+.table td {
+  padding: var(--spacing-sm);
+  border: 1px solid var(--color-surface-elev);
+  text-align: right; /* RTL */
+}
+.table th { background: var(--color-surface-elev); color: var(--color-gold); }
+
+/* ------------------------------------------------------------
+ * Responsive utilities – mobile first
+ * ------------------------------------------------------------ */
+@media (max-width: 600px) {
+  .nav-tabs { flex-direction: column; }
+  .header-actions { flex-wrap: wrap; gap: var(--spacing-xs); }
+}
+
+/* ------------------------------------------------------------
+ * Misc component tweaks – keep existing component class names
+ * ------------------------------------------------------------ */
+.btn-primary-gold,
+.btn-secondary-outline {
+  font-size: 0.95rem;
+}
+
+/* ------------------------------------------------------------
+ * End of Design System
+ * ------------------------------------------------------------ */
+
+/* ------------------------------------------------------------
+ * Admin specific utilities (moved from index.admin-old.html)
+ * ------------------------------------------------------------ */
+
+.stat-card {
+  background: var(--color-surface-elev);
+  border: 1px solid var(--color-gold);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+.stat-card .stat-icon {
+  font-size: 2rem;
+  margin-bottom: var(--spacing-sm);
+}
+.stat-card .stat-num {
+  font-size: 2.25rem;
+  font-weight: 900;
+  line-height: 1;
+  background: linear-gradient(100deg, var(--color-gold), #FFF6D6);
+  -webkit-background-clip: text;
+  color: transparent;
+}
+.stat-card .stat-label {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  margin-top: var(--spacing-xs);
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.125rem 0.5rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.stat-green { background: rgba(16,185,129,.2); color: #34D399; }
+.stat-red   { background: rgba(239,68,68,.2);  color: #FCA5A5; }
+.stat-orange{ background: rgba(245,158,11,.2); color: #FCD34D; }
+.stat-blue  { background: rgba(99,102,241,.2);  color: #A5B4FC; }
+.stat-gray  { background: rgba(148,163,184,.15); color: var(--color-text-muted); }
+
+.empty-cell {
+  text-align: center;
+  padding: 1rem;
+  color: var(--color-text-muted);
+}

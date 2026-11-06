@@ -6,7 +6,10 @@
   <title>تاكسي العاصمة - لوحة الإدارة</title>
 
   <!-- Firebase SDK -->
-  <script type="module">
+  <link rel="stylesheet" href="/css/styles.css">
+<link rel="stylesheet" href="/css/design-system.css">
+<script type="module">
+  <link rel="stylesheet" href="/css/design-system.css">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getDatabase, ref, onValue, get, query, orderByChild, limitToLast } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
     import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -402,6 +405,13 @@
     <button class="tab-btn"        onclick="showTab('users')">    <span class="tab-icon">👥</span> العملاء</button>
     <button class="tab-btn"        onclick="showTab('trips')">    <span class="tab-icon">🗺️</span> الرحلات</button>
     <button class="tab-btn"        onclick="showTab('notifs')">   <span class="tab-icon">🔔</span> الإشعارات</button>
+    <button class="tab-btn"        onclick="showTab('settings')">   <span class="tab-icon">⚙️</span> الإعدادات</button>
+    <button class="tab-btn"        onclick="showTab('pricing')">    <span class="tab-icon">💲</span> الأسعار</button>
+    <button class="tab-btn"        onclick="showTab('wallet')">     <span class="tab-icon">💰</span> المحفظة</button>
+    <button class="tab-btn"        onclick="showTab('stats')">      <span class="tab-icon">📈</span> الإحصاءات</button>
+    <button class="tab-btn"        onclick="showTab('adminLogs')"> <span class="tab-icon">🗒️</span> سجلات الإدارة</button>
+    <button class="tab-btn"        onclick="showTab('scheduledTrips')"> <span class="tab-icon">📅</span> الرحلات المجدولة</button>
+    <button class="tab-btn"        onclick="showTab('admins')">   <span class="tab-icon">👤</span> المشرفون</button>
   </nav>
 
   <!-- ══════════════════ MAIN ══════════════════ -->
@@ -584,6 +594,125 @@
             </tbody>
           </table>
         </div>
+      </div>
+    </section>
+
+    <!-- ───── SETTINGS (NEW) ───── -->
+    <section id="sec-settings" class="section">
+      <div class="card">
+        <div class="card-title"><span>⚙️</span> الإعدادات العامة</div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>المفتاح</th><th>القيمة</th></tr>
+            </thead>
+            <tbody id="settingsBody">
+              <tr><td colspan="2" class="empty-row loading">🔄 تحميل الإعدادات…</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="muted" style="margin-top:12px;">⚠️ تعديل الإعدادات غير متاح من الواجهة لأن قواعد Firebase تسمح بالكتابة للمسؤولين فقط.</p>
+      </div>
+    </section>
+
+    <!-- ───── PRICING (NEW) ───── -->
+    <section id="sec-pricing" class="section">
+      <div class="card">
+        <div class="card-title"><span>💲</span> إدارة الأسعار</div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>الفئة</th><th>السعر (ج.م)</th></tr>
+            </thead>
+            <tbody id="pricingBody">
+              <tr><td colspan="2" class="empty-row loading">🔄 تحميل الأسعار…</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="muted" style="margin-top:12px;">⚠️ تعديل الأسعار غير متاح من الواجهة لأن القواعد تسمح بالكتابة للمسؤولين فقط.</p>
+      </div>
+    </section>
+
+    <!-- ───── WALLET (NEW) ───── -->
+    <section id="sec-wallet" class="section">
+      <div class="card">
+        <div class="card-title"><span>💰</span> محفظة المستخدمين</div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>المعرّف</th><th>الرصيد (ج.م)</th></tr>
+            </thead>
+            <tbody id="walletBody">
+              <tr><td colspan="2" class="empty-row loading">🔄 تحميل الرصيد…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───── STATS (DETAILED) (NEW) ───── -->
+    <section id="sec-stats" class="section">
+      <div class="card">
+        <div class="card-title"><span>📈</span> إحصاءات مفصلة</div>
+        <div class="table-wrap">
+          <table>
+            <tbody id="statsBody">
+              <tr><td colspan="2" class="empty-row loading">🔄 تحميل الإحصاءات…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───── ADMIN LOGS (NEW) ───── -->
+    <section id="sec-adminLogs" class="section">
+      <div class="card">
+        <div class="card-title"><span>🗒️</span> سجلات الإدارة</div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>المعرّف</th><th>الإجراء</th><th>الوقت</th></tr>
+            </thead>
+            <tbody id="adminLogsBody">
+              <tr><td colspan="3" class="empty-row loading">🔄 تحميل السجلات…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───── SCHEDULED TRIPS (NEW) ───── -->
+    <section id="sec-scheduledTrips" class="section">
+      <div class="card">
+        <div class="card-title"><span>📅</span> الرحلات المجدولة</div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>المعرّف</th><th>من</th><th>إلى</th><th>الزمان</th><th>الحالة</th></tr>
+            </thead>
+            <tbody id="scheduledTripsBody">
+              <tr><td colspan="5" class="empty-row loading">🔄 تحميل الرحلات المجدولة…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───── ADMINS (NEW) ───── -->
+    <section id="sec-admins" class="section">
+      <div class="card">
+        <div class="card-title"><span>👤</span> حسابات المشرفين</div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>المعرف</th><th>دور</th><th>هل Super Admin؟</th></tr>
+            </thead>
+            <tbody id="adminsBody">
+              <tr><td colspan="3" class="empty-row loading">🔄 تحميل المشرفين…</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="muted" style="margin-top:12px;">⚠️ لا يمكن إضافة أو حذف مشرفين من الواجهة لأن كتابة القواعد غير مفعلة.</p>
       </div>
     </section>
 

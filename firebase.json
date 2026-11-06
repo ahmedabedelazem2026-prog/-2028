@@ -1,17 +1,42 @@
 {
   "hosting": {
+    "site": "taxi-alasema-app-2026",
     "public": ".",
     "ignore": [
       "firebase.json",
       "**/.*",
+      "!**/.well-known/**",
       "**/node_modules/**",
       "README.md",
       "tests/**",
+      "backups/**",
+      "reports/**",
+      "functions/**",
       "firestore.rules",
       "storage.rules",
-      "database.rules.json"
+      "database.rules.json",
+      "server.js",
+      "server.cjs",
+      "configstore_test.js",
+      "index.admin-old.html",
+      "package.json",
+      "package-lock.json",
+      "vercel.json"
     ],
     "headers": [
+      {
+        "source": ".well-known/acme-challenge/**",
+        "headers": [
+          {
+            "key": "Content-Type",
+            "value": "text/plain; charset=utf-8"
+          },
+          {
+            "key": "Cache-Control",
+            "value": "no-cache, no-store, must-revalidate"
+          }
+        ]
+      },
       {
         "source": "**/*.@(js|css|json)",
         "headers": [
@@ -38,6 +63,19 @@
       }
     ]
   },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ]
+    }
+  ],
   "firestore": {
     "rules": "firestore.rules"
   },
@@ -46,5 +84,22 @@
   },
   "storage": {
     "rules": "storage.rules"
+  },
+  "emulators": {
+    "functions": {
+      "port": 5001
+    },
+    "database": {
+      "port": 9000
+    },
+    "firestore": {
+      "port": 8080
+    },
+    "hosting": {
+      "port": 5000
+    },
+    "ui": {
+      "enabled": true
+    }
   }
 }

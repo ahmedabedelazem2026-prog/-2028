@@ -137,10 +137,12 @@ body::before {
 .brand-logo-img {
   width: 48px;
   height: 48px;
+  aspect-ratio: 1 / 1;
   border-radius: 50%;
   border: 2px solid var(--gold-bright);
   box-shadow: var(--gold-glow);
-  object-fit: cover;
+  object-fit: contain;
+  background: #050811;
   transition: transform 0.3s ease;
 }
 
@@ -466,6 +468,30 @@ body::before {
   transition: all 0.3s ease;
 }
 
+.service-card-media {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin-bottom: 1rem;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.service-card-media img {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  object-position: center;
+  transition: transform 0.4s ease;
+  display: block;
+}
+
+.feature-box:hover .service-card-media img {
+  transform: scale(1.05);
+}
+
 .feature-box:hover {
   transform: translateY(-5px);
   border-color: var(--border-gold);
@@ -682,6 +708,30 @@ body::before {
   box-shadow: 0 0 15px rgba(212, 175, 55, 0.25);
 }
 
+.car-img-wrapper {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.4);
+  margin-bottom: 6px;
+  border: 1px solid rgba(212, 175, 55, 0.18);
+}
+
+.car-img-wrapper img {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  object-position: center;
+  transition: transform 0.3s ease;
+  display: block;
+}
+
+.car-card-option:hover .car-img-wrapper img {
+  transform: scale(1.05);
+}
+
 .car-header {
   display: flex;
   justify-content: space-between;
@@ -810,6 +860,10 @@ body::before {
   justify-content: center;
   font-size: 1.8rem;
   color: #060B17;
+  overflow: hidden;
+  aspect-ratio: 1 / 1;
+  flex-shrink: 0;
+  border: 2px solid var(--gold-bright);
 }
 
 .driver-toggle-online {
@@ -1185,6 +1239,19 @@ table.admin-table tbody tr:hover {
   justify-content: center;
   font-size: 1.8rem;
   box-shadow: var(--gold-glow);
+  overflow: hidden;
+  aspect-ratio: 1 / 1;
+  flex-shrink: 0;
+}
+
+.driver-avatar-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
 }
 
 .plate-and-pin-row {
@@ -1371,4 +1438,767 @@ table.admin-table tbody tr:hover {
   .live-badge {
     display: none;
   }
+}
+
+/* =========================================================================
+   DEVICE MODE SWITCHER & RESPONSIVE ENGINE (MOBILE / TABLET / DESKTOP / AUTO)
+   ========================================================================= */
+
+/* Device Mode Control Bar in Header */
+.device-switcher-bar {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(10, 17, 36, 0.9);
+  border: 1px solid var(--border-gold);
+  border-radius: var(--radius-full);
+  padding: 2px 4px;
+  gap: 2px;
+}
+
+.device-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-family: var(--font-main);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  white-space: nowrap;
+}
+
+.device-btn:hover {
+  color: var(--gold-bright);
+}
+
+.device-btn.active {
+  background: var(--gold-gradient);
+  color: #060B17;
+  box-shadow: 0 2px 8px rgba(212, 175, 55, 0.4);
+}
+
+/* 1. Mobile Phone Mode Simulation */
+body.device-mode-mobile {
+  background: #020409 !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 100vh;
+}
+
+body.device-mode-mobile .top-header {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  border-left: 1px solid rgba(212, 175, 55, 0.2);
+  border-right: 1px solid rgba(212, 175, 55, 0.2);
+  border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+  z-index: 100;
+}
+
+body.device-mode-mobile .app-view {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  border-left: 1px solid rgba(212, 175, 55, 0.2);
+  border-right: 1px solid rgba(212, 175, 55, 0.2);
+  min-height: calc(100vh - 70px);
+  padding-bottom: 75px; /* bottom nav padding */
+  background: var(--bg-deep);
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
+}
+
+body.device-mode-mobile .customer-layout {
+  display: flex !important;
+  flex-direction: column;
+  padding: 10px;
+  gap: 12px;
+}
+
+body.device-mode-mobile .map-viewport-wrapper {
+  height: 290px !important;
+  order: 1;
+}
+
+body.device-mode-mobile .booking-panel {
+  order: 2;
+  padding: 14px;
+}
+
+body.device-mode-mobile .nav-tabs {
+  display: none !important; /* Replaced by native bottom mobile navigation bar */
+}
+
+/* Mobile Bottom Navigation Bar */
+.mobile-bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+  background: rgba(10, 17, 36, 0.97);
+  backdrop-filter: blur(16px);
+  border-top: 1px solid var(--border-gold);
+  z-index: 999;
+  justify-content: space-around;
+  align-items: center;
+  padding: 0 8px;
+}
+
+body.device-mode-mobile .mobile-bottom-nav {
+  display: flex !important;
+  max-width: 480px;
+  margin: 0 auto;
+  border-left: 1px solid var(--border-gold);
+  border-right: 1px solid var(--border-gold);
+}
+
+@media (max-width: 768px) {
+  body.device-mode-auto .mobile-bottom-nav {
+    display: flex;
+  }
+  body.device-mode-auto .app-view {
+    padding-bottom: 70px;
+  }
+}
+
+.bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-family: var(--font-main);
+  font-size: 0.7rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  flex: 1;
+}
+
+.bottom-nav-item span.icon {
+  font-size: 1.25rem;
+}
+
+.bottom-nav-item.active {
+  color: var(--gold-bright);
+}
+
+.bottom-nav-item.active::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  width: 20px;
+  height: 3px;
+  background: var(--gold-gradient);
+  border-radius: var(--radius-full);
+}
+
+/* 2. Tablet Mode Simulation */
+body.device-mode-tablet .top-header,
+body.device-mode-tablet .app-view {
+  max-width: 1024px;
+  margin: 0 auto;
+}
+
+body.device-mode-tablet .customer-layout {
+  display: grid !important;
+  grid-template-columns: 390px 1fr;
+  gap: 16px;
+  height: calc(100vh - 85px);
+  padding: 12px;
+}
+
+body.device-mode-tablet .map-viewport-wrapper {
+  height: 100% !important;
+}
+
+/* 3. Desktop Mode Simulation */
+body.device-mode-desktop .customer-layout {
+  display: grid !important;
+  grid-template-columns: 460px 1fr;
+  gap: 24px;
+  max-width: 1440px;
+  margin: 0 auto;
+  height: calc(100vh - 90px);
+  padding: 16px 24px;
+}
+
+body.device-mode-desktop .map-viewport-wrapper {
+  height: 100% !important;
+}
+
+/* =========================================================================
+   AL-ARISH AUTHENTIC PHOTOGRAPHY & LANDMARKS HERO CAROUSEL
+   ========================================================================= */
+
+.arish-photo-hero-card {
+  position: relative;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--border-gold);
+  margin-bottom: 14px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+  height: 160px;
+}
+
+.arish-photo-hero-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.arish-photo-hero-card:hover img {
+  transform: scale(1.05);
+}
+
+.arish-photo-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(6, 11, 23, 0.95) 0%, rgba(6, 11, 23, 0.4) 60%, transparent 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 12px 16px;
+}
+
+.arish-badge-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(212, 175, 55, 0.2);
+  border: 1px solid var(--gold-primary);
+  color: var(--gold-bright);
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  width: fit-content;
+  margin-bottom: 4px;
+}
+
+.arish-photo-title {
+  color: var(--text-main);
+  font-size: 1.05rem;
+  font-weight: 800;
+  margin: 0;
+}
+
+.arish-photo-subtitle {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  margin: 0;
+}
+
+/* Landmark Chips with authentic photo icons */
+.arish-landmarks-scroll-row {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 6px 2px 10px;
+  scrollbar-width: thin;
+}
+
+.landmark-photo-chip {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.landmark-photo-chip:hover {
+  border-color: var(--gold-primary);
+  transform: translateY(-2px);
+  background: var(--bg-card-hover);
+}
+
+.landmark-photo-thumb {
+  width: 32px;
+  height: 32px;
+  aspect-ratio: 1 / 1;
+  border-radius: 6px;
+  object-fit: cover;
+  object-position: center;
+  border: 1px solid var(--gold-primary);
+  flex-shrink: 0;
+  display: block;
+}
+
+/* =========================================================================
+   LIVE AUTOCOMPLETE & SEARCH SUGGESTIONS DROPDOWN
+   ========================================================================= */
+
+.autocomplete-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #0B132B;
+  border: 1px solid var(--gold-primary);
+  border-radius: var(--radius-md);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.85);
+  max-height: 240px;
+  overflow-y: auto;
+  z-index: 1000;
+  margin-top: 4px;
+}
+
+.autocomplete-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  transition: background 0.2s ease;
+}
+
+.autocomplete-item:last-child {
+  border-bottom: none;
+}
+
+.autocomplete-item:hover {
+  background: rgba(212, 175, 55, 0.15);
+}
+
+.autocomplete-icon {
+  font-size: 1.1rem;
+}
+
+.autocomplete-text {
+  flex: 1;
+}
+
+.autocomplete-name {
+  color: var(--text-main);
+  font-weight: 700;
+  font-size: 0.88rem;
+}
+
+.autocomplete-sub {
+  color: var(--text-muted);
+  font-size: 0.72rem;
+}
+
+/* =========================================================================
+   ROUTE REVIEW CARD & CONFIRMATION
+   ========================================================================= */
+
+.route-review-card {
+  background: rgba(13, 21, 42, 0.95);
+  border: 1px solid var(--border-gold);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  margin-bottom: 12px;
+}
+
+.route-point-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 0;
+}
+
+.route-point-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.88rem;
+  color: var(--text-main);
+  flex: 1;
+}
+
+.edit-point-btn {
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  color: var(--gold-bright);
+  font-size: 0.75rem;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.edit-point-btn:hover {
+  background: rgba(212, 175, 55, 0.2);
+}
+
+/* =========================================================================
+   OTP VERIFICATION BOXES
+   ========================================================================= */
+
+.otp-boxes-group {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  direction: ltr;
+  margin: 16px 0;
+}
+
+.otp-digit-input {
+  width: 52px;
+  height: 56px;
+  font-size: 1.8rem;
+  font-weight: 800;
+  text-align: center;
+  background: #0B132B;
+  border: 2px solid var(--border-gold);
+  border-radius: var(--radius-md);
+  color: var(--gold-bright);
+  outline: none;
+  transition: all 0.25s ease;
+}
+
+.otp-digit-input:focus {
+  border-color: var(--gold-bright);
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+}
+
+/* =========================================================================
+   RIDE HISTORY & TRANSACTIONS LIST
+   ========================================================================= */
+
+.trip-history-item {
+  background: rgba(13, 21, 42, 0.7);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  transition: all 0.2s ease;
+}
+
+.trip-history-item:hover {
+  border-color: var(--border-gold);
+}
+
+.trip-history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.rebook-btn {
+  background: var(--gold-gradient);
+  border: none;
+  color: #060B17;
+  font-family: var(--font-main);
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+}
+
+/* =========================================================================
+   PROMOTIONS & COUPONS
+   ========================================================================= */
+
+.promo-card {
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.15) 0%, rgba(10, 42, 107, 0.25) 100%);
+  border: 1px dashed var(--gold-primary);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.promo-code-badge {
+  font-family: monospace;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--gold-bright);
+  letter-spacing: 2px;
+}
+
+/* =========================================================================
+   LUXURY CAPITAL CAROUSEL (RTL & TOUCH-ENABLED NATIVE + SWIPER COMPATIBLE)
+   ========================================================================= */
+
+.carousel-section {
+  margin-top: 1rem;
+  margin-bottom: 3.5rem;
+}
+
+.capital-carousel,
+.swiper.mySwiper {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-gold);
+  background: var(--bg-surface);
+  box-shadow: 0 16px 45px -10px rgba(0, 0, 0, 0.8), 0 0 20px rgba(212, 175, 55, 0.15);
+  user-select: none;
+  touch-action: pan-y;
+}
+
+.carousel-track-container {
+  overflow: hidden;
+  width: 100%;
+  position: relative;
+}
+
+.carousel-track,
+.swiper-wrapper {
+  display: flex;
+  transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+  will-change: transform;
+  width: 100%;
+}
+
+.carousel-slide,
+.swiper-slide {
+  min-width: 100%;
+  width: 100%;
+  flex-shrink: 0;
+  position: relative;
+  height: 440px;
+  background: #060B17;
+  overflow: hidden;
+}
+
+.carousel-slide img,
+.swiper-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  transition: transform 0.8s ease;
+}
+
+.capital-carousel:hover .carousel-slide.active img {
+  transform: scale(1.03);
+}
+
+.slide-overlay-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(5, 8, 17, 0.96) 0%, rgba(5, 8, 17, 0.75) 50%, transparent 100%);
+  padding: 30px 32px 24px;
+  color: var(--text-main);
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.slide-caption-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(212, 175, 55, 0.2);
+  border: 1px solid var(--gold-primary);
+  color: var(--gold-bright);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 3px 12px;
+  border-radius: var(--radius-full);
+  align-self: flex-start;
+}
+
+.slide-overlay-caption h4 {
+  font-family: var(--font-heading);
+  font-size: 1.35rem;
+  color: var(--text-main);
+  margin: 0;
+  font-weight: 800;
+}
+
+.slide-overlay-caption p {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  margin: 0;
+  max-width: 700px;
+}
+
+.carousel-btn,
+.swiper-button-prev,
+.swiper-button-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(10, 17, 36, 0.85);
+  border: 1px solid var(--gold-primary);
+  color: var(--gold-bright);
+  font-size: 1.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 20;
+  transition: all 0.25s ease;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+.swiper-button-prev::after,
+.swiper-button-next::after {
+  display: none !important;
+}
+
+.carousel-btn:hover,
+.swiper-button-prev:hover,
+.swiper-button-next:hover {
+  background: var(--gold-gradient);
+  color: #050811;
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.6);
+  transform: translateY(-50%) scale(1.08);
+}
+
+/* RTL-aware positioning: In RTL, Next advances leftward, Prev advances rightward */
+.carousel-btn-prev,
+.swiper-button-prev {
+  right: 18px;
+  left: auto;
+}
+
+.carousel-btn-next,
+.swiper-button-next {
+  left: 18px;
+  right: auto;
+}
+
+.carousel-indicators,
+.swiper-pagination {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 20;
+}
+
+.carousel-indicator,
+.swiper-pagination-bullet {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.35);
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  opacity: 1 !important;
+}
+
+.carousel-indicator.active,
+.swiper-pagination-bullet-active {
+  width: 28px;
+  border-radius: var(--radius-full);
+  background: var(--gold-gradient) !important;
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.7);
+}
+
+/* Demo Notice Watermark Pill */
+.demo-notice-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  color: #FCD34D;
+  border-radius: var(--radius-full);
+  font-size: 0.72rem;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+  .carousel-slide,
+  .swiper-slide {
+    height: 330px;
+  }
+  .slide-overlay-caption {
+    padding: 20px 22px 18px;
+  }
+  .slide-overlay-caption h4 {
+    font-size: 1.15rem;
+  }
+  .slide-overlay-caption p {
+    font-size: 0.8rem;
+  }
+  .carousel-btn,
+  .swiper-button-prev,
+  .swiper-button-next {
+    width: 40px;
+    height: 40px;
+    font-size: 1.4rem;
+  }
+}
+
+@media (max-width: 540px) {
+  .carousel-slide,
+  .swiper-slide {
+    height: 250px;
+  }
+  .slide-overlay-caption {
+    padding: 14px 16px 14px;
+  }
+  .slide-overlay-caption h4 {
+    font-size: 1rem;
+  }
+  .slide-overlay-caption p {
+    display: none; /* Hide long description on small phones to keep slide clean */
+  }
+  .slide-caption-tag {
+    font-size: 0.68rem;
+    padding: 2px 8px;
+  }
+  .carousel-btn,
+  .swiper-button-prev,
+  .swiper-button-next {
+    width: 34px;
+    height: 34px;
+    font-size: 1.2rem;
+  }
+  .carousel-btn-prev,
+  .swiper-button-prev {
+    right: 8px;
+  }
+  .carousel-btn-next,
+  .swiper-button-next {
+    left: 8px;
+  }
+}
+
+/* Added hero banner and carousel image aspect ratio */
+.hero-banner-img,
+.carousel-slide img {
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
 }

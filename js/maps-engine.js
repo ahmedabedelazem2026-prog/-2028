@@ -250,72 +250,204 @@ export class MapsEngine {
   }
 
   /**
-   * Sets pickup location marker
+   * Sets pickup location marker (Draggable by customer)
    */
-  setPickupMarker({ lat, lng, title = "نقطة الانطلاق" }) {
+  setPickupMarker({ lat, lng, title = "نقطة الانطلاق", draggable = true, onDragEnd = null }) {
     if (this.mapType === "google" && this.googleMap && window.google) {
       if (this.pickupMarker) this.pickupMarker.setMap(null);
       this.pickupMarker = new window.google.maps.Marker({
         position: { lat, lng },
         map: this.googleMap,
         title,
+        draggable: !!draggable,
         icon: {
           path: window.google.maps.SymbolPath.CIRCLE,
-          scale: 10,
+          scale: 11,
           fillColor: "#10B981", // Green
           fillOpacity: 1,
           strokeColor: "#FFFFFF",
           strokeWeight: 3
         }
       });
+
+      if (draggable && typeof onDragEnd === "function") {
+        this.pickupMarker.addListener("dragend", async (e) => {
+          const newLat = e.latLng.lat();
+          const newLng = e.latLng.lng();
+          const address = await this.reverseGeocode({ lat: newLat, lng: newLng });
+          onDragEnd({ lat: newLat, lng: newLng, address });
+        });
+      }
+
       this.googleMap.panTo({ lat, lng });
     } else if (this.leafletMap && window.L) {
       if (this.pickupMarker) this.pickupMarker.remove();
       const greenIcon = window.L.divIcon({
         className: "custom-map-pin green-pin",
-        html: '<div style="background:#10B981;width:24px;height:24px;border-radius:50%;border:3px solid #FFF;box-shadow:0 0 10px rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:bold;">A</div>',
-        iconSize: [24, 24],
-        iconAnchor: [12, 12]
+        html: '<div style="background:#10B981;width:26px;height:26px;border-radius:50%;border:3px solid #FFF;box-shadow:0 0 12px rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:bold;cursor:grab;">A</div>',
+        iconSize: [26, 26],
+        iconAnchor: [13, 13]
       });
-      this.pickupMarker = window.L.marker([lat, lng], { icon: greenIcon })
+      this.pickupMarker = window.L.marker([lat, lng], { icon: greenIcon, draggable: !!draggable })
         .addTo(this.leafletMap)
-        .bindPopup(`<b>${title}</b>`)
-        .openPopup();
+        .bindPopup(`<b>${title}</b><br><small style="color:#64748B;">اسحب الدبوس لتعديل نقطة الركوب</small>`);
+
+      if (draggable && typeof onDragEnd === "function") {
+        this.pickupMarker.on("dragend", async (e) => {
+          const { lat: newLat, lng: newLng } = e.target.getLatLng();
+          const address = await this.reverseGeocode({ lat: newLat, lng: newLng });
+          onDragEnd({ lat: newLat, lng: newLng, address });
+        });
+      }
+
       this.leafletMap.panTo([lat, lng]);
     }
   }
 
   /**
-   * Sets destination marker
+   * Sets destination marker (Draggable by customer)
    */
-  setDestinationMarker({ lat, lng, title = "الوجهة" }) {
+  setDestinationMarker({ lat, lng, title = "الوجهة", draggable = true, onDragEnd = null }) {
     if (this.mapType === "google" && this.googleMap && window.google) {
       if (this.destinationMarker) this.destinationMarker.setMap(null);
       this.destinationMarker = new window.google.maps.Marker({
         position: { lat, lng },
         map: this.googleMap,
         title,
+        draggable: !!draggable,
         icon: {
           path: window.google.maps.SymbolPath.CIRCLE,
-          scale: 10,
+          scale: 11,
           fillColor: "#EF4444", // Red
           fillOpacity: 1,
           strokeColor: "#FFFFFF",
           strokeWeight: 3
         }
       });
+
+      if (draggable && typeof onDragEnd === "function") {
+        this.destinationMarker.addListener("dragend", async (e) => {
+          const newLat = e.latLng.lat();
+          const newLng = e.latLng.lng();
+          const address = await this.reverseGeocode({ lat: newLat, lng: newLng });
+          onDragEnd({ lat: newLat, lng: newLng, address });
+        });
+      }
     } else if (this.leafletMap && window.L) {
       if (this.destinationMarker) this.destinationMarker.remove();
       const redIcon = window.L.divIcon({
         className: "custom-map-pin red-pin",
-        html: '<div style="background:#EF4444;width:24px;height:24px;border-radius:50%;border:3px solid #FFF;box-shadow:0 0 10px rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:bold;">B</div>',
-        iconSize: [24, 24],
-        iconAnchor: [12, 12]
+        html: '<div style="background:#EF4444;width:26px;height:26px;border-radius:50%;border:3px solid #FFF;box-shadow:0 0 12px rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:bold;cursor:grab;">B</div>',
+        iconSize: [26, 26],
+        iconAnchor: [13, 13]
       });
-      this.destinationMarker = window.L.marker([lat, lng], { icon: redIcon })
+      this.destinationMarker = window.L.marker([lat, lng], { icon: redIcon, draggable: !!draggable })
         .addTo(this.leafletMap)
-        .bindPopup(`<b>${title}</b>`)
-        .openPopup();
+        .bindPopup(`<b>${title}</b><br><small style="color:#64748B;">اسحب الدبوس لتعديل وجهة الوصول</small>`);
+
+      if (draggable && typeof onDragEnd === "function") {
+        this.destinationMarker.on("dragend", async (e) => {
+          const { lat: newLat, lng: newLng } = e.target.getLatLng();
+          const address = await this.reverseGeocode({ lat: newLat, lng: newLng });
+          onDragEnd({ lat: newLat, lng: newLng, address });
+        });
+      }
+    }
+  }
+
+  /**
+   * Reverse Geocodes coordinates to human readable address in Al-Arish
+   */
+  async reverseGeocode({ lat, lng }) {
+    // 1. Check Google Maps Geocoder
+    if (window.google && window.google.maps && window.google.maps.Geocoder) {
+      try {
+        const geocoder = new window.google.maps.Geocoder();
+        const res = await new Promise((resolve) => {
+          geocoder.geocode({ location: { lat, lng } }, (results, status) => {
+            if (status === "OK" && results && results[0]) {
+              resolve(results[0].formatted_address);
+            } else {
+              resolve(null);
+            }
+          });
+        });
+        if (res) return res;
+      } catch (e) {
+        console.warn("Geocoder fallback:", e);
+      }
+    }
+
+    // 2. Proximity check with Al-Arish famous landmarks
+    let closestLandmark = null;
+    let minDistance = Infinity;
+    for (const lm of googleMapsConfig.arishLandmarks) {
+      const dist = this.calculateHaversineDistance({ lat, lng }, lm);
+      if (dist < minDistance) {
+        minDistance = dist;
+        closestLandmark = lm;
+      }
+    }
+
+    if (closestLandmark && minDistance < 0.6) {
+      return `${closestLandmark.name} (بالقرب من)`;
+    } else if (closestLandmark && minDistance < 2.0) {
+      return `منطقة ${closestLandmark.name} - العريش`;
+    }
+
+    return `العريش (${lat.toFixed(4)}, ${lng.toFixed(4)})`;
+  }
+
+  /**
+   * Gets user GPS location with friendly feedback
+   */
+  getUserLocation() {
+    return new Promise((resolve, reject) => {
+      if (!navigator.geolocation) {
+        return reject(new Error("المتصفح لا يدعم تحديد الموقع الجغرافي"));
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+          const address = await this.reverseGeocode({ lat, lng });
+          resolve({ lat, lng, address });
+        },
+        (error) => {
+          let msg = "تعذر الحصول على الموقع الجغرافي";
+          if (error.code === error.PERMISSION_DENIED) {
+            msg = "تم رفض إذن تحديد الموقع. يمكنك إدخال الموقع يدوياً.";
+          } else if (error.code === error.TIMEOUT) {
+            msg = "انتهت مهلة تحديد الموقع. يرجى المحاولة أو التحديد يدوياً.";
+          }
+          reject(new Error(msg));
+        },
+        { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 }
+      );
+    });
+  }
+
+  /**
+   * Searches landmarks and streets in Al-Arish
+   */
+  searchLandmarks(query) {
+    if (!query || query.trim().length === 0) return [];
+    const clean = query.trim().toLowerCase();
+    return googleMapsConfig.arishLandmarks.filter(lm => 
+      lm.name.toLowerCase().includes(clean) || 
+      (lm.category && lm.category.toLowerCase().includes(clean))
+    );
+  }
+
+  /**
+   * Forces map container resize when orientation or device mode changes
+   */
+  invalidateSize() {
+    if (this.mapType === "google" && this.googleMap && window.google) {
+      window.google.maps.event.trigger(this.googleMap, "resize");
+    } else if (this.leafletMap) {
+      this.leafletMap.invalidateSize();
     }
   }
 
