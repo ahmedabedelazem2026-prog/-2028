@@ -5,9 +5,9 @@
   "description": "CAPITAL TAXI - Complete Smart Taxi PWA Platform for Al-Arish & North Sinai",
   "main": "index.html",
   "scripts": {
-    "start": "npx serve -l 3000 .",
-    "dev": "npx serve -l 3000 .",
-    "test": "node tests/system.test.js"
+    "start": "node server.cjs",
+    "dev": "node server.cjs",
+    "test": "node tests/system.test.js && node tests/security.test.js"
   },
   "keywords": [
     "taxi",
@@ -19,5 +19,9 @@
     "google-maps"
   ],
   "author": "Capital Taxi Team",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "^6.0.0",
+    "firebase-admin": "^14.5.0"
+  }
 }
