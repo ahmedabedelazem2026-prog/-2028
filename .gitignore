@@ -3,3 +3,17 @@ node_modules/
 .env.local
 .DS_Store
 *.log
+*.local
+backups/
+tests/drive_dump.html
+
+# Exclude generated WhatsApp screenshots
+assets/images/WhatsApp Image*
+assets/images/advertising/WhatsApp Image*
+
+# Firebase hosting cache
+.firebase/hosting..cache
+
+# Generated helper file
+all_files.txt
+

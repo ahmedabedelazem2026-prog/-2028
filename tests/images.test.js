@@ -42,6 +42,8 @@ matches.forEach((m, idx) => {
   const srcMatch = fullTag.match(srcRegex);
   if (srcMatch) {
     const webPath = srcMatch[1];
+    // Skip template literal interpolations inside dynamic JS blocks
+    if (webPath.includes('${')) return;
     checkedSrcs.add(webPath);
     const diskPath = path.join(__dirname, '..', webPath.replace(/^\//, ''));
     const exists = fs.existsSync(diskPath);

@@ -22,13 +22,30 @@
     "trips": {
       ".read": "auth != null",
       "$tripId": {
-        ".write": "auth != null && (root.child('admins').child(auth.uid).val() === true || (!data.exists() && newData.child('customerId').val() === auth.uid && !newData.child('driverId').exists() && (newData.child('status').val() === 'searching' || newData.child('status').val() === 'pending' || newData.child('status').val() === 'REQUESTED')) || (data.exists() && data.child('customerId').val() === auth.uid && (data.child('status').val() === 'searching' || data.child('status').val() === 'pending' || data.child('status').val() === 'REQUESTED') && newData.child('status').val() === 'cancelled' && (!data.child('driverId').exists() || newData.child('driverId').val() === data.child('driverId').val())) || (!data.child('driverId').exists() && newData.child('driverId').val() === auth.uid && root.child('drivers').child(auth.uid).child('approved').val() === true && (data.child('status').val() === 'searching' || data.child('status').val() === 'pending' || data.child('status').val() === 'REQUESTED') && (newData.child('status').val() === 'accepted' || newData.child('status').val() === 'ACCEPTED')) || (data.child('driverId').val() === auth.uid && newData.child('driverId').val() === auth.uid))",
-        ".validate": "newData.hasChildren(['status', 'from', 'to', 'price']) && (!data.exists() || newData.child('price').val() === data.child('price').val()) && (!data.exists() || data.child('customerId').val() === newData.child('customerId').val()) && (!data.exists() || data.child('status').val() !== 'completed' || newData.child('status').val() === 'completed' || root.child('admins').child(auth.uid).val() === true)",
+        ".write": "auth != null && (root.child('admins').child(auth.uid).val() === true || (!data.exists() && newData.child('customerId').val() === auth.uid && !newData.child('driverId').exists() && (newData.child('status').val() === 'searching' || newData.child('status').val() === 'pending' || newData.child('status').val() === 'REQUESTED')) || (data.exists() && data.child('customerId').val() === auth.uid && (data.child('status').val() === 'searching' || data.child('status').val() === 'pending' || data.child('status').val() === 'REQUESTED') && newData.child('status').val() === 'cancelled' && (!data.child('driverId').exists() || newData.child('driverId').val() === data.child('driverId').val())) || (!data.child('driverId').exists() && newData.child('driverId').val() === auth.uid && root.child('drivers').child(auth.uid).child('approved').val() === true && (data.child('status').val() === 'searching' || data.child('status').val() === 'pending' || data.child('status').val() === 'REQUESTED') && (newData.child('status').val() === 'accepted' || newData.child('status').val() === 'ACCEPTED')) || (data.exists() && data.child('customerId').val() === auth.uid && (!data.child('driverId').exists() || data.child('driverId').val() === '') && newData.hasChild('driverId') && newData.child('driverId').val() !== '' && (newData.child('status').val() === 'accepted' || newData.child('status').val() === 'ACCEPTED')) || (data.child('driverId').val() === auth.uid && newData.child('driverId').val() === auth.uid))",
+        ".validate": "newData.hasChildren(['status', 'from', 'to']) && (!data.exists() || !data.hasChild('driverId') || data.child('driverId').val() === '' || !data.hasChild('price') || newData.child('price').val() === data.child('price').val() || root.child('admins').child(auth.uid).val() === true) && (!data.exists() || data.child('customerId').val() === newData.child('customerId').val()) && (!data.exists() || data.child('status').val() !== 'completed' || newData.child('status').val() === 'completed' || root.child('admins').child(auth.uid).val() === true)",
         "statusTimeline": {
           "$logId": {
             ".validate": "!data.exists() && newData.exists()"
           }
         }
+      }
+    },
+    "trip_offers": {
+      ".read": "auth != null",
+      "$tripId": {
+        ".write": "auth != null",
+        "$driverId": {
+          ".write": "auth != null && (auth.uid === $driverId && root.child('drivers').child(auth.uid).child('approved').val() === true || root.child('trips').child($tripId).child('customerId').val() === auth.uid || root.child('admins').child(auth.uid).val() === true)",
+          ".validate": "newData.hasChildren(['price', 'timestamp']) && (!newData.hasChild('driverId') || newData.child('driverId').val() === $driverId)"
+        }
+      }
+    },
+    "campaigns": {
+      ".read": true,
+      ".write": "auth != null && root.child('admins').child(auth.uid).val() === true",
+      "$campaignId": {
+        ".validate": "newData.hasChildren(['name', 'image', 'active'])"
       }
     },
     "driver_requests": {

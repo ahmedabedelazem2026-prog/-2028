@@ -12,13 +12,17 @@
   <link rel="apple-touch-icon" href="/icons/icon-192.png">
 
   <!-- Favicon -->
-  <link rel="icon" type="image/jpeg" href="/assets/images/logo-badge.jpg">
+  <link rel="icon" type="image/jpeg" href="/assets/images/advertising/logo-badge.jpg">
 
   <!-- Stylesheet -->
   <link rel="stylesheet" href="/css/styles.css">
   <link rel="stylesheet" href="/css/design-system.css">
   <!-- Swiper CSS (Carousel) -->
   <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+  <!-- Leaflet CSS for Maps & Live Fleet Map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body>
 
@@ -30,7 +34,7 @@
       
       <!-- Brand Logo & Titles -->
       <div class="brand-wrapper" onclick="window.app.switchView('landing')">
-        <img src="/assets/images/logo-badge.jpg" alt="تاكسي العاصمة كود 1" class="brand-logo-img" onerror="this.onerror=null; this.src='/assets/images/logo-badge.jpg';">
+        <img src="/assets/images/advertising/logo-badge.jpg" alt="تاكسي العاصمة كود 1" class="brand-logo-img" onerror="this.onerror=null; this.src='/assets/images/advertising/logo-badge.jpg';">
         <div class="brand-titles">
           <h1>تاكسي العاصمة</h1>
           <p>CAPITAL TAXI • كود 1 شمال سيناء</p>
@@ -137,7 +141,7 @@
 
         <!-- Hero Visual Banner -->
         <div class="hero-visual-card">
-          <img src="/assets/images/hero-arish-landmarks.jpg" alt="معالم العريش وتاكسي العاصمة" class="hero-banner-img" onerror="this.onerror=null; this.src='/assets/images/logo-badge.jpg';">
+          <img src="/assets/images/advertising/hero-arish-landmarks.jpg" alt="معالم العريش وتاكسي العاصمة" class="hero-banner-img" onerror="this.onerror=null; this.src='/assets/images/advertising/logo-badge.jpg';">
           <div class="floating-stats-pill">
             <div style="font-size: 1.8rem;">⭐</div>
             <div>
@@ -208,7 +212,7 @@
           <div class="carousel-track swiper-wrapper">
             <!-- Slide 1 -->
             <div class="carousel-slide swiper-slide active">
-              <img src="/assets/images/hero-arish-landmarks.jpg" loading="eager" alt="معالم العريش وأسطول تاكسي العاصمة" onerror="this.onerror=null; this.src='/assets/images/logo-badge.jpg';">
+              <img src="/assets/images/advertising/hero-arish-landmarks.jpg" loading="eager" alt="معالم العريش وأسطول تاكسي العاصمة" onerror="this.onerror=null; this.src='/assets/images/advertising/logo-badge.jpg';">
               <div class="slide-overlay-caption">
                 <span class="slide-caption-tag">📍 معالم العريش</span>
                 <h4>أسطول تاكسي العاصمة في خدمة أهالي سيناء</h4>
@@ -217,7 +221,7 @@
             </div>
             <!-- Slide 2 -->
             <div class="carousel-slide swiper-slide">
-              <img src="/assets/images/arish-beach-palms.jpg" loading="lazy" alt="كورنيش وشاطئ النخيل بالعريش" onerror="this.onerror=null; this.src='/assets/images/logo-badge.jpg';">
+              <img src="/assets/images/advertising/arish-beach-palms.jpg" loading="lazy" alt="كورنيش وشاطئ النخيل بالعريش" onerror="this.onerror=null; this.src='/assets/images/advertising/logo-badge.jpg';">
               <div class="slide-overlay-caption">
                 <span class="slide-caption-tag">🌴 شاطئ النخيل</span>
                 <h4>مشاوير الكورنيش والساحل السريعة والمريحة</h4>
@@ -226,7 +230,7 @@
             </div>
             <!-- Slide 3 -->
             <div class="carousel-slide swiper-slide">
-              <img src="/assets/images/arish-city-panoramic.jpg" loading="lazy" alt="بانوراما مدينة العريش" onerror="this.onerror=null; this.src='/assets/images/logo-badge.jpg';">
+              <img src="/assets/images/advertising/arish-city-panoramic.jpg" loading="lazy" alt="بانوراما مدينة العريش" onerror="this.onerror=null; this.src='/assets/images/advertising/logo-badge.jpg';">
               <div class="slide-overlay-caption">
                 <span class="slide-caption-tag">🏙️ بانوراما العريش</span>
                 <h4>الربط بين كافة أحياء وميادين المدينة</h4>
@@ -235,7 +239,7 @@
             </div>
             <!-- Slide 4 -->
             <div class="carousel-slide swiper-slide">
-              <img src="/assets/images/arish-coast-beach.jpg" loading="lazy" alt="ساحل البحر الأبيض المتوسط بالعريش" onerror="this.onerror=null; this.src='/assets/images/logo-badge.jpg';">
+              <img src="/assets/images/advertising/arish-coast-beach.jpg" loading="lazy" alt="ساحل البحر الأبيض المتوسط بالعريش" onerror="this.onerror=null; this.src='/assets/images/advertising/logo-badge.jpg';">
               <div class="slide-overlay-caption">
                 <span class="slide-caption-tag">🏖️ ساحل البحر</span>
                 <h4>رحلات سريعة بأسعار واضحة ومحددة</h4>
@@ -244,7 +248,7 @@
             </div>
             <!-- Slide 5 -->
             <div class="carousel-slide swiper-slide">
-              <img src="/assets/images/banner-app-mockup.jpg" loading="lazy" alt="تطبيق تاكسي العاصمة كود 1" onerror="this.onerror=null; this.src='/assets/images/logo-badge.jpg';">
+              <img src="/assets/images/advertising/banner-app-mockup.jpg" loading="lazy" alt="تطبيق تاكسي العاصمة كود 1" onerror="this.onerror=null; this.src='/assets/images/advertising/logo-badge.jpg';">
               <div class="slide-overlay-caption">
                 <span class="slide-caption-tag">📲 تطبيق الويب الذكي</span>
                 <h4>تجربة حجز رقمية متكاملة كود 1</h4>
@@ -253,7 +257,7 @@
             </div>
             <!-- Slide 6 -->
             <div class="carousel-slide swiper-slide">
-              <img src="/assets/images/service-city.jpg" loading="lazy" alt="أسطول سيارات تاكسي العاصمة الحديثة" onerror="this.onerror=null; this.src='/assets/images/logo-badge.jpg';">
+              <img src="/assets/images/advertising/service-city.jpg" loading="lazy" alt="أسطول سيارات تاكسي العاصمة الحديثة" onerror="this.onerror=null; this.src='/assets/images/advertising/logo-badge.jpg';">
               <div class="slide-overlay-caption">
                 <span class="slide-caption-tag">🚕 أسطول السيارات الحديثة</span>
                 <h4>تاكسي العاصمة • CAPITAL TAXI</h4>
@@ -293,7 +297,7 @@
         </div>
         <div class="feature-box">
           <div class="service-card-media">
-            <img src="/assets/images/service-city.jpg" alt="أسطول سيارات مكيف تاكسي العاصمة" loading="lazy" onerror="this.onerror=null; this.src='/assets/images/logo-badge.jpg';">
+            <img src="/assets/images/advertising/service-city.jpg" alt="أسطول سيارات مكيف تاكسي العاصمة" loading="lazy" onerror="this.onerror=null; this.src='/assets/images/advertising/logo-badge.jpg';">
           </div>
           <div class="feature-icon-circle">🚗</div>
           <h4>أسطول سيارات مكيف</h4>
@@ -301,7 +305,7 @@
         </div>
         <div class="feature-box">
           <div class="service-card-media">
-            <img src="/assets/images/service-students.jpg" alt="توصيل طلاب الجامعات بالعريش" loading="lazy" onerror="this.onerror=null; this.src='/assets/images/logo-badge.jpg';">
+            <img src="/assets/images/advertising/service-students.jpg" alt="توصيل طلاب الجامعات بالعريش" loading="lazy" onerror="this.onerror=null; this.src='/assets/images/advertising/logo-badge.jpg';">
           </div>
           <div class="feature-icon-circle">🎓</div>
           <h4>توصيل طلاب الجامعات</h4>
@@ -309,7 +313,7 @@
         </div>
         <div class="feature-box">
           <div class="service-card-media">
-            <img src="/assets/images/service-intercity.jpg" alt="سفريات خارج العريش والمحافظات" loading="lazy" onerror="this.onerror=null; this.src='/assets/images/logo-badge.jpg';">
+            <img src="/assets/images/advertising/service-intercity.jpg" alt="سفريات خارج العريش والمحافظات" loading="lazy" onerror="this.onerror=null; this.src='/assets/images/advertising/logo-badge.jpg';">
           </div>
           <div class="feature-icon-circle">🛣️</div>
           <h4>سفريات خارج العريش</h4>
@@ -317,6 +321,59 @@
         </div>
       </div>
     </section>
+
+    <!-- Professional Footer Section -->
+    <footer class="site-footer">
+      <div class="container">
+        <div class="footer-grid">
+          <div class="footer-brand">
+            <div class="brand-wrapper" style="cursor:default;">
+              <img src="/assets/images/advertising/logo-badge.jpg" alt="تاكسي العاصمة" class="brand-logo-img" style="width:42px;height:42px;" onerror="this.onerror=null; this.src='/assets/images/advertising/logo-badge.jpg';">
+              <div class="brand-titles">
+                <h4 style="font-family:var(--font-heading); font-size:1.2rem; background:var(--gold-gradient); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">تاكسي العاصمة</h4>
+                <p style="font-size:0.75rem; color:var(--text-muted);">CAPITAL TAXI • كود 1 شمال سيناء</p>
+              </div>
+            </div>
+            <p style="font-size:0.85rem; color:var(--text-muted); margin-top:12px; max-width:320px; line-height:1.7;">المنصة الذكية الأولى للنقل في شمال سيناء. خدمة آمنة وموثوقة على مدار الساعة بأسطول حديث ومكيف.</p>
+          </div>
+
+          <div class="footer-links-col">
+            <h5>روابط سريعة</h5>
+            <ul>
+              <li><a href="javascript:void(0)" onclick="window.app.switchView('customer')">🚖 احجز رحلة</a></li>
+              <li><a href="javascript:void(0)" onclick="window.app.switchView('driver')">🚗 انضم ككابتن</a></li>
+              <li><a href="javascript:void(0)" onclick="document.getElementById('supportModal').classList.add('open')">🎧 المساعدة والدعم</a></li>
+              <li><a href="javascript:void(0)" onclick="document.getElementById('safetyModal').classList.add('open')">🛡️ مركز الأمان</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-links-col">
+            <h5>خدماتنا</h5>
+            <ul>
+              <li><span>🏙️ مشاوير داخل العريش</span></li>
+              <li><span>🛣️ سفريات خارجية</span></li>
+              <li><span>🎓 توصيل طلاب الجامعات</span></li>
+              <li><span>✈️ رحلات المطارات</span></li>
+            </ul>
+          </div>
+
+          <div class="footer-links-col">
+            <h5>تواصل معنا</h5>
+            <ul>
+              <li><a href="tel:01094129592">📞 01094129592</a></li>
+              <li><a href="https://wa.me/201094129592" target="_blank" rel="noopener">💬 واتساب مباشر</a></li>
+              <li><span>📍 العريش – شمال سيناء – مصر</span></li>
+              <li><span>🕒 متاح 24 ساعة يومياً</span></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="footer-bottom">
+          <p>© 2026 تاكسي العاصمة – CAPITAL TAXI. جميع الحقوق محفوظة.</p>
+          <p style="font-size:0.75rem; color:var(--text-dim);">منصة النقل الذكي بمدينة العريش وشمال سيناء – كود 1</p>
+        </div>
+      </div>
+    </footer>
 
   </main>
 
@@ -331,7 +388,7 @@
         
         <!-- Al-Arish Authentic Photography Banner Card -->
         <div class="arish-photo-hero-card">
-          <img id="arishHeroImg" src="/assets/images/hero-arish-landmarks.jpg" alt="كورنيش وشواطئ العريش الحقيقية" onerror="this.onerror=null; this.src='/assets/images/logo-badge.jpg';">
+          <img id="arishHeroImg" src="/assets/images/advertising/hero-arish-landmarks.jpg" alt="كورنيش وشواطئ العريش الحقيقية" onerror="this.onerror=null; this.src='/assets/images/advertising/logo-badge.jpg';">
           <div class="arish-photo-hero-overlay">
             <span class="arish-badge-tag">📍 صور فوتوغرافية حقيقية لمدينة العريش</span>
             <h4 class="arish-photo-title">تاكسي العاصمة • كود 1 شمال سيناء</h4>
@@ -367,35 +424,35 @@
         </div>
         <div class="arish-landmarks-scroll-row">
           <div class="landmark-photo-chip" onclick="window.app.selectAlArishLandmark('beach')" title="شاطئ العريش والكورنيش">
-            <img src="/assets/images/arish-beach-palms.jpg" class="landmark-photo-thumb" alt="شاطئ النخيل" loading="lazy" onerror="this.onerror=null; this.src='/assets/images/logo-badge.jpg';">
+            <img src="/assets/images/advertising/arish-beach-palms.jpg" class="landmark-photo-thumb" alt="شاطئ النخيل" loading="lazy" onerror="this.onerror=null; this.src='/assets/images/advertising/logo-badge.jpg';">
             <div>
               <div style="font-size:0.8rem; font-weight:700; color:var(--text-main);">شاطئ النخيل والكورنيش</div>
               <div style="font-size:0.68rem; color:var(--gold-bright);">الساحل السياحي</div>
             </div>
           </div>
           <div class="landmark-photo-chip" onclick="window.app.selectAlArishLandmark('univ_sinai')" title="جامعة سيناء">
-            <img src="/assets/images/arish-coast-beach.jpg" class="landmark-photo-thumb" alt="جامعة سيناء" loading="lazy" onerror="this.onerror=null; this.src='/assets/images/logo-badge.jpg';">
+            <img src="/assets/images/advertising/arish-coast-beach.jpg" class="landmark-photo-thumb" alt="جامعة سيناء" loading="lazy" onerror="this.onerror=null; this.src='/assets/images/advertising/logo-badge.jpg';">
             <div>
               <div style="font-size:0.8rem; font-weight:700; color:var(--text-main);">جامعة سيناء (المساعيد)</div>
               <div style="font-size:0.68rem; color:var(--text-muted);">حي المساعيد</div>
             </div>
           </div>
           <div class="landmark-photo-chip" onclick="window.app.selectAlArishLandmark('nasr_mosque')" title="ميدان ومسجد النصر">
-            <img src="/assets/images/arish-city-panoramic.jpg" class="landmark-photo-thumb" alt="ميدان النصر" loading="lazy" onerror="this.onerror=null; this.src='/assets/images/logo-badge.jpg';">
+            <img src="/assets/images/advertising/arish-city-panoramic.jpg" class="landmark-photo-thumb" alt="ميدان النصر" loading="lazy" onerror="this.onerror=null; this.src='/assets/images/advertising/logo-badge.jpg';">
             <div>
               <div style="font-size:0.8rem; font-weight:700; color:var(--text-main);">ميدان النصر وسط البلد</div>
               <div style="font-size:0.68rem; color:var(--text-muted);">المركز التجاري</div>
             </div>
           </div>
           <div class="landmark-photo-chip" onclick="window.app.selectAlArishLandmark('univ_arish')" title="جامعة العريش">
-            <img src="/assets/images/hero-arish-landmarks.jpg" class="landmark-photo-thumb" alt="جامعة العريش" loading="lazy" onerror="this.onerror=null; this.src='/assets/images/logo-badge.jpg';">
+            <img src="/assets/images/advertising/hero-arish-landmarks.jpg" class="landmark-photo-thumb" alt="جامعة العريش" loading="lazy" onerror="this.onerror=null; this.src='/assets/images/advertising/logo-badge.jpg';">
             <div>
               <div style="font-size:0.8rem; font-weight:700; color:var(--text-main);">جامعة العريش</div>
               <div style="font-size:0.68rem; color:var(--text-muted);">ضاحية السلام</div>
             </div>
           </div>
           <div class="landmark-photo-chip" onclick="window.app.selectAlArishLandmark('hospital_general')" title="مستشفى العريش العام">
-            <img src="/assets/images/landmark-hospital.jpg" class="landmark-photo-thumb" alt="مستشفى العريش العام" loading="lazy" onerror="this.onerror=null; this.src='/assets/images/logo-badge.jpg';">
+            <img src="/assets/images/advertising/landmark-hospital.jpg" class="landmark-photo-thumb" alt="مستشفى العريش العام" loading="lazy" onerror="this.onerror=null; this.src='/assets/images/advertising/logo-badge.jpg';">
             <div>
               <div style="font-size:0.8rem; font-weight:700; color:var(--text-main);">مستشفى العريش العام</div>
               <div style="font-size:0.68rem; color:var(--text-muted);">شارع الجيش</div>
@@ -516,7 +573,7 @@
             
             <div class="car-card-option selected" data-cartype="economy">
               <div class="car-img-wrapper">
-                <img src="/assets/images/car-economy.jpg" alt="اقتصادي Capital Go" loading="lazy" onerror="this.onerror=null; this.src='/assets/images/logo-badge.jpg';">
+                <img src="/assets/images/advertising/car-economy.jpg" alt="اقتصادي Capital Go" loading="lazy" onerror="this.onerror=null; this.src='/assets/images/advertising/logo-badge.jpg';">
               </div>
               <div class="car-header">
                 <span class="car-icon">🚕</span>
@@ -528,7 +585,7 @@
 
             <div class="car-card-option" data-cartype="comfort">
               <div class="car-img-wrapper">
-                <img src="/assets/images/car-comfort.jpg" alt="كمفورت Comfort" loading="lazy" onerror="this.onerror=null; this.src='/assets/images/logo-badge.jpg';">
+                <img src="/assets/images/advertising/car-comfort.jpg" alt="كمفورت Comfort" loading="lazy" onerror="this.onerror=null; this.src='/assets/images/advertising/logo-badge.jpg';">
               </div>
               <div class="car-header">
                 <span class="car-icon">🚗</span>
@@ -540,7 +597,7 @@
 
             <div class="car-card-option" data-cartype="vip">
               <div class="car-img-wrapper">
-                <img src="/assets/images/car-vip.jpg" alt="العاصمة VIP Black" loading="lazy" onerror="this.onerror=null; this.src='/assets/images/logo-badge.jpg';">
+                <img src="/assets/images/advertising/car-vip.jpg" alt="العاصمة VIP Black" loading="lazy" onerror="this.onerror=null; this.src='/assets/images/advertising/logo-badge.jpg';">
               </div>
               <div class="car-header">
                 <span class="car-icon">✨</span>
@@ -552,7 +609,7 @@
 
             <div class="car-card-option" data-cartype="family">
               <div class="car-img-wrapper">
-                <img src="/assets/images/car-family.jpg" alt="عائلي Capital XL" loading="lazy" onerror="this.onerror=null; this.src='/assets/images/logo-badge.jpg';">
+                <img src="/assets/images/advertising/car-family.jpg" alt="عائلي Capital XL" loading="lazy" onerror="this.onerror=null; this.src='/assets/images/advertising/logo-badge.jpg';">
               </div>
               <div class="car-header">
                 <span class="car-icon">🚐</span>
@@ -632,10 +689,24 @@
             <div class="radar-circle circle3"></div>
             <div class="radar-center-taxi">🚕</div>
           </div>
-          <h4 style="color:var(--gold-bright); margin-top:12px;">جاري البحث عن أقرب كابتن في العريش...</h4>
-          <p style="font-size:0.8rem; color:var(--text-muted);">يتم إرسال طلبك للسيارات المتاحة في محيطك</p>
-          <button type="button" class="btn-reject" style="margin-top:10px; width:100%;" onclick="window.app.cancelCustomerSearching()">
-            إلغاء البحث
+          <h4 style="color:var(--gold-bright); margin-top:12px;">جاري إرسال الطلب واستقبال عروض الأسعار...</h4>
+          <p style="font-size:0.8rem; color:var(--text-muted);">السعر المرجعي المعتمد: <b id="customerRefFare" style="color:var(--gold-light);">30 ج.م</b> • يقدم الكباتن عروضهم لحظياً</p>
+
+          <!-- Bids / Negotiation Offers List for Customer -->
+          <div id="customerBidsContainer" style="margin-top:14px; text-align:right;">
+            <div style="font-size:0.82rem; font-weight:700; color:var(--gold-light); margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+              <span>⚡ عروض الأسعار الواردة من الكباتن:</span>
+              <span id="customerBidsCountBadge" class="live-badge" style="background:rgba(213,174,99,0.15); font-size:0.7rem;">0 عروض</span>
+            </div>
+            <div id="customerBidsList" style="display:flex; flex-direction:column; gap:8px; max-height:220px; overflow-y:auto; padding-right:2px;">
+              <div style="text-align:center; padding:10px; font-size:0.75rem; color:var(--text-muted); background:rgba(0,0,0,0.25); border-radius:6px;">
+                في انتظار تقديم أول كابتن لعرض سعر...
+              </div>
+            </div>
+          </div>
+
+          <button type="button" class="btn-reject" style="margin-top:12px; width:100%;" onclick="window.app.cancelCustomerSearching()">
+            إلغاء الطلب
           </button>
         </div>
 
@@ -644,7 +715,7 @@
           
           <div class="uber-driver-header">
             <div class="driver-avatar-circle">
-              <img src="/assets/images/driver-avatar.jpg" alt="صورة الكابتن" class="driver-avatar-img" onerror="this.onerror=null; this.src='/assets/images/logo-badge.jpg';">
+              <img src="/assets/images/advertising/driver-avatar.jpg" alt="صورة الكابتن" class="driver-avatar-img" onerror="this.onerror=null; this.src='/assets/images/advertising/logo-badge.jpg';">
             </div>
             <div style="flex:1;">
               <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -730,7 +801,7 @@
         
         <div class="driver-profile-header">
           <div class="driver-avatar">
-            <img src="/assets/images/driver-avatar.jpg" alt="صورة الكابتن" class="driver-avatar-img" onerror="this.onerror=null; this.src='/assets/images/logo-badge.jpg';">
+            <img src="/assets/images/advertising/driver-avatar.jpg" alt="صورة الكابتن" class="driver-avatar-img" onerror="this.onerror=null; this.src='/assets/images/advertising/logo-badge.jpg';">
           </div>
           <div>
             <h3 style="font-family:var(--font-heading); font-size:1.2rem; color:var(--gold-light);">كابتن تاكسي العاصمة</h3>
@@ -848,13 +919,33 @@
             <b>ملاحظة العميل:</b> <span id="incomingNotesText"></span>
           </div>
 
+          <!-- Driver Bidding / Counter-Offer Controls -->
+          <div class="card" style="padding:10px 12px; margin-top:8px; background:rgba(20,29,43,0.8); border:1px solid rgba(213,174,99,0.3);">
+            <div style="font-size:0.8rem; font-weight:700; color:var(--gold-light); margin-bottom:6px; display:flex; justify-content:space-between;">
+              <span>💰 تقديم عرض سعر مخصص (المزايدة):</span>
+              <span id="incomingBidStatusText" style="font-size:0.7rem; color:var(--text-muted);">السعر المرجعي</span>
+            </div>
+            <div style="display:flex; gap:6px; align-items:center;">
+              <input type="number" id="inputDriverCustomBid" class="input-field" style="width:100px; padding:6px 10px; font-weight:800; font-size:1rem; text-align:center; color:var(--gold-bright);" placeholder="السعر" />
+              <button type="button" class="btn-secondary-outline" style="padding:6px 10px; font-size:0.8rem; flex:1;" onclick="window.app.submitDriverBidOffer()">
+                📤 إرسال عرض السعر
+              </button>
+            </div>
+            <div style="display:flex; gap:6px; margin-top:6px;">
+              <button type="button" class="chip-btn" style="flex:1; padding:3px 6px; font-size:0.72rem;" onclick="window.app.adjustDriverBid(-5)">-5 ج.م</button>
+              <button type="button" class="chip-btn" style="flex:1; padding:3px 6px; font-size:0.72rem;" onclick="window.app.resetDriverBidToRef()">السعر المرجعي</button>
+              <button type="button" class="chip-btn" style="flex:1; padding:3px 6px; font-size:0.72rem;" onclick="window.app.adjustDriverBid(5)">+5 ج.م</button>
+              <button type="button" class="chip-btn" style="flex:1; padding:3px 6px; font-size:0.72rem;" onclick="window.app.adjustDriverBid(10)">+10 ج.م</button>
+            </div>
+          </div>
+
           <!-- Uber Slide-to-Accept Control -->
           <div style="font-size:0.75rem; color:var(--gold-bright); text-align:center; margin-bottom:6px; background:rgba(212,175,55,0.08); padding:6px; border-radius:6px;">
-            🔒 القبول الذري الآمن (يتطلب Cloud Functions في الإنتاج لمنع قبول أكثر من سائق، ومتاح للتجربة محلياً)
+            🔒 القبول المباشر بالسعر التقديري أو انتظار قبول العميل لعرضك المخصص
           </div>
           <div class="slide-to-action-container">
             <button id="btnAcceptTrip" class="btn-accept" style="width:100%; font-size:1.1rem; padding:14px;">
-              اسحب أو اضغط للقبول الفوري ✓
+              قبول مباشر بالسعر المرجعي ✓
             </button>
             <button id="btnRejectTrip" class="btn-reject" style="width:100%; margin-top:6px;">
               تخطي الطلب (رفض)
@@ -921,6 +1012,23 @@
             <button id="btnDriverCompleteAction" class="btn-accept" style="flex:1;" onclick="window.app.completeActiveTrip()">
               🏁 إنهاء وتحصيل المبلغ
             </button>
+          </div>
+        </div>
+
+        <!-- Driver Official Advertising Banner Card -->
+        <div class="feature-box" style="margin-top:1.2rem; padding:1.2rem; display:flex; align-items:center; gap:1.2rem; flex-wrap:wrap; background:linear-gradient(135deg, rgba(20,29,43,0.95), rgba(11,15,22,0.95)); border:1px solid rgba(213,174,99,0.3); border-radius:var(--radius-lg, 16px);">
+          <div style="flex:1; min-width:260px;">
+            <div class="badge-gold" style="display:inline-block; margin-bottom:0.5rem; font-size:0.75rem; padding:3px 10px;">🌟 كابتن العاصمة الرسمي</div>
+            <h4 style="color:var(--color-gold-light, #E7C989); margin:0 0 0.5rem 0; font-size:1.15rem;">أسطول سيارات مكيف ومجهز بأعلى المعايير</h4>
+            <p style="color:var(--text-muted); font-size:0.85rem; margin:0 0 0.8rem 0; line-height:1.5;">التزم بالزي اللائق ومعايير الجودة لتأكيد حصولك على أعلى تقييمات من عملاء العريش ومكافآت التميز الشهرية.</p>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              <span class="chip" style="font-size:0.75rem;">🛡️ أمان كامل</span>
+              <span class="chip" style="font-size:0.75rem;">⚡ عمولة منخفضة</span>
+              <span class="chip" style="font-size:0.75rem;">📍 دعم ميداني 24/7</span>
+            </div>
+          </div>
+          <div style="width:160px; height:100px; border-radius:12px; overflow:hidden; border:1px solid rgba(213,174,99,0.25); flex-shrink:0;">
+            <img src="/assets/images/advertising/banner-app-mockup.jpg" alt="إعلان أسطول تاكسي العاصمة" style="width:100%; height:100%; object-fit:cover;" onerror="this.onerror=null; this.src='/assets/images/advertising/logo-badge.jpg';">
           </div>
         </div>
 
@@ -1069,11 +1177,69 @@
 
       </div>
 
+      <!-- Admin Tab Filter Navigation -->
+      <div class="admin-tabs-nav">
+        <button type="button" class="admin-tab-btn active" onclick="switchAdminSection('all', this)">📊 عرض كافة الأقسام</button>
+        <button type="button" class="admin-tab-btn" onclick="switchAdminSection('drivers', this)">🚗 أسطول الكباتن</button>
+        <button type="button" class="admin-tab-btn" onclick="switchAdminSection('users', this)">👥 حسابات العملاء</button>
+        <button type="button" class="admin-tab-btn" onclick="switchAdminSection('trips', this)">🗺️ سجل الرحلات الحية</button>
+        <button type="button" class="admin-tab-btn" onclick="switchAdminSection('complaints', this)">📩 الشكاوى والدعم</button>
+        <button type="button" class="admin-tab-btn" onclick="switchAdminSection('campaigns', this)">📢 الحملات الإعلانية</button>
+        <button type="button" class="admin-tab-btn" onclick="switchAdminSection('liveMap', this)">🗺️ خريطة الأسطول الحية</button>
+      </div>
+
+      <!-- Live Fleet Map Section -->
+      <div id="adminSectionLiveMap" class="admin-table-card" style="display:none; padding:1.2rem;">
+        <div class="table-header-bar" style="margin-bottom:1rem;">
+          <div>
+            <h4 style="font-size:1.15rem; color:var(--gold-light); margin:0;">🗺️ خريطة الأسطول والرحلات المباشرة</h4>
+            <p style="font-size:0.8rem; color:var(--text-muted); margin:4px 0 0 0;">متابعة فورية لمواقع السائقين والرحلات النشطة بالعريش مع وقت آخر تحديث</p>
+          </div>
+          <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+            <select id="adminMapFilterStatus" class="chip-btn" onchange="window.app.filterAdminMapMarkers(this.value)">
+              <option value="all">📍 جميع الكباتن والرحلات</option>
+              <option value="online">🟢 المتاحون فقط</option>
+              <option value="busy">🟡 المشغولون برحلة</option>
+              <option value="active_trips">🚗 مسارات الرحلات النشطة</option>
+            </select>
+            <button type="button" class="btn-secondary-outline" style="padding:6px 12px; font-size:0.8rem;" onclick="window.app.refreshAdminLiveMap()">
+              🔄 تحديث الخريطة
+            </button>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:10px; margin-bottom:12px;">
+          <div class="stat-card" style="padding:10px; text-align:center; margin:0;">
+            <div style="font-size:0.75rem; color:var(--text-muted);">كباتن متصلون بالـ GPS</div>
+            <strong id="adminLiveGpsCount" style="color:var(--gold-bright); font-size:1.2rem;">0</strong>
+          </div>
+          <div class="stat-card" style="padding:10px; text-align:center; margin:0;">
+            <div style="font-size:0.75rem; color:var(--text-muted);">رحلات نشطة جارية</div>
+            <strong id="adminLiveTripsCount" style="color:#60A5FA; font-size:1.2rem;">0</strong>
+          </div>
+          <div class="stat-card" style="padding:10px; text-align:center; margin:0;">
+            <div style="font-size:0.75rem; color:var(--text-muted);">آخر إشارة GPS</div>
+            <strong id="adminLiveLastSignal" style="color:var(--status-green); font-size:0.85rem;">—</strong>
+          </div>
+        </div>
+
+        <div style="height:480px; border-radius:var(--radius-lg); overflow:hidden; border:1px solid rgba(213,174,99,0.3); position:relative;">
+          <div id="adminLiveMapViewport" style="width:100%; height:100%; background:#0B0F16;"></div>
+          <div id="adminLiveMapEmptyNotice" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); background:rgba(11,15,22,0.85); border:1px solid var(--border-gold); padding:12px 20px; border-radius:8px; display:none; text-align:center; z-index:1000;">
+            <span style="font-size:1.4rem;">📡</span>
+            <div style="color:var(--gold-bright); font-size:0.9rem; font-weight:700;">جاري تحميل ومزامنة إحداثيات الأسطول...</div>
+          </div>
+        </div>
+      </div>
+
       <!-- Drivers Management Table -->
-      <div class="admin-table-card">
+      <div id="adminSectionDrivers" class="admin-table-card">
         <div class="table-header-bar">
           <h4 style="font-size:1.15rem; color:var(--gold-light);">🚗 إدارة أسطول الكباتن والسيارات</h4>
-          <span class="feature-pill">تحديث لحظي من Firebase</span>
+          <div style="display:flex; gap:10px; align-items:center;">
+            <input type="text" class="admin-search-input" placeholder="بحث بالاسم أو الهاتف أو اللوحة..." oninput="filterAdminTable('adminDriversTableBody', this.value)" style="padding:5px 12px; font-size:0.8rem; width:220px;">
+            <span class="feature-pill">تحديث لحظي من Firebase</span>
+          </div>
         </div>
         <div class="table-responsive">
           <table class="admin-table">
@@ -1096,10 +1262,13 @@
       </div>
 
       <!-- Customers Management Table -->
-      <div class="admin-table-card">
+      <div id="adminSectionUsers" class="admin-table-card">
         <div class="table-header-bar">
           <h4 style="font-size:1.15rem; color:var(--gold-light);">👥 إدارة العملاء والمستخدمين</h4>
-          <span class="feature-pill">سجل الحسابات</span>
+          <div style="display:flex; gap:10px; align-items:center;">
+            <input type="text" class="admin-search-input" placeholder="بحث باسم العميل أو هاتفه..." oninput="filterAdminTable('adminUsersTableBody', this.value)" style="padding:5px 12px; font-size:0.8rem; width:220px;">
+            <span class="feature-pill">سجل الحسابات</span>
+          </div>
         </div>
         <div class="table-responsive">
           <table class="admin-table">
@@ -1120,10 +1289,13 @@
       </div>
 
       <!-- Trips Table -->
-      <div class="admin-table-card">
+      <div id="adminSectionTrips" class="admin-table-card">
         <div class="table-header-bar">
           <h4 style="font-size:1.15rem; color:var(--gold-light);">🗺️ سجل الرحلات الحية والسابقة</h4>
-          <span class="feature-pill">سجل العمليات الكامل</span>
+          <div style="display:flex; gap:10px; align-items:center;">
+            <input type="text" class="admin-search-input" placeholder="بحث بالمعرف أو الوجهة أو العميل..." oninput="filterAdminTable('adminTripsTableBody', this.value)" style="padding:5px 12px; font-size:0.8rem; width:220px;">
+            <span class="feature-pill">سجل العمليات الكامل</span>
+          </div>
         </div>
         <div class="table-responsive">
           <table class="admin-table">
@@ -1147,10 +1319,13 @@
       </div>
 
       <!-- Complaints Management Table -->
-      <div class="admin-table-card">
+      <div id="adminSectionComplaints" class="admin-table-card">
         <div class="table-header-bar">
           <h4 style="font-size:1.15rem; color:var(--gold-light);">📩 الشكاوى والدعم الفني</h4>
-          <span class="feature-pill">متابعة الجودة</span>
+          <div style="display:flex; gap:10px; align-items:center;">
+            <input type="text" class="admin-search-input" placeholder="بحث في نص الشكاوى..." oninput="filterAdminTable('adminComplaintsTableBody', this.value)" style="padding:5px 12px; font-size:0.8rem; width:220px;">
+            <span class="feature-pill">متابعة الجودة</span>
+          </div>
         </div>
         <div class="table-responsive">
           <table class="admin-table">
@@ -1171,6 +1346,112 @@
         </div>
       </div>
 
+      <!-- ══════ Campaigns / Advertising Management Section ══════ -->
+      <div id="adminSectionCampaigns" class="admin-table-card" style="display:none;">
+        <div class="table-header-bar">
+          <h4 style="font-size:1.15rem; color:var(--gold-light);">📢 إدارة الحملات الإعلانية</h4>
+        </div>
+
+        <!-- Campaign Image Gallery -->
+        <div class="card" style="padding:1.2rem; margin-bottom:1.2rem;">
+          <h5 style="color:var(--gold-light); margin-bottom:0.8rem; font-size:1rem;">🖼️ معرض الصور المتاحة</h5>
+          <p style="color:var(--text-muted); font-size:0.82rem; margin-bottom:0.8rem;">اختر صورة للحملة بالنقر عليها</p>
+          <div id="campaignGalleryGrid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(120px, 1fr)); gap:10px;">
+          </div>
+        </div>
+
+        <!-- Campaign Form -->
+        <div class="card" style="padding:1.2rem; margin-bottom:1.2rem;">
+          <h5 style="color:var(--gold-light); margin-bottom:1rem; font-size:1rem;">➕ إنشاء / تعديل حملة إعلانية</h5>
+          <input type="hidden" id="campaignEditId" value="">
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+            <div class="input-group">
+              <label class="input-label">اسم الحملة</label>
+              <input type="text" id="campaignName" class="input-field" placeholder="مثال: عرض صيف العريش" />
+            </div>
+            <div class="input-group">
+              <label class="input-label">الصورة المختارة</label>
+              <input type="text" id="campaignImage" class="input-field" placeholder="اختر من المعرض أعلاه" readonly />
+            </div>
+            <div class="input-group">
+              <label class="input-label">الفئة</label>
+              <select id="campaignCategory" class="input-field">
+                <option value="">-- اختر الفئة --</option>
+                <option value="hero">Hero - بطل الصفحة</option>
+                <option value="service">Service - خدمات</option>
+                <option value="banner">Banner - بانر إعلاني</option>
+                <option value="car">Car - سيارات</option>
+                <option value="branding">Branding - هوية بصرية</option>
+              </select>
+            </div>
+            <div class="input-group">
+              <label class="input-label">مكان العرض</label>
+              <select id="campaignLocation" class="input-field">
+                <option value="">-- اختر مكان العرض --</option>
+                <option value="الصفحة الرئيسية">الصفحة الرئيسية</option>
+                <option value="واجهة العميل">واجهة العميل</option>
+                <option value="واجهة السائق">واجهة السائق</option>
+                <option value="الكل">الكل</option>
+              </select>
+            </div>
+            <div class="input-group">
+              <label class="input-label">تاريخ البدء</label>
+              <input type="date" id="campaignStartDate" class="input-field" />
+            </div>
+            <div class="input-group">
+              <label class="input-label">تاريخ الانتهاء</label>
+              <input type="date" id="campaignEndDate" class="input-field" />
+            </div>
+          </div>
+          <div style="display:flex; align-items:center; gap:14px; margin-top:1rem;">
+            <label class="input-label" style="margin:0;">الحالة:</label>
+            <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+              <input type="checkbox" id="campaignActive" checked style="width:18px; height:18px; accent-color:var(--color-gold);" />
+              <span id="campaignActiveLabel" style="color:var(--gold-light); font-size:0.9rem;">مفعّلة</span>
+            </label>
+          </div>
+          <div style="display:flex; gap:10px; margin-top:1.2rem;">
+            <button type="button" class="btn-primary-gold" onclick="saveCampaign()" style="flex:1;">💾 حفظ الحملة</button>
+            <button type="button" class="btn-secondary-outline" onclick="previewCampaign()" style="flex:1;">👁️ معاينة</button>
+            <button type="button" class="btn-secondary-outline" onclick="resetCampaignForm()" style="flex:0.5;">🔄 تفريغ</button>
+          </div>
+        </div>
+
+        <!-- Campaign Preview Card -->
+        <div id="campaignPreviewContainer" class="card" style="padding:1.2rem; margin-bottom:1.2rem; display:none;">
+          <h5 style="color:var(--gold-light); margin-bottom:0.8rem; font-size:1rem;">👁️ معاينة الحملة</h5>
+          <div id="campaignPreviewCard" style="border-radius:var(--radius-md); overflow:hidden; border:1px solid var(--color-gold); max-width:420px;">
+          </div>
+        </div>
+
+        <!-- Active Campaigns Table -->
+        <div class="card" style="padding:1.2rem;">
+          <h5 style="color:var(--gold-light); margin-bottom:0.8rem; font-size:1rem;">📋 الحملات المسجّلة</h5>
+          <div style="margin-bottom:0.8rem;">
+            <input type="text" class="input-field" placeholder="🔍 بحث في الحملات..." oninput="filterAdminTable('campaignsTableBody', this.value)" style="max-width:340px;" />
+          </div>
+          <div class="table-responsive">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>الصورة</th>
+                  <th>اسم الحملة</th>
+                  <th>الفئة</th>
+                  <th>مكان العرض</th>
+                  <th>البدء</th>
+                  <th>الانتهاء</th>
+                  <th>الحالة</th>
+                  <th>الإجراء</th>
+                </tr>
+              </thead>
+              <tbody id="campaignsTableBody">
+                <tr><td colspan="8" class="empty-cell">لا توجد حملات إعلانية حالياً.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
     </div>
   </section>
 
@@ -1179,8 +1460,11 @@
        ═════════════════════════════════════════════════════════════════════════ -->
   <div id="authModal" class="modal-overlay">
     <div class="modal-dialog">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
-        <h3 style="font-family:var(--font-heading); color:var(--gold-light);">تسجيل الدخول / حساب جديد</h3>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <img src="/assets/images/advertising/logo-badge.jpg" alt="شعار تاكسي العاصمة" style="width:36px; height:36px; border-radius:50%; object-fit:contain; border:1px solid var(--color-gold-base, #D5AE63);" onerror="this.onerror=null; this.src='/assets/images/advertising/logo-badge.jpg';">
+          <h3 style="font-family:var(--font-heading); color:var(--gold-light); margin:0; font-size:1.2rem;">تسجيل الدخول / حساب جديد</h3>
+        </div>
         <button class="modal-close-btn chip-btn">✕ إغلاق</button>
       </div>
 
@@ -1245,7 +1529,7 @@
   <div id="chatModal" class="modal-overlay">
     <div class="modal-dialog" style="max-width: 480px; display:flex; flex-direction:column; height: 550px;">
       <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-subtle); padding-bottom:12px;">
-        <h3 style="font-family:var(--font-heading); color:var(--gold-light);">💬 محادثة مباشرة للمشوار</h3>
+        <h3 id="chatPeerName" style="font-family:var(--font-heading); color:var(--gold-light);">💬 محادثة مباشرة للمشوار</h3>
         <button class="chip-btn" onclick="window.app.closeChatModal()">✕ إغلاق</button>
       </div>
 
@@ -1259,7 +1543,7 @@
       <!-- Message Input -->
       <div style="display:flex; gap:8px;">
         <input type="text" id="chatInputText" class="input-field" placeholder="اكتب رسالتك للكابتن / العميل...">
-        <button type="button" class="btn-primary-gold" style="padding:0 20px;" onclick="window.app.sendChatMessage(window.app.currentRole)">
+        <button id="btnSendChatMessage" type="button" class="btn-primary-gold" style="padding:0 20px;" onclick="window.app.sendChatMessage(window.app.currentRole)">
           إرسال
         </button>
       </div>
@@ -1274,11 +1558,12 @@
       <div style="text-align:center; margin-bottom:1.2rem;">
         <div style="font-size:2.8rem; margin-bottom:4px;">⭐</div>
         <h3 style="font-family:var(--font-heading); color:var(--gold-light);">حمد لله على سلامتك!</h3>
+        <p id="ratingDriverName" style="font-size:0.95rem; color:var(--gold-bright); font-weight:700; margin:4px 0;">كابتن تاكسي العاصمة</p>
         <p style="font-size:0.85rem; color:var(--text-muted);">كيف كانت تجربتك ومشوارك مع كابتن تاكسي العاصمة؟</p>
       </div>
 
       <!-- Star Rating Radio Group -->
-      <div style="display:flex; justify-content:center; gap:12px; font-size:1.8rem; margin-bottom:1.2rem; direction:ltr;">
+      <div class="star-rating-select" style="display:flex; justify-content:center; gap:12px; font-size:1.8rem; margin-bottom:1.2rem; direction:ltr;">
         <label><input type="radio" name="starRating" value="1"> ⭐1</label>
         <label><input type="radio" name="starRating" value="2"> ⭐2</label>
         <label><input type="radio" name="starRating" value="3"> ⭐3</label>
@@ -1308,7 +1593,7 @@
       </div>
 
       <div style="display:flex; gap:10px;">
-        <button type="button" class="btn-primary-gold" style="flex:1;" onclick="window.app.submitDriverRating()">
+        <button id="btnSubmitRating" type="button" class="btn-primary-gold" style="flex:1;" onclick="window.app.submitDriverRating()">
           تأكيد وإرسال التقييم ✓
         </button>
         <button type="button" class="btn-secondary-outline" onclick="document.getElementById('ratingModal').classList.remove('open')">
@@ -1970,6 +2255,325 @@
       document.getElementById('pricingModal').classList.remove('open');
       window.app.showToast("تم حفظ وتحديث إعدادات الأسعار بنجاح!");
       window.app.updateRouteAndFare();
+    }
+
+    function switchAdminSection(sec, btn) {
+      document.querySelectorAll('.admin-tab-btn').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      const cards = {
+        drivers: document.getElementById('adminSectionDrivers'),
+        users: document.getElementById('adminSectionUsers'),
+        trips: document.getElementById('adminSectionTrips'),
+        complaints: document.getElementById('adminSectionComplaints'),
+        campaigns: document.getElementById('adminSectionCampaigns'),
+        liveMap: document.getElementById('adminSectionLiveMap')
+      };
+      Object.keys(cards).forEach(k => {
+        if (!cards[k]) return;
+        cards[k].style.display = (sec === 'all' || sec === k) ? 'block' : 'none';
+      });
+      if ((sec === 'all' || sec === 'liveMap') && window.app && window.app.initAdminLiveMap) {
+        setTimeout(() => window.app.initAdminLiveMap(), 200);
+      }
+    }
+
+    function filterAdminTable(tbodyId, query) {
+      const tbody = document.getElementById(tbodyId);
+      if (!tbody) return;
+      const q = (query || '').toLowerCase().trim();
+      Array.from(tbody.getElementsByTagName('tr')).forEach(tr => {
+        const text = tr.innerText.toLowerCase();
+        tr.style.display = text.includes(q) ? '' : 'none';
+      });
+    }
+
+    // ═════════════════════════════════════════════════════════════════════════
+    // CAMPAIGNS / ADVERTISING MANAGEMENT
+    // ═════════════════════════════════════════════════════════════════════════
+    const OFFICIAL_CAMPAIGN_ASSETS = [
+      { file: 'hero-arish-landmarks.jpg', name: 'معالم العريش والأسطول', category: 'hero' },
+      { file: 'arish-beach-palms.jpg', name: 'شاطئ النخيل والكورنيش', category: 'hero' },
+      { file: 'arish-city-panoramic.jpg', name: 'بانوراما مدينة العريش', category: 'hero' },
+      { file: 'arish-coast-beach.jpg', name: 'ساحل البحر المتوسط', category: 'hero' },
+      { file: 'banner-app-mockup.jpg', name: 'بانر تطبيق تاكسي العاصمة', category: 'banner' },
+      { file: 'service-city.jpg', name: 'أسطول مشاوير العريش', category: 'service' },
+      { file: 'service-intercity.jpg', name: 'سفريات المحافظات والخطوط', category: 'service' },
+      { file: 'service-students.jpg', name: 'توصيل طلاب الجامعات', category: 'service' },
+      { file: 'car-economy.jpg', name: 'سيارة Capital Go الاقتصادية', category: 'car' },
+      { file: 'car-comfort.jpg', name: 'سيارة Comfort المكيفة', category: 'car' },
+      { file: 'car-vip.jpg', name: 'سيارة VIP رجال الأعمال', category: 'car' },
+      { file: 'car-family.jpg', name: 'سيارة Family العائلية XL', category: 'car' },
+      { file: 'driver-avatar.jpg', name: 'كابتن معتمد', category: 'branding' },
+      { file: 'landmark-hospital.jpg', name: 'مستشفى العريش العام', category: 'hero' },
+      { file: 'logo-badge.jpg', name: 'شعار تاكسي العاصمة الرسمي', category: 'branding' }
+    ];
+
+    function initCampaignGallery() {
+      const grid = document.getElementById('campaignGalleryGrid');
+      if (!grid) return;
+      grid.innerHTML = OFFICIAL_CAMPAIGN_ASSETS.map(asset => `
+        <div class="campaign-gallery-item" onclick="selectCampaignAsset('${asset.file}', '${asset.name}', '${asset.category}', this)" style="position:relative; border-radius:var(--radius-md,8px); overflow:hidden; border:2px solid transparent; cursor:pointer; background:rgba(0,0,0,0.3); aspect-ratio:16/10;">
+          <img src="/assets/images/advertising/${asset.file}" alt="${asset.name}" style="width:100%; height:100%; object-fit:cover;" onerror="this.src='/assets/images/advertising/logo-badge.jpg';" />
+          <div style="position:absolute; bottom:0; left:0; right:0; background:linear-gradient(transparent, rgba(0,0,0,0.85)); padding:3px 6px; font-size:0.65rem; color:#fff; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${asset.name}</div>
+        </div>
+      `).join('');
+    }
+
+    function selectCampaignAsset(fileName, assetName, category, el) {
+      document.querySelectorAll('#campaignGalleryGrid > div').forEach(d => d.style.borderColor = 'transparent');
+      if (el) el.style.borderColor = 'var(--color-gold, #D5AE63)';
+      const imgInput = document.getElementById('campaignImage');
+      if (imgInput) imgInput.value = '/assets/images/advertising/' + fileName;
+      const catSelect = document.getElementById('campaignCategory');
+      if (catSelect && !catSelect.value) catSelect.value = category;
+      const nameInput = document.getElementById('campaignName');
+      if (nameInput && !nameInput.value) nameInput.value = assetName;
+    }
+
+    function getStoredCampaigns() {
+      // 1. If Firebase RTDB campaigns are loaded into window.app.campaigns, prefer them
+      if (window.app && window.app.campaigns && Object.keys(window.app.campaigns).length > 0) {
+        return Object.values(window.app.campaigns);
+      }
+      try {
+        const data = localStorage.getItem('capitalTaxiCampaigns');
+        return data ? JSON.parse(data) : [
+          {
+            id: 'camp_1',
+            name: 'حملة مشاوير العريش الساحلية',
+            image: '/assets/images/advertising/hero-arish-landmarks.jpg',
+            category: 'hero',
+            location: 'الصفحة الرئيسية',
+            startDate: '2026-11-01',
+            endDate: '2026-12-31',
+            active: true
+          },
+          {
+            id: 'camp_2',
+            name: 'عرض طلاب جامعة العريش وسيناء',
+            image: '/assets/images/advertising/service-students.jpg',
+            category: 'service',
+            location: 'واجهة العميل',
+            startDate: '2026-11-01',
+            endDate: '2026-12-31',
+            active: true
+          },
+          {
+            id: 'camp_3',
+            name: 'أسطول الكباتن الفاخر',
+            image: '/assets/images/advertising/banner-app-mockup.jpg',
+            category: 'banner',
+            location: 'واجهة السائق',
+            startDate: '2026-11-01',
+            endDate: '2026-12-31',
+            active: true
+          }
+        ];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveStoredCampaigns(campaigns) {
+      try {
+        localStorage.setItem('capitalTaxiCampaigns', JSON.stringify(campaigns));
+      } catch (e) {}
+      // Sync to Firebase RTDB if user is admin
+      if (window.app && window.app.rtdb && window.app.isSuperAdminUser) {
+        const campObj = {};
+        campaigns.forEach(c => { if (c && c.id) campObj[c.id] = c; });
+        window.app.rtdb.ref('campaigns').set(campObj).catch(err => console.warn('Campaigns cloud sync notice:', err.message));
+      }
+    }
+
+    function checkExpiredCampaigns() {
+      const campaigns = getStoredCampaigns();
+      const today = new Date().toISOString().split('T')[0];
+      let changed = false;
+      campaigns.forEach(c => {
+        if (c.endDate && c.endDate < today && c.active) {
+          c.active = false;
+          c.expired = true;
+          changed = true;
+        }
+      });
+      if (changed) saveStoredCampaigns(campaigns);
+    }
+
+    function renderCampaignsTable() {
+      checkExpiredCampaigns();
+      const tbody = document.getElementById('campaignsTableBody');
+      if (!tbody) return;
+      const campaigns = getStoredCampaigns();
+      if (!campaigns || campaigns.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" class="empty-cell">لا توجد حملات إعلانية مسجلة حالياً.</td></tr>';
+        return;
+      }
+      const today = new Date().toISOString().split('T')[0];
+      tbody.innerHTML = campaigns.map(c => {
+        const isExpired = c.endDate && c.endDate < today;
+        const statusBadge = isExpired
+          ? '<span class="status-badge" style="background:rgba(239,68,68,0.2); color:#F87171;">منتهية</span>'
+          : c.active
+          ? '<span class="status-badge green">مفعّلة</span>'
+          : '<span class="status-badge" style="background:rgba(156,163,175,0.2); color:#9CA3AF;">متوقفة</span>';
+
+        return `
+          <tr>
+            <td>
+              <img src="${c.image}" alt="${c.name}" style="width:50px; height:34px; object-fit:cover; border-radius:4px; border:1px solid rgba(213,174,99,0.3);" onerror="this.src='/assets/images/advertising/logo-badge.jpg';" />
+            </td>
+            <td><strong>${c.name}</strong></td>
+            <td><span class="feature-pill" style="font-size:0.75rem;">${c.category}</span></td>
+            <td>${c.location || 'الكل'}</td>
+            <td>${c.startDate || '—'}</td>
+            <td>${c.endDate || '—'}</td>
+            <td>${statusBadge}</td>
+            <td>
+              <div style="display:flex; gap:6px;">
+                <button type="button" class="chip-btn" onclick="toggleCampaign('${c.id}')" title="تفعيل / إيقاف">
+                  ${c.active ? '⏸️' : '▶️'}
+                </button>
+                <button type="button" class="chip-btn" onclick="editCampaign('${c.id}')" title="تعديل">
+                  ✏️
+                </button>
+                <button type="button" class="chip-btn" style="color:#F87171;" onclick="deleteCampaign('${c.id}')" title="حذف">
+                  🗑️
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function saveCampaign() {
+      const name = document.getElementById('campaignName')?.value.trim();
+      const image = document.getElementById('campaignImage')?.value.trim();
+      const category = document.getElementById('campaignCategory')?.value;
+      const location = document.getElementById('campaignLocation')?.value;
+      const startDate = document.getElementById('campaignStartDate')?.value;
+      const endDate = document.getElementById('campaignEndDate')?.value;
+      const active = document.getElementById('campaignActive')?.checked ?? true;
+      const editId = document.getElementById('campaignEditId')?.value;
+
+      if (!name || !image) {
+        alert('يرجى تحديد اسم الحملة واختيار صورة من المعرض');
+        return;
+      }
+
+      const campaigns = getStoredCampaigns();
+      if (editId) {
+        const idx = campaigns.findIndex(c => c.id === editId);
+        if (idx !== -1) {
+          campaigns[idx] = { ...campaigns[idx], name, image, category, location, startDate, endDate, active };
+        }
+      } else {
+        campaigns.unshift({
+          id: 'camp_' + Date.now(),
+          name,
+          image,
+          category: category || 'hero',
+          location: location || 'الكل',
+          startDate: startDate || new Date().toISOString().split('T')[0],
+          endDate: endDate || '',
+          active
+        });
+      }
+
+      saveStoredCampaigns(campaigns);
+      resetCampaignForm();
+      renderCampaignsTable();
+      if (window.app && window.app.showToast) {
+        window.app.showToast('تم حفظ الحملة الإعلانية بنجاح');
+      }
+    }
+
+    function toggleCampaign(id) {
+      const campaigns = getStoredCampaigns();
+      const c = campaigns.find(item => item.id === id);
+      if (c) {
+        c.active = !c.active;
+        saveStoredCampaigns(campaigns);
+        renderCampaignsTable();
+      }
+    }
+
+    function editCampaign(id) {
+      const campaigns = getStoredCampaigns();
+      const c = campaigns.find(item => item.id === id);
+      if (!c) return;
+      document.getElementById('campaignEditId').value = c.id;
+      document.getElementById('campaignName').value = c.name;
+      document.getElementById('campaignImage').value = c.image;
+      document.getElementById('campaignCategory').value = c.category;
+      document.getElementById('campaignLocation').value = c.location;
+      document.getElementById('campaignStartDate').value = c.startDate || '';
+      document.getElementById('campaignEndDate').value = c.endDate || '';
+      document.getElementById('campaignActive').checked = !!c.active;
+      previewCampaign();
+    }
+
+    function deleteCampaign(id) {
+      if (!confirm('هل أنت متأكد من حذف هذه الحملة الإعلانية؟')) return;
+      let campaigns = getStoredCampaigns();
+      campaigns = campaigns.filter(c => c.id !== id);
+      saveStoredCampaigns(campaigns);
+      renderCampaignsTable();
+    }
+
+    function resetCampaignForm() {
+      document.getElementById('campaignEditId').value = '';
+      document.getElementById('campaignName').value = '';
+      document.getElementById('campaignImage').value = '';
+      document.getElementById('campaignCategory').value = '';
+      document.getElementById('campaignLocation').value = '';
+      document.getElementById('campaignStartDate').value = '';
+      document.getElementById('campaignEndDate').value = '';
+      document.getElementById('campaignActive').checked = true;
+      document.getElementById('campaignPreviewContainer').style.display = 'none';
+      document.querySelectorAll('#campaignGalleryGrid > div').forEach(d => d.style.borderColor = 'transparent');
+    }
+
+    function previewCampaign() {
+      const name = document.getElementById('campaignName')?.value.trim() || 'اسم الحملة الإعلانية';
+      const image = document.getElementById('campaignImage')?.value.trim() || '/assets/images/advertising/banner-app-mockup.jpg';
+      const location = document.getElementById('campaignLocation')?.value || 'عام';
+      const category = document.getElementById('campaignCategory')?.value || 'hero';
+
+      const previewBox = document.getElementById('campaignPreviewContainer');
+      const previewCard = document.getElementById('campaignPreviewCard');
+      if (!previewBox || !previewCard) return;
+
+      previewCard.innerHTML = `
+        <div style="background:var(--color-surface, #141D2B); border-radius:var(--radius-md, 8px); overflow:hidden; border:1px solid rgba(213,174,99,0.3);">
+          <div style="height:160px; overflow:hidden;">
+            <img src="${image}" alt="${name}" style="width:100%; height:100%; object-fit:cover;" onerror="this.src='/assets/images/advertising/logo-badge.jpg';" />
+          </div>
+          <div style="padding:14px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <span class="arish-badge-tag">${category.toUpperCase()}</span>
+              <span style="font-size:0.75rem; color:var(--gold-bright);">📍 ${location}</span>
+            </div>
+            <h4 style="color:var(--gold-light, #E7C989); margin:0 0 4px 0; font-size:1.1rem;">${name}</h4>
+            <p style="font-size:0.8rem; color:var(--text-muted); margin:0;">معاينة حية لشكل الحملة عند ظهورها في ${location} للمستخدمين.</p>
+          </div>
+        </div>
+      `;
+      previewBox.style.display = 'block';
+    }
+
+    // Initialize campaign module on DOM load
+    document.addEventListener('DOMContentLoaded', () => {
+      initCampaignGallery();
+      renderCampaignsTable();
+    });
+    // If DOM already loaded:
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+      setTimeout(() => {
+        initCampaignGallery();
+        renderCampaignsTable();
+      }, 500);
     }
   </script>
 

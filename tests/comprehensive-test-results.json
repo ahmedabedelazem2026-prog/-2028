@@ -1,0 +1,652 @@
+{
+  "passed": 129,
+  "failed": 0,
+  "warnings": 0,
+  "details": [
+    {
+      "status": "PASS",
+      "category": "IMAGE",
+      "message": "/assets/images/advertising/logo-badge.jpg (194 KB)"
+    },
+    {
+      "status": "PASS",
+      "category": "IMAGE",
+      "message": "/assets/images/advertising/hero-arish-landmarks.jpg (419 KB)"
+    },
+    {
+      "status": "PASS",
+      "category": "IMAGE",
+      "message": "/assets/images/advertising/arish-beach-palms.jpg (683 KB)"
+    },
+    {
+      "status": "PASS",
+      "category": "IMAGE",
+      "message": "/assets/images/advertising/arish-city-panoramic.jpg (112 KB)"
+    },
+    {
+      "status": "PASS",
+      "category": "IMAGE",
+      "message": "/assets/images/advertising/arish-coast-beach.jpg (241 KB)"
+    },
+    {
+      "status": "PASS",
+      "category": "IMAGE",
+      "message": "/assets/images/advertising/banner-app-mockup.jpg (475 KB)"
+    },
+    {
+      "status": "PASS",
+      "category": "IMAGE",
+      "message": "/assets/images/advertising/service-city.jpg (313 KB)"
+    },
+    {
+      "status": "PASS",
+      "category": "IMAGE",
+      "message": "/assets/images/advertising/service-students.jpg (196 KB)"
+    },
+    {
+      "status": "PASS",
+      "category": "IMAGE",
+      "message": "/assets/images/advertising/service-intercity.jpg (307 KB)"
+    },
+    {
+      "status": "PASS",
+      "category": "IMAGE",
+      "message": "/assets/images/advertising/landmark-hospital.jpg (335 KB)"
+    },
+    {
+      "status": "PASS",
+      "category": "IMAGE",
+      "message": "/assets/images/advertising/car-economy.jpg (429 KB)"
+    },
+    {
+      "status": "PASS",
+      "category": "IMAGE",
+      "message": "/assets/images/advertising/car-comfort.jpg (429 KB)"
+    },
+    {
+      "status": "PASS",
+      "category": "IMAGE",
+      "message": "/assets/images/advertising/car-vip.jpg (414 KB)"
+    },
+    {
+      "status": "PASS",
+      "category": "IMAGE",
+      "message": "/assets/images/advertising/car-family.jpg (414 KB)"
+    },
+    {
+      "status": "PASS",
+      "category": "IMAGE",
+      "message": "/assets/images/advertising/driver-avatar.jpg (557 KB)"
+    },
+    {
+      "status": "PASS",
+      "category": "IMAGE",
+      "message": "/icons/icon-192.png exists"
+    },
+    {
+      "status": "PASS",
+      "category": "HTML",
+      "message": "View \"view-landing\" exists"
+    },
+    {
+      "status": "PASS",
+      "category": "HTML",
+      "message": "View \"view-customer\" exists"
+    },
+    {
+      "status": "PASS",
+      "category": "HTML",
+      "message": "View \"view-driver\" exists"
+    },
+    {
+      "status": "PASS",
+      "category": "HTML",
+      "message": "View \"view-admin\" exists"
+    },
+    {
+      "status": "PASS",
+      "category": "HTML",
+      "message": "Modal \"authModal\" present"
+    },
+    {
+      "status": "PASS",
+      "category": "HTML",
+      "message": "Modal \"chatModal\" present"
+    },
+    {
+      "status": "PASS",
+      "category": "HTML",
+      "message": "Modal \"ratingModal\" present"
+    },
+    {
+      "status": "PASS",
+      "category": "HTML",
+      "message": "Modal \"scheduleModal\" present"
+    },
+    {
+      "status": "PASS",
+      "category": "HTML",
+      "message": "Modal \"safetyModal\" present"
+    },
+    {
+      "status": "PASS",
+      "category": "HTML",
+      "message": "Modal \"driverPinModal\" present"
+    },
+    {
+      "status": "PASS",
+      "category": "HTML",
+      "message": "Modal \"walletModal\" present"
+    },
+    {
+      "status": "PASS",
+      "category": "HTML",
+      "message": "Modal \"pricingModal\" present"
+    },
+    {
+      "status": "PASS",
+      "category": "HTML",
+      "message": "Modal \"deviceModeModal\" present"
+    },
+    {
+      "status": "PASS",
+      "category": "HTML",
+      "message": "Modal \"otpModal\" present"
+    },
+    {
+      "status": "PASS",
+      "category": "HTML",
+      "message": "Modal \"historyModal\" present"
+    },
+    {
+      "status": "PASS",
+      "category": "HTML",
+      "message": "Modal \"notificationsModal\" present"
+    },
+    {
+      "status": "PASS",
+      "category": "HTML",
+      "message": "Modal \"profileModal\" present"
+    },
+    {
+      "status": "PASS",
+      "category": "HTML",
+      "message": "Modal \"settingsModal\" present"
+    },
+    {
+      "status": "PASS",
+      "category": "HTML",
+      "message": "Modal \"supportModal\" present"
+    },
+    {
+      "status": "PASS",
+      "category": "HTML",
+      "message": "Modal \"promosModal\" present"
+    },
+    {
+      "status": "PASS",
+      "category": "HTML",
+      "message": "Element #inputPickup present"
+    },
+    {
+      "status": "PASS",
+      "category": "HTML",
+      "message": "Element #inputDropoff present"
+    },
+    {
+      "status": "PASS",
+      "category": "HTML",
+      "message": "Element #inputTripNotes present"
+    },
+    {
+      "status": "PASS",
+      "category": "HTML",
+      "message": "Element #inputCoupon present"
+    },
+    {
+      "status": "PASS",
+      "category": "HTML",
+      "message": "Element #inputCustomerName present"
+    },
+    {
+      "status": "PASS",
+      "category": "HTML",
+      "message": "Element #inputCustomerPhone present"
+    },
+    {
+      "status": "PASS",
+      "category": "HTML",
+      "message": "Element #btnConfirmRideMain present"
+    },
+    {
+      "status": "PASS",
+      "category": "HTML",
+      "message": "Element #loginEmail present"
+    },
+    {
+      "status": "PASS",
+      "category": "HTML",
+      "message": "Element #loginPassword present"
+    },
+    {
+      "status": "PASS",
+      "category": "HTML",
+      "message": "Element #regName present"
+    },
+    {
+      "status": "PASS",
+      "category": "HTML",
+      "message": "Element #regPhone present"
+    },
+    {
+      "status": "PASS",
+      "category": "HTML",
+      "message": "Element #regEmail present"
+    },
+    {
+      "status": "PASS",
+      "category": "HTML",
+      "message": "Element #regPassword present"
+    },
+    {
+      "status": "PASS",
+      "category": "HTML",
+      "message": "Element #regRole present"
+    },
+    {
+      "status": "PASS",
+      "category": "HTML",
+      "message": "Element #driverOnlineToggle present"
+    },
+    {
+      "status": "PASS",
+      "category": "HTML",
+      "message": "Element #customerSearchingCard present"
+    },
+    {
+      "status": "PASS",
+      "category": "HTML",
+      "message": "Element #customerTripStatusCard present"
+    },
+    {
+      "status": "PASS",
+      "category": "HTML",
+      "message": "Element #incomingTripCard present"
+    },
+    {
+      "status": "PASS",
+      "category": "HTML",
+      "message": "Element #driverActiveTripCard present"
+    },
+    {
+      "status": "PASS",
+      "category": "HTML",
+      "message": "Element #adminTotalTrips present"
+    },
+    {
+      "status": "PASS",
+      "category": "HTML",
+      "message": "Element #adminActiveTrips present"
+    },
+    {
+      "status": "PASS",
+      "category": "HTML",
+      "message": "Element #adminCompletedTrips present"
+    },
+    {
+      "status": "PASS",
+      "category": "HTML",
+      "message": "Element #adminTotalDrivers present"
+    },
+    {
+      "status": "PASS",
+      "category": "HTML",
+      "message": "Element #adminOnlineDrivers present"
+    },
+    {
+      "status": "PASS",
+      "category": "HTML",
+      "message": "Element #adminTotalUsers present"
+    },
+    {
+      "status": "PASS",
+      "category": "HTML",
+      "message": "Element #adminTotalRevenue present"
+    },
+    {
+      "status": "PASS",
+      "category": "HTML",
+      "message": "Element #adminCommission present"
+    },
+    {
+      "status": "PASS",
+      "category": "JS",
+      "message": "Function/method \"switchView\" found in app.js"
+    },
+    {
+      "status": "PASS",
+      "category": "JS",
+      "message": "Function/method \"requestRide\" found in app.js"
+    },
+    {
+      "status": "PASS",
+      "category": "JS",
+      "message": "Function/method \"detectUserGpsLocation\" found in app.js"
+    },
+    {
+      "status": "PASS",
+      "category": "JS",
+      "message": "Function/method \"updateRouteAndFare\" found in app.js"
+    },
+    {
+      "status": "PASS",
+      "category": "JS",
+      "message": "Function/method \"login\" found in app.js"
+    },
+    {
+      "status": "PASS",
+      "category": "JS",
+      "message": "Function/method \"register\" found in app.js"
+    },
+    {
+      "status": "PASS",
+      "category": "JS",
+      "message": "Function/method \"selectAlArishLandmark\" found in app.js"
+    },
+    {
+      "status": "PASS",
+      "category": "JS",
+      "message": "Function/method \"cancelCustomerSearching\" found in app.js"
+    },
+    {
+      "status": "PASS",
+      "category": "JS",
+      "message": "Function/method \"shareTripWhatsApp\" found in app.js"
+    },
+    {
+      "status": "PASS",
+      "category": "JS",
+      "message": "Function/method \"cancelActiveTripCustomer\" found in app.js"
+    },
+    {
+      "status": "PASS",
+      "category": "JS",
+      "message": "Function/method \"sendChatMessage\" found in app.js"
+    },
+    {
+      "status": "PASS",
+      "category": "JS",
+      "message": "Function/method \"submitDriverRating\" found in app.js"
+    },
+    {
+      "status": "PASS",
+      "category": "JS",
+      "message": "Function/method \"selectTip\" found in app.js"
+    },
+    {
+      "status": "PASS",
+      "category": "JS",
+      "message": "Function/method \"confirmScheduledRide\" found in app.js"
+    },
+    {
+      "status": "PASS",
+      "category": "JS",
+      "message": "Function/method \"completeActiveTrip\" found in app.js"
+    },
+    {
+      "status": "PASS",
+      "category": "JS",
+      "message": "Function/method \"markDriverArrived\" found in app.js"
+    },
+    {
+      "status": "PASS",
+      "category": "JS",
+      "message": "Function/method \"promptDriverPinAndStart\" found in app.js"
+    },
+    {
+      "status": "PASS",
+      "category": "JS",
+      "message": "Function/method \"confirmDriverPinAndStart\" found in app.js"
+    },
+    {
+      "status": "PASS",
+      "category": "JS",
+      "message": "Function/method \"setDeviceMode\" found in app.js"
+    },
+    {
+      "status": "PASS",
+      "category": "JS",
+      "message": "Function/method \"showToast\" found in app.js"
+    },
+    {
+      "status": "PASS",
+      "category": "JS",
+      "message": "Function/method \"renderTripHistory\" found in app.js"
+    },
+    {
+      "status": "PASS",
+      "category": "JS",
+      "message": "Function/method \"refreshUserWalletUI\" found in app.js"
+    },
+    {
+      "status": "PASS",
+      "category": "JS",
+      "message": "Function/method \"submitComplaint\" found in app.js"
+    },
+    {
+      "status": "PASS",
+      "category": "JS",
+      "message": "Function/method \"exportReportToCSV\" found in app.js"
+    },
+    {
+      "status": "PASS",
+      "category": "JS",
+      "message": "Function/method \"saveProfileInfo\" found in app.js"
+    },
+    {
+      "status": "PASS",
+      "category": "JS",
+      "message": "Function/method \"resetMapToCenter\" found in app.js"
+    },
+    {
+      "status": "PASS",
+      "category": "JS",
+      "message": "Function/method \"applyCouponDirect\" found in app.js"
+    },
+    {
+      "status": "PASS",
+      "category": "JS",
+      "message": "Function/method \"setQuickFavorite\" found in app.js"
+    },
+    {
+      "status": "PASS",
+      "category": "JS",
+      "message": "Function/method \"topUpUserWallet\" found in app.js"
+    },
+    {
+      "status": "PASS",
+      "category": "JS",
+      "message": "Function/method \"verifyOtpCode\" found in app.js"
+    },
+    {
+      "status": "PASS",
+      "category": "JS",
+      "message": "Function/method \"handleOtpInput\" found in app.js"
+    },
+    {
+      "status": "PASS",
+      "category": "JS",
+      "message": "Inline function \"showAuthTab\" present in HTML"
+    },
+    {
+      "status": "PASS",
+      "category": "JS",
+      "message": "Inline function \"toggleDriverRegisterFields\" present in HTML"
+    },
+    {
+      "status": "PASS",
+      "category": "JS",
+      "message": "Inline function \"handleLoginSubmit\" present in HTML"
+    },
+    {
+      "status": "PASS",
+      "category": "JS",
+      "message": "Inline function \"handleRegisterSubmit\" present in HTML"
+    },
+    {
+      "status": "PASS",
+      "category": "JS",
+      "message": "Inline function \"saveAdminPricingConfig\" present in HTML"
+    },
+    {
+      "status": "PASS",
+      "category": "JS",
+      "message": "Inline function \"switchAdminSection\" present in HTML"
+    },
+    {
+      "status": "PASS",
+      "category": "JS",
+      "message": "Inline function \"filterAdminTable\" present in HTML"
+    },
+    {
+      "status": "PASS",
+      "category": "CSS",
+      "message": "Variable \"--color-bg-primary\" defined"
+    },
+    {
+      "status": "PASS",
+      "category": "CSS",
+      "message": "Variable \"--color-surface\" defined"
+    },
+    {
+      "status": "PASS",
+      "category": "CSS",
+      "message": "Variable \"--color-surface-elev\" defined"
+    },
+    {
+      "status": "PASS",
+      "category": "CSS",
+      "message": "Variable \"--color-gold\" defined"
+    },
+    {
+      "status": "PASS",
+      "category": "CSS",
+      "message": "Variable \"--color-gold-light\" defined"
+    },
+    {
+      "status": "PASS",
+      "category": "CSS",
+      "message": "Variable \"--color-success\" defined"
+    },
+    {
+      "status": "PASS",
+      "category": "CSS",
+      "message": "Variable \"--color-warning\" defined"
+    },
+    {
+      "status": "PASS",
+      "category": "CSS",
+      "message": "Variable \"--color-error\" defined"
+    },
+    {
+      "status": "PASS",
+      "category": "CSS",
+      "message": "Variable \"--color-text-primary\" defined"
+    },
+    {
+      "status": "PASS",
+      "category": "CSS",
+      "message": "Variable \"--font-sans\" defined"
+    },
+    {
+      "status": "PASS",
+      "category": "CSS",
+      "message": "RTL direction set"
+    },
+    {
+      "status": "PASS",
+      "category": "CSS",
+      "message": "Dark background #0B0F16 present"
+    },
+    {
+      "status": "PASS",
+      "category": "FIREBASE",
+      "message": "Hosting public dir: \".\""
+    },
+    {
+      "status": "PASS",
+      "category": "FIREBASE",
+      "message": "Rewrites configured"
+    },
+    {
+      "status": "PASS",
+      "category": "RESPONSIVE",
+      "message": "Mobile bottom navigation bar present"
+    },
+    {
+      "status": "PASS",
+      "category": "RESPONSIVE",
+      "message": "Device mode switcher present"
+    },
+    {
+      "status": "PASS",
+      "category": "RESPONSIVE",
+      "message": "5 @media breakpoints found in design-system.css"
+    },
+    {
+      "status": "PASS",
+      "category": "NAV",
+      "message": "Navigation tab \"landing\" present"
+    },
+    {
+      "status": "PASS",
+      "category": "NAV",
+      "message": "Navigation tab \"customer\" present"
+    },
+    {
+      "status": "PASS",
+      "category": "NAV",
+      "message": "Navigation tab \"driver\" present"
+    },
+    {
+      "status": "PASS",
+      "category": "NAV",
+      "message": "Navigation tab \"admin\" present"
+    },
+    {
+      "status": "PASS",
+      "category": "NAV",
+      "message": "Admin section tab \"all\" configured"
+    },
+    {
+      "status": "PASS",
+      "category": "NAV",
+      "message": "Admin section tab \"drivers\" configured"
+    },
+    {
+      "status": "PASS",
+      "category": "NAV",
+      "message": "Admin section tab \"users\" configured"
+    },
+    {
+      "status": "PASS",
+      "category": "NAV",
+      "message": "Admin section tab \"trips\" configured"
+    },
+    {
+      "status": "PASS",
+      "category": "NAV",
+      "message": "Admin section tab \"complaints\" configured"
+    },
+    {
+      "status": "PASS",
+      "category": "NAV",
+      "message": "Admin section tab \"campaigns\" configured"
+    },
+    {
+      "status": "PASS",
+      "category": "NAV",
+      "message": "Admin section tab \"liveMap\" configured"
+    }
+  ]
+}

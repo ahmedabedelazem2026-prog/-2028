@@ -1,0 +1,922 @@
+[
+  {
+    "file": "arish-beach-palms.jpg",
+    "sizeKB": "683.4",
+    "width": 1827,
+    "height": 2506,
+    "aspectRatio": "0.73",
+    "orientation": "Portrait"
+  },
+  {
+    "file": "arish-city-panoramic.jpg",
+    "sizeKB": "112.2",
+    "width": 951,
+    "height": 630,
+    "aspectRatio": "1.51",
+    "orientation": "Landscape"
+  },
+  {
+    "file": "arish-coast-beach.jpg",
+    "sizeKB": "240.8",
+    "width": 726,
+    "height": 510,
+    "aspectRatio": "1.42",
+    "orientation": "Landscape"
+  },
+  {
+    "file": "banner-app-mockup.jpg",
+    "sizeKB": "474.6",
+    "width": 1024,
+    "height": 682,
+    "aspectRatio": "1.50",
+    "orientation": "Landscape"
+  },
+  {
+    "file": "car-comfort.jpg",
+    "sizeKB": "428.7",
+    "width": 1600,
+    "height": 1600,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "car-economy.jpg",
+    "sizeKB": "428.7",
+    "width": 1600,
+    "height": 1600,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "car-family.jpg",
+    "sizeKB": "414.1",
+    "width": 1600,
+    "height": 1600,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "car-vip.jpg",
+    "sizeKB": "414.1",
+    "width": 1600,
+    "height": 1600,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "driver-avatar.jpg",
+    "sizeKB": "556.9",
+    "width": 1600,
+    "height": 1600,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "hero-arish-landmarks.jpg",
+    "sizeKB": "419.2",
+    "width": 1024,
+    "height": 576,
+    "aspectRatio": "1.78",
+    "orientation": "Landscape"
+  },
+  {
+    "file": "landmark-hospital.jpg",
+    "sizeKB": "335.2",
+    "width": 1254,
+    "height": 1254,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "logo-badge.jpg",
+    "sizeKB": "193.8",
+    "width": 1011,
+    "height": 1024,
+    "aspectRatio": "0.99",
+    "orientation": "Portrait"
+  },
+  {
+    "file": "service-city.jpg",
+    "sizeKB": "313.1",
+    "width": 1600,
+    "height": 900,
+    "aspectRatio": "1.78",
+    "orientation": "Landscape"
+  },
+  {
+    "file": "service-intercity.jpg",
+    "sizeKB": "307.2",
+    "width": 1600,
+    "height": 900,
+    "aspectRatio": "1.78",
+    "orientation": "Landscape"
+  },
+  {
+    "file": "service-students.jpg",
+    "sizeKB": "196.0",
+    "width": 1600,
+    "height": 900,
+    "aspectRatio": "1.78",
+    "orientation": "Landscape"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.37.59 AM.jpeg",
+    "sizeKB": "313.1",
+    "width": 1600,
+    "height": 900,
+    "aspectRatio": "1.78",
+    "orientation": "Landscape"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.00 AM.jpeg",
+    "sizeKB": "307.2",
+    "width": 1600,
+    "height": 900,
+    "aspectRatio": "1.78",
+    "orientation": "Landscape"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.01 AM.jpeg",
+    "sizeKB": "164.7",
+    "width": 1054,
+    "height": 1492,
+    "aspectRatio": "0.71",
+    "orientation": "Portrait"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.02 AM (1).jpeg",
+    "sizeKB": "182.3",
+    "width": 1024,
+    "height": 1536,
+    "aspectRatio": "0.67",
+    "orientation": "Portrait"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.02 AM (2).jpeg",
+    "sizeKB": "138.8",
+    "width": 1024,
+    "height": 1024,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.02 AM.jpeg",
+    "sizeKB": "163.4",
+    "width": 1254,
+    "height": 1254,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.03 AM (1).jpeg",
+    "sizeKB": "168.1",
+    "width": 1086,
+    "height": 1448,
+    "aspectRatio": "0.75",
+    "orientation": "Portrait"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.03 AM (2).jpeg",
+    "sizeKB": "128.8",
+    "width": 1254,
+    "height": 1254,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.03 AM.jpeg",
+    "sizeKB": "197.7",
+    "width": 1024,
+    "height": 1536,
+    "aspectRatio": "0.67",
+    "orientation": "Portrait"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.04 AM.jpeg",
+    "sizeKB": "201.4",
+    "width": 1024,
+    "height": 1536,
+    "aspectRatio": "0.67",
+    "orientation": "Portrait"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.05 AM (1).jpeg",
+    "sizeKB": "161.1",
+    "width": 1254,
+    "height": 1254,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.05 AM (2).jpeg",
+    "sizeKB": "163.7",
+    "width": 1254,
+    "height": 1254,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.05 AM (3).jpeg",
+    "sizeKB": "178.0",
+    "width": 1254,
+    "height": 1254,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.05 AM.jpeg",
+    "sizeKB": "172.5",
+    "width": 1254,
+    "height": 1254,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.06 AM (1).jpeg",
+    "sizeKB": "171.4",
+    "width": 1254,
+    "height": 1254,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.06 AM.jpeg",
+    "sizeKB": "166.5",
+    "width": 1254,
+    "height": 1254,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.07 AM (1).jpeg",
+    "sizeKB": "75.7",
+    "width": 1280,
+    "height": 730,
+    "aspectRatio": "1.75",
+    "orientation": "Landscape"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.07 AM (2).jpeg",
+    "sizeKB": "144.3",
+    "width": 1024,
+    "height": 1536,
+    "aspectRatio": "0.67",
+    "orientation": "Portrait"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.07 AM.jpeg",
+    "sizeKB": "136.7",
+    "width": 1484,
+    "height": 1060,
+    "aspectRatio": "1.40",
+    "orientation": "Landscape"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.08 AM (1).jpeg",
+    "sizeKB": "187.7",
+    "width": 1024,
+    "height": 1536,
+    "aspectRatio": "0.67",
+    "orientation": "Portrait"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.08 AM (2).jpeg",
+    "sizeKB": "79.8",
+    "width": 714,
+    "height": 1280,
+    "aspectRatio": "0.56",
+    "orientation": "Portrait"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.08 AM.jpeg",
+    "sizeKB": "160.2",
+    "width": 1024,
+    "height": 1536,
+    "aspectRatio": "0.67",
+    "orientation": "Portrait"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.09 AM (1).jpeg",
+    "sizeKB": "149.8",
+    "width": 1254,
+    "height": 1254,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.09 AM.jpeg",
+    "sizeKB": "145.7",
+    "width": 1122,
+    "height": 1402,
+    "aspectRatio": "0.80",
+    "orientation": "Portrait"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.10 AM (1).jpeg",
+    "sizeKB": "201.0",
+    "width": 1254,
+    "height": 1254,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.10 AM.jpeg",
+    "sizeKB": "175.0",
+    "width": 1024,
+    "height": 1536,
+    "aspectRatio": "0.67",
+    "orientation": "Portrait"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.11 AM (1).jpeg",
+    "sizeKB": "192.2",
+    "width": 1024,
+    "height": 1536,
+    "aspectRatio": "0.67",
+    "orientation": "Portrait"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.11 AM (2).jpeg",
+    "sizeKB": "203.2",
+    "width": 1254,
+    "height": 1254,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.11 AM (3).jpeg",
+    "sizeKB": "204.7",
+    "width": 1024,
+    "height": 1536,
+    "aspectRatio": "0.67",
+    "orientation": "Portrait"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.11 AM.jpeg",
+    "sizeKB": "229.0",
+    "width": 1254,
+    "height": 1254,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.12 AM.jpeg",
+    "sizeKB": "191.6",
+    "width": 1024,
+    "height": 1536,
+    "aspectRatio": "0.67",
+    "orientation": "Portrait"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.13 AM (1).jpeg",
+    "sizeKB": "216.9",
+    "width": 1024,
+    "height": 1536,
+    "aspectRatio": "0.67",
+    "orientation": "Portrait"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.13 AM (2).jpeg",
+    "sizeKB": "203.0",
+    "width": 1254,
+    "height": 1254,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.13 AM.jpeg",
+    "sizeKB": "214.5",
+    "width": 1254,
+    "height": 1254,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.14 AM (1).jpeg",
+    "sizeKB": "89.5",
+    "width": 1024,
+    "height": 1024,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.14 AM (2).jpeg",
+    "sizeKB": "284.4",
+    "width": 1254,
+    "height": 1254,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.14 AM.jpeg",
+    "sizeKB": "224.8",
+    "width": 1254,
+    "height": 1254,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.15 AM (1).jpeg",
+    "sizeKB": "293.8",
+    "width": 1254,
+    "height": 1254,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.15 AM.jpeg",
+    "sizeKB": "284.4",
+    "width": 1254,
+    "height": 1254,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.16 AM (1).jpeg",
+    "sizeKB": "274.1",
+    "width": 1254,
+    "height": 1254,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.16 AM (2).jpeg",
+    "sizeKB": "319.6",
+    "width": 1254,
+    "height": 1254,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.16 AM.jpeg",
+    "sizeKB": "257.8",
+    "width": 1254,
+    "height": 1254,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.17 AM (1).jpeg",
+    "sizeKB": "191.4",
+    "width": 1599,
+    "height": 1066,
+    "aspectRatio": "1.50",
+    "orientation": "Landscape"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.17 AM (2).jpeg",
+    "sizeKB": "428.7",
+    "width": 1600,
+    "height": 1600,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.17 AM.jpeg",
+    "sizeKB": "210.0",
+    "width": 1207,
+    "height": 1600,
+    "aspectRatio": "0.75",
+    "orientation": "Portrait"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.18 AM (1).jpeg",
+    "sizeKB": "225.8",
+    "width": 1280,
+    "height": 1600,
+    "aspectRatio": "0.80",
+    "orientation": "Portrait"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.18 AM (2).jpeg",
+    "sizeKB": "208.4",
+    "width": 1599,
+    "height": 1066,
+    "aspectRatio": "1.50",
+    "orientation": "Landscape"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.18 AM (3).jpeg",
+    "sizeKB": "319.6",
+    "width": 1254,
+    "height": 1254,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.18 AM.jpeg",
+    "sizeKB": "287.1",
+    "width": 1600,
+    "height": 1600,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.20 AM (1).jpeg",
+    "sizeKB": "310.9",
+    "width": 1254,
+    "height": 1254,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.20 AM.jpeg",
+    "sizeKB": "335.2",
+    "width": 1254,
+    "height": 1254,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.21 AM (1).jpeg",
+    "sizeKB": "190.2",
+    "width": 1207,
+    "height": 1600,
+    "aspectRatio": "0.75",
+    "orientation": "Portrait"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.21 AM (2).jpeg",
+    "sizeKB": "165.0",
+    "width": 900,
+    "height": 1600,
+    "aspectRatio": "0.56",
+    "orientation": "Portrait"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.21 AM.jpeg",
+    "sizeKB": "291.2",
+    "width": 1254,
+    "height": 1254,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.22 AM (1).jpeg",
+    "sizeKB": "183.4",
+    "width": 1207,
+    "height": 1600,
+    "aspectRatio": "0.75",
+    "orientation": "Portrait"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.22 AM.jpeg",
+    "sizeKB": "190.2",
+    "width": 1207,
+    "height": 1600,
+    "aspectRatio": "0.75",
+    "orientation": "Portrait"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.23 AM (1).jpeg",
+    "sizeKB": "210.0",
+    "width": 1207,
+    "height": 1600,
+    "aspectRatio": "0.75",
+    "orientation": "Portrait"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.23 AM (2).jpeg",
+    "sizeKB": "277.3",
+    "width": 1600,
+    "height": 1600,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.23 AM (3).jpeg",
+    "sizeKB": "556.9",
+    "width": 1600,
+    "height": 1600,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.23 AM.jpeg",
+    "sizeKB": "165.0",
+    "width": 900,
+    "height": 1600,
+    "aspectRatio": "0.56",
+    "orientation": "Portrait"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.24 AM.jpeg",
+    "sizeKB": "414.1",
+    "width": 1600,
+    "height": 1600,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.25 AM (1).jpeg",
+    "sizeKB": "184.4",
+    "width": 1280,
+    "height": 1600,
+    "aspectRatio": "0.80",
+    "orientation": "Portrait"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.25 AM.jpeg",
+    "sizeKB": "266.2",
+    "width": 1600,
+    "height": 1600,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.26 AM (1).jpeg",
+    "sizeKB": "184.4",
+    "width": 1280,
+    "height": 1600,
+    "aspectRatio": "0.80",
+    "orientation": "Portrait"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.26 AM.jpeg",
+    "sizeKB": "414.1",
+    "width": 1600,
+    "height": 1600,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.29 AM (1).jpeg",
+    "sizeKB": "289.8",
+    "width": 1600,
+    "height": 1600,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.29 AM (2).jpeg",
+    "sizeKB": "320.0",
+    "width": 1600,
+    "height": 1600,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.29 AM.jpeg",
+    "sizeKB": "196.0",
+    "width": 1600,
+    "height": 900,
+    "aspectRatio": "1.78",
+    "orientation": "Landscape"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.30 AM (1).jpeg",
+    "sizeKB": "428.7",
+    "width": 1600,
+    "height": 1600,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.30 AM (2).jpeg",
+    "sizeKB": "329.2",
+    "width": 1600,
+    "height": 1600,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.30 AM.jpeg",
+    "sizeKB": "329.2",
+    "width": 1600,
+    "height": 1600,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.33 AM.jpeg",
+    "sizeKB": "242.2",
+    "width": 1254,
+    "height": 1254,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.34 AM (1).jpeg",
+    "sizeKB": "297.2",
+    "width": 1254,
+    "height": 1254,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.34 AM.jpeg",
+    "sizeKB": "297.2",
+    "width": 1254,
+    "height": 1254,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.35 AM (1).jpeg",
+    "sizeKB": "170.7",
+    "width": 1254,
+    "height": 1254,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.35 AM (2).jpeg",
+    "sizeKB": "246.7",
+    "width": 1254,
+    "height": 1254,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.35 AM (3).jpeg",
+    "sizeKB": "301.5",
+    "width": 1024,
+    "height": 1536,
+    "aspectRatio": "0.67",
+    "orientation": "Portrait"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.35 AM.jpeg",
+    "sizeKB": "332.9",
+    "width": 1024,
+    "height": 1536,
+    "aspectRatio": "0.67",
+    "orientation": "Portrait"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.36 AM (1).jpeg",
+    "sizeKB": "282.8",
+    "width": 1254,
+    "height": 1254,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.36 AM.jpeg",
+    "sizeKB": "263.6",
+    "width": 1024,
+    "height": 1536,
+    "aspectRatio": "0.67",
+    "orientation": "Portrait"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.41 AM (1).jpeg",
+    "sizeKB": "288.2",
+    "width": 1254,
+    "height": 1254,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.41 AM.jpeg",
+    "sizeKB": "249.0",
+    "width": 1254,
+    "height": 1254,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.42 AM (1).jpeg",
+    "sizeKB": "199.2",
+    "width": 1254,
+    "height": 1254,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.42 AM (2).jpeg",
+    "sizeKB": "263.1",
+    "width": 1024,
+    "height": 1536,
+    "aspectRatio": "0.67",
+    "orientation": "Portrait"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.42 AM.jpeg",
+    "sizeKB": "261.9",
+    "width": 1024,
+    "height": 1536,
+    "aspectRatio": "0.67",
+    "orientation": "Portrait"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.43 AM (1).jpeg",
+    "sizeKB": "173.4",
+    "width": 1122,
+    "height": 1402,
+    "aspectRatio": "0.80",
+    "orientation": "Portrait"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.43 AM (2).jpeg",
+    "sizeKB": "197.9",
+    "width": 1254,
+    "height": 1254,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.43 AM (3).jpeg",
+    "sizeKB": "184.0",
+    "width": 1254,
+    "height": 1254,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.43 AM.jpeg",
+    "sizeKB": "185.5",
+    "width": 1254,
+    "height": 1254,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.44 AM (1).jpeg",
+    "sizeKB": "244.7",
+    "width": 1024,
+    "height": 1536,
+    "aspectRatio": "0.67",
+    "orientation": "Portrait"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.44 AM (2).jpeg",
+    "sizeKB": "225.9",
+    "width": 1024,
+    "height": 1536,
+    "aspectRatio": "0.67",
+    "orientation": "Portrait"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.44 AM (3).jpeg",
+    "sizeKB": "196.3",
+    "width": 1122,
+    "height": 1402,
+    "aspectRatio": "0.80",
+    "orientation": "Portrait"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.44 AM.jpeg",
+    "sizeKB": "238.6",
+    "width": 1024,
+    "height": 1536,
+    "aspectRatio": "0.67",
+    "orientation": "Portrait"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.45 AM (1).jpeg",
+    "sizeKB": "143.7",
+    "width": 1254,
+    "height": 1254,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.45 AM (2).jpeg",
+    "sizeKB": "141.4",
+    "width": 738,
+    "height": 1600,
+    "aspectRatio": "0.46",
+    "orientation": "Portrait"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.45 AM (3).jpeg",
+    "sizeKB": "219.7",
+    "width": 1024,
+    "height": 1536,
+    "aspectRatio": "0.67",
+    "orientation": "Portrait"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.45 AM.jpeg",
+    "sizeKB": "206.8",
+    "width": 1086,
+    "height": 1448,
+    "aspectRatio": "0.75",
+    "orientation": "Portrait"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.46 AM (1).jpeg",
+    "sizeKB": "161.1",
+    "width": 1254,
+    "height": 1254,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.46 AM (2).jpeg",
+    "sizeKB": "163.7",
+    "width": 1254,
+    "height": 1254,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  },
+  {
+    "file": "WhatsApp Image 2026-11-02 at 11.38.46 AM.jpeg",
+    "sizeKB": "172.5",
+    "width": 1254,
+    "height": 1254,
+    "aspectRatio": "1.00",
+    "orientation": "Square"
+  }
+]

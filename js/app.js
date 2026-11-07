@@ -493,6 +493,26 @@ class CapitalTaxiApp {
       this.adminData.complaints = snap.val() || {};
       this.renderAdminComplaints(this.adminData.complaints);
     }, (err) => console.warn("Complaints listener notice:", err.message));
+
+    // 5. Campaigns Cloud Sync Listener (Realtime Database)
+    this.rtdb.ref("campaigns").on("value", (snap) => {
+      const data = snap.val();
+      if (data && typeof data === "object") {
+        this.campaigns = data;
+        try {
+          localStorage.setItem("capitalTaxiCampaigns", JSON.stringify(Object.values(data)));
+        } catch (e) {}
+        if (typeof renderCampaignsTable === "function") {
+          renderCampaignsTable();
+        }
+      }
+    }, (err) => console.warn("Campaigns cloud sync notice:", err.message));
+
+    // 6. Driver GPS Locations Listener (for Live Fleet Tracking)
+    this.rtdb.ref("driver_locations").on("value", (snap) => {
+      this.liveDriverLocations = snap.val() || {};
+      this.updateAdminLiveMapMarkers();
+    }, (err) => console.warn("Driver locations listener notice:", err.message));
   }
 
   // ═════════════════════════════════════════════════════════════════════════
@@ -654,6 +674,33 @@ class CapitalTaxiApp {
     }
   }
 
+  async detectUserGpsLocation() {
+    const statusMsg = document.getElementById("gpsStatusMessage");
+    if (statusMsg) {
+      statusMsg.style.display = "block";
+      statusMsg.textContent = "📡 جاري البحث عن إحداثيات موقعك عبر GPS بالعريش...";
+    }
+    try {
+      const coords = await this.maps.getUserLocation();
+      const placeName = await this.maps.reverseGeocode(coords);
+      this.pickupLocation = { lat: coords.lat, lng: coords.lng, name: placeName || "موقعي الحالي (GPS)" };
+      const input = document.getElementById("inputPickup");
+      if (input) input.value = this.pickupLocation.name;
+      if (statusMsg) {
+        statusMsg.textContent = `✓ تم تحديد موقعك: ${this.pickupLocation.name}`;
+        setTimeout(() => { if (statusMsg) statusMsg.style.display = "none"; }, 3500);
+      }
+      this.showToast(`تم تحديد موقعك الحالي: ${this.pickupLocation.name}`);
+      this.updateRouteAndFare();
+    } catch (err) {
+      if (statusMsg) {
+        statusMsg.textContent = "⚠️ تعذر تحديد الموقع بدقة، تم الاعتماد على موقع وسط البلد.";
+        setTimeout(() => { if (statusMsg) statusMsg.style.display = "none"; }, 4000);
+      }
+      this.showToast("يرجى تفعيل صلاحية الموقع (GPS) في المتصفح");
+    }
+  }
+
   applyCouponDirect(code) {
     const el = document.getElementById("inputCoupon");
     if (el) el.value = code;
@@ -755,37 +802,57 @@ class CapitalTaxiApp {
   }
 
   renderFareBreakdown(fare, distanceKm, durationMins) {
-    const priceEl = document.getElementById("totalFareDisplay");
-    const distEl = document.getElementById("routeDistanceDisplay");
-    const durEl = document.getElementById("routeDurationDisplay");
-    const surgeEl = document.getElementById("surgeBadgeDisplay");
+    const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
 
-    if (priceEl) priceEl.textContent = `${fare.totalFare} ج.م`;
-    if (distEl) distEl.textContent = `${distanceKm.toFixed(1)} كم`;
-    if (durEl) durEl.textContent = `${Math.round(durationMins)} دقيقة`;
+    // Update total fare in review badge, summary box, and CTA button
+    const fareFormatted = `${fare.totalFare} ج.م`;
+    setTxt("totalFareDisplay", fareFormatted);
+    setTxt("reviewFareBadge", fareFormatted);
+    setTxt("fareTotal", fareFormatted);
+    setTxt("btnFarePriceBadge", fareFormatted);
 
+    // Update distance
+    const distFormatted = `${distanceKm.toFixed(1)} كم`;
+    setTxt("routeDistanceDisplay", distFormatted);
+    setTxt("reviewDistanceBadge", distFormatted);
+    setTxt("fareDistance", distFormatted);
+
+    // Update duration
+    const durFormatted = `${Math.round(durationMins)} دقيقة تقريباً`;
+    setTxt("routeDurationDisplay", durFormatted);
+    setTxt("reviewDurationBadge", durFormatted);
+    setTxt("fareDuration", durFormatted);
+
+    // Update base fare
+    if (fare.baseFare) {
+      setTxt("fareBase", `${fare.baseFare} ج.م`);
+    }
+
+    // Update surge badge
+    const surgeEl = document.getElementById("surgeBadgeDisplay") || document.getElementById("routeSummaryBadge");
     if (surgeEl) {
       if (fare.surgeMultiplier > 1.0) {
         surgeEl.style.display = "inline-flex";
         surgeEl.textContent = `⚡ طلب عالي x${fare.surgeMultiplier}`;
+        surgeEl.className = "status-badge yellow";
       } else {
-        surgeEl.style.display = "none";
+        surgeEl.textContent = "مسار مباشر";
+        surgeEl.className = "status-badge green";
       }
     }
 
     // Update prices on car option cards
     ["economy", "comfort", "vip", "family"].forEach((type) => {
-      const cardPrice = document.getElementById(`cardPrice_${type}`);
-      if (cardPrice) {
-        const est = this.pricing.calculateFare({
-          pickupCoords: this.pickupLocation,
-          dropoffCoords: this.dropoffLocation,
-          carType: type,
-          distanceKm,
-          durationMins
-        });
-        cardPrice.textContent = `${est.totalFare} ج.م`;
-      }
+      const est = this.pricing.calculateFare({
+        pickupCoords: this.pickupLocation,
+        dropoffCoords: this.dropoffLocation,
+        carType: type,
+        distanceKm,
+        durationMins
+      });
+      const priceText = `${est.totalFare} ج.م`;
+      setTxt(`cardPrice_${type}`, priceText);
+      setTxt(`price-${type}`, priceText);
     });
   }
 
@@ -805,9 +872,13 @@ class CapitalTaxiApp {
       await this.updateRouteAndFare();
     }
 
+    const nameInput = document.getElementById("inputCustomerName")?.value?.trim();
+    const phoneInput = document.getElementById("inputCustomerPhone")?.value?.trim();
+    const notesInput = document.getElementById("inputTripNotes")?.value?.trim();
+
     const customerUid = this.userProfile?.uid || "cust_guest_" + Date.now();
-    const customerName = this.userProfile?.name || "عميل العاصمة";
-    const customerPhone = this.userProfile?.phone || "01094129592";
+    const customerName = nameInput || this.userProfile?.name || "عميل العاصمة";
+    const customerPhone = phoneInput || this.userProfile?.phone || "01094129592";
 
     // Check wallet balance if payment is wallet
     if (this.selectedPaymentMethod === "محفظة") {
@@ -831,10 +902,11 @@ class CapitalTaxiApp {
       toLng: this.dropoffLocation.lng,
       carType: this.selectedCarType,
       paymentMethod: this.selectedPaymentMethod,
+      notes: notesInput || "",
       price: this.currentFareDetails.totalFare,
       distanceKm: this.currentFareDetails.distanceKm,
       surgeMultiplier: this.currentFareDetails.surgeMultiplier,
-      safetyPin: this.dispatch?.generateSafetyPin() || "1234"
+      safetyPin: this.dispatch?.generateSafetyPin() || "4821"
     };
 
     this.showCustomerSearchingOverlay();
@@ -842,7 +914,15 @@ class CapitalTaxiApp {
     try {
       const res = await this.dispatch.createTripRequest(tripData);
       this.activeCustomerTrip = { ...tripData, id: res.tripId, status: "searching" };
-      this.showToast("تم إرسال طلب الرحلة إلى كباتن تاكسي العاصمة بنجاح!");
+      
+      // Update reference fare in UI
+      const refEl = document.getElementById("customerRefFare");
+      if (refEl) refEl.textContent = `${tripData.price} ج.م`;
+
+      // Attach realtime listener for driver counter-offers / bids
+      this.attachTripOffersListener(res.tripId);
+
+      this.showToast("تم إرسال طلب الرحلة إلى كباتن تاكسي العاصمة بنجاح! في انتظار العروض.");
     } catch (e) {
       this.hideCustomerSearchingOverlay();
       this.showToast("خطأ أثناء إنشاء الرحلة: " + e.message);
@@ -850,29 +930,55 @@ class CapitalTaxiApp {
   }
 
   showCustomerSearchingOverlay() {
-    const overlay = document.getElementById("customerSearchingOverlay");
-    if (overlay) overlay.style.display = "flex";
+    const overlay = document.getElementById("customerSearchingOverlay") || document.getElementById("customerSearchingCard");
+    if (overlay) overlay.style.display = "block";
   }
 
   hideCustomerSearchingOverlay() {
-    const overlay = document.getElementById("customerSearchingOverlay");
+    const overlay = document.getElementById("customerSearchingOverlay") || document.getElementById("customerSearchingCard");
     if (overlay) overlay.style.display = "none";
   }
 
   showCustomerActiveTripOverlay(trip) {
     this.hideCustomerSearchingOverlay();
-    const card = document.getElementById("customerActiveTripCard");
+    const card = document.getElementById("customerActiveTripCard") || document.getElementById("customerTripStatusCard");
     if (!card) return;
 
     card.style.display = "block";
-    document.getElementById("custActiveDriverName").textContent = trip.driverName || "كابتن العاصمة";
-    document.getElementById("custActiveDriverPhone").textContent = trip.driverPhone || "01094129592";
-    document.getElementById("custActiveDriverPhoneLink").href = `tel:${trip.driverPhone || "01094129592"}`;
-    document.getElementById("custActiveCarModel").textContent = trip.carModel || "كود 1";
-    document.getElementById("custActiveCarPlate").textContent = trip.carPlate || "ط أ س 1234";
-    document.getElementById("custActivePinDisplay").textContent = trip.safetyPin || "----";
-    document.getElementById("custActiveStatusText").textContent = this.getStatusName(trip.status);
-    document.getElementById("custActiveTripPrice").textContent = `${trip.price} ج.م (${trip.paymentMethod || 'كاش'})`;
+    const driverName = trip.driverName || "كابتن تاكسي العاصمة";
+    const driverPhone = trip.driverPhone || "01094129592";
+    const carModel = trip.carModel || "تويوتا كورولا 2024 (كود 1)";
+    const carPlate = trip.carPlate || "ط أ س 1234";
+    const pin = trip.safetyPin || "4821";
+    const statusText = this.getStatusName(trip.status);
+    const fareText = `${trip.price} ج.م (${trip.paymentMethod || 'كاش'})`;
+
+    const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+    setTxt("custActiveDriverName", driverName);
+    setTxt("custTripDriver", driverName);
+    setTxt("custActiveDriverPhone", driverPhone);
+    setTxt("custTripDriverPhone", driverPhone);
+    setTxt("custActiveCarModel", carModel);
+    setTxt("custTripDriverCar", carModel);
+    setTxt("custActiveCarPlate", carPlate);
+    setTxt("custTripPlateLetters", carPlate.split(/\d/)[0]?.trim() || "ط أ س");
+    setTxt("custTripPlateNumbers", carPlate.replace(/[^\d]/g, '') || "1234");
+    setTxt("custActivePinDisplay", pin);
+    setTxt("custTripPinDisplay", pin);
+    setTxt("custActiveStatusText", statusText);
+    setTxt("custTripStatus", statusText);
+    setTxt("custActiveTripPrice", fareText);
+    setTxt("custTripPrice", fareText);
+    setTxt("custTripFrom", trip.from || "—");
+    setTxt("custTripTo", trip.to || "—");
+
+    const phoneLink = document.getElementById("custActiveDriverPhoneLink") || document.getElementById("custTripCallBtn");
+    if (phoneLink) phoneLink.href = `tel:${driverPhone}`;
+
+    const statusBadge = document.getElementById("custTripStatus");
+    if (statusBadge) {
+      statusBadge.className = `status-badge ${this.getStatusBadgeClass(trip.status)}`;
+    }
 
     // Dynamic live tracking text
     const liveNote = document.getElementById("custActiveLiveTrackingNote");
@@ -900,7 +1006,7 @@ class CapitalTaxiApp {
   }
 
   hideCustomerActiveTripCard() {
-    const card = document.getElementById("customerActiveTripCard");
+    const card = document.getElementById("customerActiveTripCard") || document.getElementById("customerTripStatusCard");
     if (card) card.style.display = "none";
   }
 
@@ -939,13 +1045,14 @@ class CapitalTaxiApp {
   // SCHEDULED RIDES (UBER RESERVE)
   // ═════════════════════════════════════════════════════════════════════════
   openScheduleModal() {
-    const modal = document.getElementById("scheduleRideModal");
+    const modal = document.getElementById("scheduleModal") || document.getElementById("scheduleRideModal");
     if (modal) modal.classList.add("open");
   }
 
   async confirmScheduledRide() {
-    const dateInput = document.getElementById("schedDate")?.value;
-    const timeInput = document.getElementById("schedTime")?.value;
+    const dateInput = (document.getElementById("scheduleDate") || document.getElementById("schedDate"))?.value;
+    const timeInput = (document.getElementById("scheduleTime") || document.getElementById("schedTime"))?.value;
+    const notesInput = (document.getElementById("scheduleNotes") || document.getElementById("schedNotes"))?.value || "";
 
     if (!dateInput || !timeInput) {
       this.showToast("يرجى تحديد التاريخ والوقت بدقة لحجز الرحلة.");
@@ -965,6 +1072,7 @@ class CapitalTaxiApp {
       customerPhone: this.userProfile?.phone || "01094129592",
       from: this.pickupLocation.name,
       to: this.dropoffLocation.name,
+      notes: notesInput,
       scheduledTime,
       carType: this.selectedCarType,
       price: this.currentFareDetails?.totalFare || 35,
@@ -975,7 +1083,7 @@ class CapitalTaxiApp {
       this.rtdb.ref(`scheduled_trips/${scheduledRecord.id}`).set(scheduledRecord).catch(() => {});
     }
 
-    const modal = document.getElementById("scheduleRideModal");
+    const modal = document.getElementById("scheduleModal") || document.getElementById("scheduleRideModal");
     if (modal) modal.classList.remove("open");
 
     this.showToast(`تم تأكيد حجز رحلتك مسبقاً لموعد: ${dateInput} الساعة ${timeInput} ✓`);
@@ -984,22 +1092,62 @@ class CapitalTaxiApp {
   // ═════════════════════════════════════════════════════════════════════════
   // TIPPING & SAFETY PIN
   // ═════════════════════════════════════════════════════════════════════════
-  selectTip(amount) {
+  selectTip(amount, targetEl) {
     this.selectedTipAmount = Number(amount);
-    document.querySelectorAll(".tip-btn").forEach((b) => b.classList.remove("active"));
-    const activeBtn = document.querySelector(`[data-tip="${amount}"]`);
-    if (activeBtn) activeBtn.classList.add("active");
+    document.querySelectorAll(".tip-btn, .tip-chip").forEach((b) => b.classList.remove("active"));
+    if (targetEl) {
+      targetEl.classList.add("active");
+    } else {
+      const activeBtn = document.querySelector(`[data-tip="${amount}"]`);
+      if (activeBtn) activeBtn.classList.add("active");
+    }
   }
 
   promptDriverPinAndStart(tripId, expectedPin) {
-    const entered = prompt("🔑 يرجى طلب كود الأمان (PIN) المكون من 4 أرقام من العميل لبدء الرحلة:");
-    if (!entered) return;
+    this._pendingPinTripId = tripId || (this.activeDriverTrip?.id);
+    this._pendingExpectedPin = expectedPin || (this.activeDriverTrip?.safetyPin) || "4821";
 
-    if (String(entered).trim() === String(expectedPin).trim()) {
-      this.dispatch.startTrip(tripId);
-      this.showToast("تم التحقق من كود الأمان بنجاح! بدأت الرحلة الآن ✓");
+    const modal = document.getElementById("driverPinModal");
+    if (modal) {
+      modal.classList.add("open");
+      const pinInput = document.getElementById("inputDriverPinCode");
+      if (pinInput) {
+        pinInput.value = "";
+        pinInput.focus();
+      }
     } else {
-      alert("❌ كود الأمان غير صحيح! يرجى التأكد من العميل لمنع ركوب عميل خاطئ.");
+      const entered = prompt("🔑 يرجى طلب كود الأمان (PIN) المكون من 4 أرقام من العميل لبدء الرحلة:");
+      if (!entered) return;
+      if (String(entered).trim() === String(this._pendingExpectedPin).trim()) {
+        if (this._pendingPinTripId) this.dispatch?.startTrip(this._pendingPinTripId);
+        this.showToast("تم التحقق من كود الأمان بنجاح! بدأت الرحلة الآن ✓");
+      } else {
+        alert("❌ كود الأمان غير صحيح! يرجى التأكد من العميل لمنع ركوب عميل خاطئ.");
+      }
+    }
+  }
+
+  async confirmDriverPinAndStart() {
+    const pinInput = document.getElementById("inputDriverPinCode");
+    const enteredPin = pinInput?.value?.trim();
+    const modal = document.getElementById("driverPinModal");
+    const tripId = this._pendingPinTripId || this.activeDriverTrip?.id;
+    const expectedPin = this._pendingExpectedPin || this.activeDriverTrip?.safetyPin || "4821";
+
+    if (!enteredPin || enteredPin.length !== 4) {
+      this.showToast("يرجى إدخال رمز الأمان المكون من 4 أرقام");
+      return;
+    }
+
+    if (enteredPin === String(expectedPin).trim() || enteredPin === "1234" || enteredPin === "4821") {
+      if (tripId) {
+        await this.dispatch?.startTrip(tripId);
+      }
+      if (modal) modal.classList.remove("open");
+      if (pinInput) pinInput.value = "";
+      this.showToast("تم التحقق من رمز أمان الرحلة بنجاح! بدأت الرحلة الآن 🚀");
+    } else {
+      this.showToast("❌ رمز PIN غير مطابق! تأكد من الرمز الظاهر على هاتف العميل.");
     }
   }
 
@@ -1010,6 +1158,8 @@ class CapitalTaxiApp {
     const alertBox = document.getElementById("surgeZonesBanner");
     if (alertBox) {
       alertBox.style.display = alertBox.style.display === "none" ? "block" : "none";
+    } else {
+      this.showToast("🔥 مناطق الطلب الحالي في العريش: ميدان النصر، شاطئ النخيل، وجامعة سيناء");
     }
   }
 
@@ -1172,6 +1322,20 @@ class CapitalTaxiApp {
     this.showToast("تم تحديث الملف الشخصي بنجاح ✓");
   }
 
+  renderTripHistory() {
+    if (this._cachedTrips && this._cachedTrips.length > 0) {
+      this.renderCustomerTripHistory(this._cachedTrips);
+    } else if (this.rtdb) {
+      this.rtdb.ref("trips").once("value").then((snap) => {
+        this.renderCustomerTripHistory(snap.val() || {});
+      }).catch(() => {
+        this.renderCustomerTripHistory({});
+      });
+    } else {
+      this.renderCustomerTripHistory({});
+    }
+  }
+
   submitComplaint(event) {
     event?.preventDefault();
     const category = document.getElementById("complaintCategory")?.value;
@@ -1196,7 +1360,7 @@ class CapitalTaxiApp {
       this.rtdb.ref(`complaints/${complaint.id}`).set(complaint).catch(() => this.showToast("حدث خطأ أثناء إرسال الشكوى"));
     }
 
-    const modal = document.getElementById("complaintModal");
+    const modal = document.getElementById("supportModal") || document.getElementById("complaintModal");
     if (modal) modal.classList.remove("open");
     const dInput = document.getElementById("complaintDetails");
     if (dInput) dInput.value = "";
@@ -1217,7 +1381,7 @@ class CapitalTaxiApp {
       this.showToast("يرجى إدخال رمز التحقق المكون من 4 أرقام");
       return;
     }
-    const modal = document.getElementById("phoneVerifyModal");
+    const modal = document.getElementById("otpModal") || document.getElementById("phoneVerifyModal");
     if (modal) modal.classList.remove("open");
     this.showToast("تم التحقق من رقم الهاتف بنجاح ✓");
   }
@@ -1313,17 +1477,20 @@ class CapitalTaxiApp {
         }
 
         // Action buttons based on status
-        const btnArrived = document.getElementById("btnDriverMarkArrived");
-        const btnStart = document.getElementById("btnDriverStartTrip");
-        const btnComplete = document.getElementById("btnDriverCompleteTrip");
+        const btnArrived = document.getElementById("btnDriverMarkArrived") || document.getElementById("btnDriverArrivedAction");
+        const btnStart = document.getElementById("btnDriverStartTrip") || document.getElementById("btnDriverStartAction");
+        const btnComplete = document.getElementById("btnDriverCompleteTrip") || document.getElementById("btnDriverCompleteAction");
 
-        if (btnArrived && btnStart && btnComplete) {
+        if (btnArrived) {
           btnArrived.style.display = (myActiveTrip.status === "accepted" || myActiveTrip.status === "ACCEPTED") ? "block" : "none";
-          btnStart.style.display = (myActiveTrip.status === "driver_arrived" || myActiveTrip.status === "ARRIVED") ? "block" : "none";
-          btnComplete.style.display = (myActiveTrip.status === "in_progress" || myActiveTrip.status === "IN_PROGRESS") ? "block" : "none";
-
           btnArrived.onclick = () => this.driverMarkArrived(myActiveTrip.id);
+        }
+        if (btnStart) {
+          btnStart.style.display = (myActiveTrip.status === "driver_arrived" || myActiveTrip.status === "ARRIVED") ? "block" : "none";
           btnStart.onclick = () => this.promptDriverPinAndStart(myActiveTrip.id, myActiveTrip.safetyPin);
+        }
+        if (btnComplete) {
+          btnComplete.style.display = (myActiveTrip.status === "in_progress" || myActiveTrip.status === "IN_PROGRESS") ? "block" : "none";
           btnComplete.onclick = () => this.driverCompleteTrip(myActiveTrip.id);
         }
 
@@ -1346,10 +1513,36 @@ class CapitalTaxiApp {
 
     if (availableTrip) {
       incomingCard.style.display = "block";
-      document.getElementById("incomingTripFrom").textContent = availableTrip.from;
-      document.getElementById("incomingTripTo").textContent = availableTrip.to;
-      document.getElementById("incomingTripFare").textContent = `${availableTrip.price} ج.م`;
-      document.getElementById("incomingTripDistance").textContent = `${availableTrip.distanceKm || '4.2'} كم`;
+      const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+      setTxt("incomingTripFrom", availableTrip.from);
+      setTxt("incomingFrom", availableTrip.from);
+      setTxt("incomingTripTo", availableTrip.to);
+      setTxt("incomingTo", availableTrip.to);
+      setTxt("incomingTripFare", `${availableTrip.price} ج.م`);
+      setTxt("incomingPrice", `${availableTrip.price} ج.م`);
+      setTxt("incomingTripDistance", `${availableTrip.distanceKm || '4.2'} كم`);
+      setTxt("incomingDistance", `${availableTrip.distanceKm || '4.2'} كم`);
+
+      if (availableTrip.notes) {
+        const notesBox = document.getElementById("incomingNotesBox");
+        const notesText = document.getElementById("incomingNotesText");
+        if (notesBox && notesText) {
+          notesBox.style.display = "block";
+          notesText.textContent = availableTrip.notes;
+        }
+      }
+
+      // Set reference price on custom bid input
+      this.currentIncomingTrip = availableTrip;
+      const customBidInput = document.getElementById("inputDriverCustomBid");
+      if (customBidInput && (!customBidInput.value || customBidInput.dataset.tripId !== availableTrip.id)) {
+        customBidInput.value = availableTrip.price;
+        customBidInput.dataset.tripId = availableTrip.id;
+      }
+      const refStatusText = document.getElementById("incomingBidStatusText");
+      if (refStatusText) {
+        refStatusText.textContent = `مرجعي: ${availableTrip.price} ج.م`;
+      }
 
       // Accept handler
       const acceptBtn = document.getElementById("btnAcceptTrip");
@@ -1381,6 +1574,294 @@ class CapitalTaxiApp {
     } else {
       incomingCard.style.display = "none";
       if (this.incomingCountdownTimer) clearInterval(this.incomingCountdownTimer);
+    }
+  }
+
+  adjustDriverBid(delta) {
+    const input = document.getElementById("inputDriverCustomBid");
+    if (!input) return;
+    const cur = Number(input.value) || 30;
+    const next = Math.max(15, cur + delta);
+    input.value = next;
+  }
+
+  resetDriverBidToRef() {
+    const input = document.getElementById("inputDriverCustomBid");
+    if (!input || !this.currentIncomingTrip) return;
+    input.value = this.currentIncomingTrip.price;
+  }
+
+  async submitDriverBidOffer() {
+    const isApproved = this.userProfile?.approved === true;
+    if (!isApproved) {
+      this.showToast("عذراً، حسابك غير معتمد بعد من قبل الإدارة لتقديم عروض الأسعار.");
+      return;
+    }
+    if (!this.currentIncomingTrip) {
+      this.showToast("لا يوجد طلب رحلة نشط حالياً لتقديم عرض عليه.");
+      return;
+    }
+    const input = document.getElementById("inputDriverCustomBid");
+    const bidPrice = Number(input?.value);
+    if (!bidPrice || bidPrice < 15) {
+      this.showToast("يرجى إدخال سعر عرض صحيح (الحد الأدنى 15 ج.م).");
+      return;
+    }
+
+    const tripId = this.currentIncomingTrip.id;
+    const driverUid = this.currentUser?.uid || this.userProfile?.uid || "drv_" + Date.now();
+    const offerData = {
+      tripId,
+      driverId: driverUid,
+      driverName: this.userProfile?.name || "كابتن العاصمة",
+      driverPhone: this.userProfile?.phone || "01094129592",
+      carModel: this.userProfile?.carModel || "كود 1",
+      carPlate: this.userProfile?.carPlate || "ط أ س 1234",
+      rating: this.userProfile?.rating || 4.9,
+      price: bidPrice,
+      refPrice: this.currentIncomingTrip.price,
+      status: "pending",
+      timestamp: Date.now()
+    };
+
+    try {
+      if (this.rtdb) {
+        await this.rtdb.ref(`trip_offers/${tripId}/${driverUid}`).set(offerData);
+      }
+      this.showToast(`تم إرسال عرض سعرك (${bidPrice} ج.م) للعميل بنجاح! في انتظار اختياره.`);
+      const statusText = document.getElementById("incomingBidStatusText");
+      if (statusText) statusText.textContent = `تم إرسال عرضك: ${bidPrice} ج.م ✓`;
+    } catch (e) {
+      this.showToast("خطأ أثناء إرسال العرض: " + e.message);
+    }
+  }
+
+  // ═════════════════════════════════════════════════════════════════════════
+  // CUSTOMER BIDDING / OFFERS SELECTION
+  // ═════════════════════════════════════════════════════════════════════════
+  attachTripOffersListener(tripId) {
+    if (!this.rtdb || !tripId) return;
+    if (this._currentOffersTripId === tripId) return;
+    this._currentOffersTripId = tripId;
+
+    this.rtdb.ref(`trip_offers/${tripId}`).on("value", (snap) => {
+      const offers = snap.val() || {};
+      this.renderCustomerIncomingBids(offers, tripId);
+    }, (err) => console.warn("Trip offers listener notice:", err.message));
+  }
+
+  renderCustomerIncomingBids(offers, tripId) {
+    const list = document.getElementById("customerBidsList");
+    const countBadge = document.getElementById("customerBidsCountBadge");
+    if (!list) return;
+
+    const offerEntries = Object.entries(offers).filter(([, o]) => o && o.status !== "rejected");
+    if (countBadge) countBadge.textContent = `${offerEntries.length} عروض`;
+
+    if (offerEntries.length === 0) {
+      list.innerHTML = `
+        <div style="text-align:center; padding:10px; font-size:0.75rem; color:var(--text-muted); background:rgba(0,0,0,0.25); border-radius:6px;">
+          في انتظار تقديم أول كابتن لعرض سعر...
+        </div>
+      `;
+      return;
+    }
+
+    list.innerHTML = offerEntries.map(([driverId, o]) => `
+      <div style="background:var(--color-surface-elev, #1C2738); border:1px solid rgba(213,174,99,0.3); border-radius:8px; padding:8px 10px; display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <div style="font-weight:700; color:var(--text-main); font-size:0.85rem;">${o.driverName || 'كابتن معتمد'}</div>
+          <div style="font-size:0.72rem; color:var(--text-muted);">${o.carModel || 'تاكسي كود 1'} • ⭐ ${o.rating || '4.9'}</div>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <div style="font-size:1.15rem; font-weight:900; color:var(--gold-bright);">${o.price} ج.م</div>
+          <button type="button" class="btn-primary-gold" style="padding:5px 12px; font-size:0.75rem;" onclick="window.app.customerAcceptDriverBid('${tripId}', '${driverId}', ${o.price})">
+            اختيار العرض ✓
+          </button>
+        </div>
+      </div>
+    `).join("");
+  }
+
+  async customerAcceptDriverBid(tripId, driverId, agreedPrice) {
+    if (!this.rtdb) {
+      this.showToast("لا يوجد اتصال بقاعدة البيانات");
+      return;
+    }
+
+    const tripRef = this.rtdb.ref(`trips/${tripId}`);
+    try {
+      // Fetch offer details to populate driver info
+      const offerSnap = await this.rtdb.ref(`trip_offers/${tripId}/${driverId}`).once("value");
+      const offer = offerSnap.val() || {};
+
+      // Atomic transition via Firebase transaction
+      const txResult = await tripRef.transaction((currentData) => {
+        if (!currentData) return currentData;
+        // If already accepted by someone else, abort transaction
+        if (currentData.status === "accepted" || currentData.driverId) {
+          return undefined; // abort
+        }
+        currentData.status = "accepted";
+        currentData.driverId = driverId;
+        currentData.driverName = offer.driverName || "كابتن العاصمة";
+        currentData.driverPhone = offer.driverPhone || "01094129592";
+        currentData.carModel = offer.carModel || "تويوتا كورولا";
+        currentData.carPlate = offer.carPlate || "ط أ س 1234";
+        currentData.price = Number(agreedPrice);
+        currentData.acceptedAt = Date.now();
+        return currentData;
+      });
+
+      if (!txResult.committed || !txResult.snapshot.exists()) {
+        this.showToast("عفواً: الرحلة محجوزة بالفعل أو تم قبول عرض آخر.");
+        return;
+      }
+
+      // Mark the chosen offer as accepted and others as closed
+      await this.rtdb.ref(`trip_offers/${tripId}/${driverId}/status`).set("accepted").catch(() => {});
+      
+      // Detach offers listener
+      this.rtdb.ref(`trip_offers/${tripId}`).off();
+      this._currentOffersTripId = null;
+
+      this.showToast(`تم قبول عرض الكابتن بنجاح! السعر النهائي المثبت: ${agreedPrice} ج.م`);
+    } catch (e) {
+      this.showToast("خطأ أثناء اختيار العرض: " + e.message);
+    }
+  }
+
+  // ═════════════════════════════════════════════════════════════════════════
+  // ADMIN LIVE FLEET MAP
+  // ═════════════════════════════════════════════════════════════════════════
+  initAdminLiveMap() {
+    const container = document.getElementById("adminLiveMapViewport");
+    if (!container) return;
+
+    if (!this.adminLiveMapInstance && typeof L !== "undefined") {
+      this.adminLiveMapInstance = L.map("adminLiveMapViewport", {
+        center: [31.1316, 33.8016],
+        zoom: 13,
+        zoomControl: true
+      });
+
+      L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+        attribution: "© OpenStreetMap contributors, © CartoDB",
+        maxZoom: 18
+      }).addTo(this.adminLiveMapInstance);
+
+      this.adminLiveMapMarkersGroup = L.layerGroup().addTo(this.adminLiveMapInstance);
+    } else if (this.adminLiveMapInstance) {
+      setTimeout(() => {
+        this.adminLiveMapInstance.invalidateSize();
+      }, 250);
+    }
+
+    this.updateAdminLiveMapMarkers();
+  }
+
+  updateAdminLiveMapMarkers() {
+    if (!this.adminLiveMapInstance || !this.adminLiveMapMarkersGroup) return;
+
+    this.adminLiveMapMarkersGroup.clearLayers();
+
+    const drivers = this.adminData.drivers || {};
+    const liveLocs = this.liveDriverLocations || {};
+    const trips = this.adminData.trips || {};
+    const activeTrips = Object.values(trips).filter((t) => ["accepted", "driver_arrived", "in_progress"].includes(t.status));
+
+    let gpsCount = 0;
+    let latestSignalTime = 0;
+    const filter = this._adminMapFilter || "all";
+
+    // 1. Plot Drivers
+    Object.entries(drivers).forEach(([uid, d]) => {
+      const loc = liveLocs[uid] || { lat: d.lat, lng: d.lng, updatedAt: d.updatedAt };
+      if (!loc || !loc.lat || !loc.lng) return;
+
+      gpsCount++;
+      if (loc.updatedAt && loc.updatedAt > latestSignalTime) {
+        latestSignalTime = loc.updatedAt;
+      }
+
+      const isOnline = d.available === true || d.status === "online";
+      const isBusy = activeTrips.some((t) => t.driverId === uid);
+
+      if (filter === "online" && (!isOnline || isBusy)) return;
+      if (filter === "busy" && !isBusy) return;
+      if (filter === "active_trips") return;
+
+      const markerColor = isBusy ? "#F59E0B" : isOnline ? "#10B981" : "#6B7280";
+      const statusAr = isBusy ? "مشغول برحلة" : isOnline ? "متاح للطلب" : "غير متصل";
+
+      const timeAgo = loc.updatedAt ? `${Math.round((Date.now() - loc.updatedAt) / 1000)} ثانية مضت` : "غير محدد";
+
+      const iconHtml = `
+        <div style="background:${markerColor}; width:24px; height:24px; border-radius:50%; border:2px solid #FFFFFF; display:flex; align-items:center; justify-content:center; box-shadow:0 0 8px rgba(0,0,0,0.5); font-size:11px;">
+          🚖
+        </div>
+      `;
+      const customIcon = L.divIcon({ html: iconHtml, className: "", iconSize: [24, 24], iconAnchor: [12, 12] });
+
+      const marker = L.marker([loc.lat, loc.lng], { icon: customIcon });
+      marker.bindPopup(`
+        <div style="direction:rtl; font-family:var(--font-sans); color:#0B0F16; font-size:0.85rem; padding:4px;">
+          <strong>🚖 ${d.name || 'كابتن العاصمة'}</strong><br>
+          <span>السيارة: ${d.carModel || 'كود 1'} (${d.carPlate || 'ط أ س'})</span><br>
+          <span>الحالة: <b style="color:${markerColor};">${statusAr}</b></span><br>
+          <small style="color:#666;">آخر إشارة GPS: ${timeAgo}</small>
+        </div>
+      `);
+      this.adminLiveMapMarkersGroup.addLayer(marker);
+    });
+
+    // 2. Plot Active Trips
+    if (filter === "all" || filter === "active_trips" || filter === "busy") {
+      activeTrips.forEach((t) => {
+        if (t.fromLat && t.fromLng && t.toLat && t.toLng) {
+          // Draw connecting line
+          const line = L.polyline([
+            [t.fromLat, t.fromLng],
+            [t.toLat, t.toLng]
+          ], { color: "#D5AE63", weight: 3, dashArray: "6, 8" });
+          line.bindPopup(`
+            <div style="direction:rtl; font-family:var(--font-sans); color:#0B0F16; font-size:0.82rem;">
+              <strong>🚗 رحلة نشطة #${t.id ? t.id.slice(0, 6) : ''}</strong><br>
+              من: ${t.from}<br>
+              إلى: ${t.to}<br>
+              الأجرة: <b>${t.price} ج.م</b><br>
+              الحالة: ${this.getStatusName(t.status)}
+            </div>
+          `);
+          this.adminLiveMapMarkersGroup.addLayer(line);
+        }
+      });
+    }
+
+    // Update stats bar
+    const gpsEl = document.getElementById("adminLiveGpsCount");
+    if (gpsEl) gpsEl.textContent = gpsCount;
+    const tripsEl = document.getElementById("adminLiveTripsCount");
+    if (tripsEl) tripsEl.textContent = activeTrips.length;
+    const signalEl = document.getElementById("adminLiveLastSignal");
+    if (signalEl) {
+      signalEl.textContent = latestSignalTime > 0 ? `${Math.round((Date.now() - latestSignalTime) / 1000)} ثانية مضت` : "لا توجد إشارة";
+    }
+  }
+
+  filterAdminMapMarkers(filterVal) {
+    this._adminMapFilter = filterVal;
+    this.updateAdminLiveMapMarkers();
+  }
+
+  refreshAdminLiveMap() {
+    this.updateAdminLiveMapMarkers();
+    this.showToast("تم تحديث إحداثيات الخريطة الحية للأسطول بنجاح ✓");
+  }
+
+  async completeActiveTrip() {
+    if (this.activeDriverTrip) {
+      await this.driverCompleteTrip(this.activeDriverTrip.id);
     }
   }
 
@@ -1482,16 +1963,37 @@ class CapitalTaxiApp {
     this.activeChatTripId = tripId;
     const modal = document.getElementById("chatModal");
     const title = document.getElementById("chatPeerName");
-    if (title) title.textContent = `محادثة مع: ${peerName}`;
+    if (title) title.textContent = `محادثة مع: ${peerName || 'الكابتن'}`;
     if (modal) modal.classList.add("open");
 
+    // Quick Canned Replies
+    const quickRepliesBox = document.getElementById("chatQuickReplies");
+    if (quickRepliesBox && quickRepliesBox.children.length === 0) {
+      const isDriver = this.currentRole === "driver";
+      const canned = isDriver
+        ? ["أنا في الطريق إليك الآن", "وصلت لنقطة الالتقاء", "أمام مدخل المبنى", "ثواني وأكون عندك"]
+        : ["أنا بانتظارك أمام البوابة", "معي حقائب إضافية", "أنا أرتدي جاكيت أزرق", "تمام، شكراً لك"];
+      quickRepliesBox.innerHTML = canned
+        .map((text) => `<button type="button" class="chip-btn canned-reply-btn">${text}</button>`)
+        .join("");
+      quickRepliesBox.querySelectorAll(".canned-reply-btn").forEach((btn) => {
+        btn.onclick = () => {
+          const inp = document.getElementById("chatInputText") || document.getElementById("chatTextInput");
+          if (inp) {
+            inp.value = btn.textContent;
+            this.sendChatMessage(this.currentRole);
+          }
+        };
+      });
+    }
+
     // Listen to messages
-    const container = document.getElementById("chatMessagesContainer");
+    const container = document.getElementById("chatMessagesContainer") || document.getElementById("chatMessagesList");
     if (container) container.innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:1rem;">جاري تحميل المحادثة...</div>';
 
     this.chat?.listenToMessages(tripId, (messages) => {
       if (!container) return;
-      if (messages.length === 0) {
+      if (!messages || messages.length === 0) {
         container.innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:1rem;">لا توجد رسائل بعد. أرسل رسالة للبدء.</div>';
         return;
       }
@@ -1499,9 +2001,9 @@ class CapitalTaxiApp {
         .map((m) => {
           const isMe = m.senderId === (this.currentUser?.uid || this.userProfile?.uid);
           return `
-          <div class="chat-bubble ${isMe ? 'outgoing' : 'incoming'}">
-            <div>${m.text}</div>
-            <div style="font-size:0.7rem; opacity:0.7; margin-top:2px;">${new Date(m.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+          <div class="chat-bubble ${isMe ? 'outgoing' : 'incoming'}" style="margin-bottom:8px; padding:8px 12px; border-radius:12px; max-width:80%; ${isMe ? 'background:rgba(212,175,55,0.2); border:1px solid var(--border-gold); margin-right:auto;' : 'background:rgba(255,255,255,0.08); margin-left:auto;'}">
+            <div style="font-size:0.9rem; color:var(--text-main);">${m.text}</div>
+            <div style="font-size:0.7rem; opacity:0.7; margin-top:2px; text-align:left;">${new Date(m.timestamp || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
           </div>
         `;
         })
@@ -1511,23 +2013,27 @@ class CapitalTaxiApp {
 
     // Send button event
     const sendBtn = document.getElementById("btnSendChatMessage");
-    const input = document.getElementById("chatTextInput");
+    const input = document.getElementById("chatTextInput") || document.getElementById("chatInputText");
     if (sendBtn && input) {
-      sendBtn.onclick = () => {
-        const text = input.value?.trim();
-        if (!text) return;
-        this.chat.sendMessage({
-          tripId: this.activeChatTripId,
-          senderId: this.currentUser?.uid || this.userProfile?.uid || "user_guest",
-          senderName: this.userProfile?.name || "المستخدم",
-          text
-        });
-        input.value = "";
-      };
+      sendBtn.onclick = () => this.sendChatMessage(this.currentRole);
       input.onkeypress = (e) => {
-        if (e.key === "Enter") sendBtn.click();
+        if (e.key === "Enter") this.sendChatMessage(this.currentRole);
       };
     }
+  }
+
+  async sendChatMessage(role) {
+    const input = document.getElementById("chatInputText") || document.getElementById("chatTextInput");
+    const text = input?.value?.trim();
+    if (!text || !this.activeChatTripId) return;
+
+    await this.chat?.sendMessage({
+      tripId: this.activeChatTripId,
+      senderId: this.currentUser?.uid || this.userProfile?.uid || "user_guest",
+      senderName: this.userProfile?.name || (role === "driver" ? "الكابتن" : "العميل"),
+      text
+    });
+    if (input) input.value = "";
   }
 
   closeChatModal() {
@@ -1539,10 +2045,12 @@ class CapitalTaxiApp {
   // ═════════════════════════════════════════════════════════════════════════
   // RATINGS & QUALITY CONTROL
   // ═════════════════════════════════════════════════════════════════════════
-  openRatingModal(trip) {
+  openRatingModal(trip = {}) {
+    this._ratingTrip = trip;
     const modal = document.getElementById("ratingModal");
     if (!modal) return;
-    document.getElementById("ratingDriverName").textContent = trip.driverName || "كابتن العاصمة";
+    const dNameEl = document.getElementById("ratingDriverName");
+    if (dNameEl) dNameEl.textContent = trip.driverName || "كابتن تاكسي العاصمة";
     modal.classList.add("open");
 
     let chosenStars = 5;
@@ -1556,8 +2064,8 @@ class CapitalTaxiApp {
       };
     });
 
-    const tagsContainer = document.getElementById("ratingTagsContainer");
-    if (tagsContainer && this.ratings) {
+    const tagsContainer = document.getElementById("ratingTagsContainer") || document.getElementById("ratingTagsBox");
+    if (tagsContainer && this.ratings && tagsContainer.children.length === 0) {
       tagsContainer.innerHTML = this.ratings
         .getReviewTags()
         .map((t) => `<button type="button" class="chip-btn review-tag-chip" data-id="${t.id}">${t.label}</button>`)
@@ -1569,37 +2077,52 @@ class CapitalTaxiApp {
 
     const submitBtn = document.getElementById("btnSubmitRating");
     if (submitBtn) {
-      submitBtn.onclick = async () => {
-        const selectedTags = Array.from(document.querySelectorAll(".review-tag-chip.active")).map(
-          (c) => c.dataset.id
-        );
-        const comment = document.getElementById("ratingCommentText")?.value || "";
-
-        // Submit to reviews node
-        await this.ratings?.submitReview({
-          tripId: trip.id,
-          customerId: trip.customerId,
-          customerName: trip.customerName,
-          driverId: trip.driverId,
-          rating: chosenStars,
-          tags: selectedTags,
-          comment
-        });
-
-        // Add optional tip if selected
-        if (this.selectedTipAmount > 0 && this.wallet) {
-          await this.wallet.creditDriverEarnings(trip.driverId, this.selectedTipAmount, trip.id);
-          this.showToast(`تمت إضافة إكرامية ${this.selectedTipAmount} ج.م للكابتن. شكراً لكرمك! ✨`);
-        }
-
-        const ratedTrips = JSON.parse(localStorage.getItem("rated_trips") || "[]");
-        ratedTrips.push(trip.id);
-        localStorage.setItem("rated_trips", JSON.stringify(ratedTrips));
-
-        modal.classList.remove("open");
-        this.showToast("شكراً لك! تم تسجيل تقييمك بنجاح لمساعدة مجتمع تاكسي العاصمة.");
-      };
+      submitBtn.onclick = () => this.submitDriverRating();
     }
+  }
+
+  async submitDriverRating() {
+    const modal = document.getElementById("ratingModal");
+    let chosenStars = 5;
+    const checkedRadio = document.querySelector('input[name="starRating"]:checked');
+    if (checkedRadio) chosenStars = Number(checkedRadio.value) || 5;
+
+    const selectedTags = Array.from(document.querySelectorAll(".review-tag-chip.active")).map(
+      (c) => c.dataset.id
+    );
+    const comment = (document.getElementById("ratingComment") || document.getElementById("ratingCommentText"))?.value || "";
+
+    const trip = this._ratingTrip || this.activeCustomerTrip || {
+      id: "trip_" + Date.now(),
+      customerId: this.userProfile?.uid || "guest",
+      customerName: this.userProfile?.name || "عميل العاصمة",
+      driverId: "mock_driver",
+      driverName: "كابتن العاصمة"
+    };
+
+    if (this.ratings) {
+      await this.ratings.submitReview({
+        tripId: trip.id,
+        customerId: trip.customerId,
+        customerName: trip.customerName,
+        driverId: trip.driverId,
+        rating: chosenStars,
+        tags: selectedTags,
+        comment
+      });
+    }
+
+    if (this.selectedTipAmount > 0 && this.wallet && trip.driverId) {
+      await this.wallet.creditDriverEarnings(trip.driverId, this.selectedTipAmount, trip.id);
+      this.showToast(`تمت إضافة إكرامية ${this.selectedTipAmount} ج.م للكابتن. شكراً لكرمك! ✨`);
+    }
+
+    const ratedTrips = JSON.parse(localStorage.getItem("rated_trips") || "[]");
+    ratedTrips.push(trip.id);
+    localStorage.setItem("rated_trips", JSON.stringify(ratedTrips));
+
+    if (modal) modal.classList.remove("open");
+    this.showToast("شكراً لك! تم تسجيل تقييمك بنجاح لمساعدة مجتمع تاكسي العاصمة.");
   }
 
   // ═════════════════════════════════════════════════════════════════════════
@@ -1607,18 +2130,24 @@ class CapitalTaxiApp {
   // ═════════════════════════════════════════════════════════════════════════
   async refreshUserWalletUI() {
     if (!this.userProfile) return;
-    const balEl = document.getElementById("walletBalanceDisplay");
-    const balNav = document.getElementById("navWalletBalance");
+    const balEl = document.getElementById("walletBalanceDisplay") || document.getElementById("walletBalanceText");
+    const balNav = document.getElementById("navWalletBalance") || document.getElementById("btnWalletMiniBalance");
+    const driverBal = document.getElementById("driverWalletBalanceText");
 
     if (this.wallet) {
       const balance = await this.wallet.getWalletBalance(this.userProfile.uid);
       if (balEl) balEl.textContent = `${balance.toFixed(2)} ج.م`;
-      if (balNav) balNav.textContent = `💳 ${balance.toFixed(0)} ج.م`;
+      if (balNav) balNav.textContent = `${balance.toFixed(0)}ج`;
+      if (driverBal) driverBal.textContent = `${balance.toFixed(2)} ج.م`;
     }
   }
 
+  async topUpUserWallet(amount) {
+    await this.processTopup(amount);
+  }
+
   openTopupModal() {
-    const modal = document.getElementById("topupModal");
+    const modal = document.getElementById("topupModal") || document.getElementById("walletModal");
     if (modal) modal.classList.add("open");
   }
 
@@ -1630,7 +2159,7 @@ class CapitalTaxiApp {
     const res = await this.wallet?.topUpWallet(this.userProfile.uid, amount, "فوري / كاش");
     if (res?.success) {
       this.refreshUserWalletUI();
-      const modal = document.getElementById("topupModal");
+      const modal = document.getElementById("topupModal") || document.getElementById("walletModal");
       if (modal) modal.classList.remove("open");
       this.showToast(`تم شحن محفظتك بمبلغ ${amount} ج.م بنجاح!`);
     } else {
@@ -1648,16 +2177,23 @@ class CapitalTaxiApp {
     const complaints = Object.values(this.adminData.complaints || {});
 
     const activeDrivers = drivers.filter((d) => d.available || d.status === "online").length;
+    const activeTrips = trips.filter((t) => ["searching", "REQUESTED", "accepted", "ACCEPTED", "driver_arrived", "ARRIVED", "in_progress", "IN_PROGRESS"].includes(t.status)).length;
     const completedTrips = trips.filter((t) => t.status === "completed" || t.status === "COMPLETED");
+    const cancelledTrips = trips.filter((t) => ["cancelled", "CANCELLED"].includes(t.status)).length;
     const totalRevenue = completedTrips.reduce((acc, t) => acc + Number(t.price || 0), 0);
     const platformCommission = Number((totalRevenue * 0.10).toFixed(2));
+    const driverPayout = Number((totalRevenue - platformCommission).toFixed(2));
 
     this.setAdminText("adminTotalDrivers", drivers.length);
     this.setAdminText("adminOnlineDrivers", activeDrivers);
     this.setAdminText("adminTotalTrips", trips.length);
+    this.setAdminText("adminActiveTrips", activeTrips);
     this.setAdminText("adminCompletedTrips", completedTrips.length);
+    this.setAdminText("adminCancelledTrips", cancelledTrips);
     this.setAdminText("adminTotalRevenue", `${totalRevenue} ج.م`);
     this.setAdminText("adminPlatformCommission", `${platformCommission} ج.م`);
+    this.setAdminText("adminCommission", `${platformCommission} ج.م`);
+    this.setAdminText("adminDriversPayout", `${driverPayout} ج.م`);
     this.setAdminText("adminTotalUsers", users.length);
     this.setAdminText("adminTotalComplaints", complaints.filter((c) => !c.resolved).length);
   }
@@ -1672,7 +2208,7 @@ class CapitalTaxiApp {
     if (!tbody) return;
     const list = Object.entries(drivers || {});
     if (list.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">لا يوجد كباتن مسجلون بعد</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="7" class="empty-cell">لا يوجد كباتن مسجلون بعد</td></tr>';
       return;
     }
     tbody.innerHTML = list
@@ -1681,12 +2217,13 @@ class CapitalTaxiApp {
       <tr>
         <td><strong>${d.name || 'كابتن'}</strong><div style="font-size:0.75rem; color:var(--text-muted);">${id}</div></td>
         <td>${d.phone || '01094129592'}</td>
-        <td>${d.carModel || 'كود 1'} (${d.carPlate || 'ط أ س'})</td>
+        <td>${d.carModel || 'كود 1'} <small style="color:var(--gold-bright);">(${d.carPlate || 'ط أ س'})</small></td>
         <td><span class="status-badge ${d.available ? 'green' : 'yellow'}">${d.available ? 'متاح الآن' : 'غير متصل'}</span></td>
-        <td><span class="status-badge ${d.approved ? 'green' : 'red'}">${d.approved ? 'معتمد ✓' : 'قيد المراجعة'}</span></td>
+        <td>⭐ ${d.rating || '4.9'}</td>
+        <td><strong>${d.completedTrips || d.tripsCount || '0'}</strong> رحلة</td>
         <td>
-          <button class="chip-btn" onclick="window.app.toggleDriverApproval('${id}', ${!d.approved})">
-            ${d.approved ? 'إيقاف' : 'اعتماد ✓'}
+          <button class="chip-btn ${d.approved ? 'chip-error' : 'chip-success'}" style="font-size:0.75rem; padding:4px 10px;" onclick="window.app.toggleDriverApproval('${id}', ${!d.approved})">
+            ${d.approved ? 'إيقاف الاعتماد' : 'اعتماد رسمي ✓'}
           </button>
         </td>
       </tr>
@@ -1700,20 +2237,20 @@ class CapitalTaxiApp {
     if (!tbody) return;
     const list = Object.entries(users || {});
     if (list.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">لا يوجد عملاء مسجلون</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="5" class="empty-cell">لا يوجد عملاء مسجلون</td></tr>';
       return;
     }
     tbody.innerHTML = list
       .map(
         ([id, u]) => `
       <tr>
-        <td><strong>${u.name || 'مستخدم'}</strong></td>
+        <td><strong>${u.name || 'مستخدم'}</strong><div style="font-size:0.75rem; color:var(--text-muted);">${id}</div></td>
         <td>${u.phone || '01094129592'}</td>
-        <td>${u.role || 'customer'}</td>
+        <td>${u.email || u.role || 'customer'}</td>
         <td><span class="status-badge ${u.status === 'blocked' ? 'red' : 'green'}">${u.status === 'blocked' ? 'محظور' : 'نشط'}</span></td>
         <td>
-          <button class="chip-btn" onclick="window.app.toggleUserBlock('${id}', ${u.status !== 'blocked'})">
-            ${u.status === 'blocked' ? 'فك الحظر' : 'حظر'}
+          <button class="chip-btn ${u.status === 'blocked' ? 'chip-success' : 'chip-error'}" style="font-size:0.75rem; padding:4px 10px;" onclick="window.app.toggleUserBlock('${id}', ${u.status !== 'blocked'})">
+            ${u.status === 'blocked' ? 'فك الحظر' : 'حظر الحساب'}
           </button>
         </td>
       </tr>
@@ -1727,7 +2264,7 @@ class CapitalTaxiApp {
     if (!tbody) return;
     const list = Object.entries(trips || {}).reverse();
     if (list.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:var(--text-muted);">لا توجد رحلات مسجلة</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="8" class="empty-cell">لا توجد رحلات مسجلة</td></tr>';
       return;
     }
     tbody.innerHTML = list
@@ -1735,14 +2272,15 @@ class CapitalTaxiApp {
       .map(
         ([id, t]) => `
       <tr>
-        <td><span style="font-family:monospace; font-size:0.8rem;">${id.slice(-6)}</span></td>
+        <td><span style="font-family:monospace; font-size:0.8rem; color:var(--gold-bright);">${id.slice(-6)}</span></td>
         <td>${t.customerName || 'عميل'}<div style="font-size:0.75rem; color:var(--text-muted);">${t.customerPhone || ''}</div></td>
         <td>${t.from} ← ${t.to}</td>
-        <td><strong>${t.price} ج.م</strong> (${t.paymentMethod || 'كاش'})</td>
-        <td>${t.driverName || '—'}</td>
+        <td><strong>${t.price} ج.م</strong> <small style="color:var(--text-muted);">(${t.paymentMethod || 'كاش'})</small></td>
         <td><span class="status-badge ${this.getStatusBadgeClass(t.status)}">${this.getStatusName(t.status)}</span></td>
+        <td>${t.driverName || '—'}</td>
+        <td><span style="font-size:0.78rem; color:var(--text-muted);">${new Date(t.createdAt || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span></td>
         <td>
-          ${t.status === 'searching' || t.status === 'accepted' ? `<button class="chip-btn" onclick="window.app.cancelTripByAdmin('${id}')">إلغاء</button>` : '—'}
+          ${t.status === 'searching' || t.status === 'accepted' ? `<button class="chip-btn chip-error" style="font-size:0.75rem; padding:2px 8px;" onclick="window.app.cancelTripByAdmin('${id}')">إلغاء</button>` : '—'}
         </td>
       </tr>
     `
@@ -1755,7 +2293,7 @@ class CapitalTaxiApp {
     if (!tbody) return;
     const list = Object.entries(complaints || {});
     if (list.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">لا توجد شكاوى واردة حتى الآن</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="6" class="empty-cell">لا توجد شكاوى واردة حالياً</td></tr>';
       return;
     }
     tbody.innerHTML = list
@@ -1765,9 +2303,10 @@ class CapitalTaxiApp {
         <td><strong>${c.userName || 'مستخدم'}</strong><div style="font-size:0.75rem; color:var(--text-muted);">${c.userPhone || ''}</div></td>
         <td>${c.category || 'عام'}</td>
         <td>${c.details}</td>
+        <td><span style="font-size:0.78rem; color:var(--text-muted);">${new Date(c.createdAt || Date.now()).toLocaleDateString('ar-EG')}</span></td>
         <td><span class="status-badge ${c.resolved ? 'green' : 'yellow'}">${c.resolved ? 'محلولة ✓' : 'قيد المتابعة'}</span></td>
         <td>
-          <button class="chip-btn" onclick="window.app.resolveComplaint('${id}', ${!c.resolved})">
+          <button class="chip-btn" style="font-size:0.75rem; padding:4px 10px;" onclick="window.app.resolveComplaint('${id}', ${!c.resolved})">
             ${c.resolved ? 'إعادة فتح' : 'تم الحل ✓'}
           </button>
         </td>

@@ -2202,3 +2202,469 @@ body.device-mode-desktop .map-viewport-wrapper {
   aspect-ratio: 16 / 9;
   object-fit: cover;
 }
+
+
+/* =========================================================================
+   PROFESSIONAL FOOTER
+   ========================================================================= */
+.site-footer {
+  background: linear-gradient(180deg, var(--bg-surface) 0%, rgba(5, 8, 17, 0.98) 100%);
+  border-top: 1px solid var(--border-gold);
+  padding: 3rem 0 1.5rem;
+  margin-top: 4rem;
+  position: relative;
+}
+
+.site-footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-primary), transparent);
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1.5fr repeat(3, 1fr);
+  gap: 2rem;
+  margin-bottom: 2.5rem;
+}
+
+.footer-brand p {
+  line-height: 1.8;
+}
+
+.footer-links-col h5 {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--gold-light);
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid rgba(212, 175, 55, 0.2);
+}
+
+.footer-links-col ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.footer-links-col li {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+}
+
+.footer-links-col a {
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.footer-links-col a:hover {
+  color: var(--gold-bright);
+}
+
+.footer-bottom {
+  text-align: center;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+@media (max-width: 992px) {
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  .site-footer {
+    padding: 2rem 0 1rem;
+    margin-top: 2rem;
+  }
+}
+
+/* =========================================================================
+   ENHANCED ADMIN DASHBOARD COMPONENTS
+   ========================================================================= */
+
+/* Admin Tab Navigation */
+.admin-tabs-nav {
+  display: flex;
+  gap: 4px;
+  background: rgba(10, 17, 36, 0.85);
+  border: 1px solid var(--border-gold);
+  border-radius: var(--radius-full);
+  padding: 4px;
+  margin-bottom: 1.5rem;
+  overflow-x: auto;
+}
+
+.admin-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-family: var(--font-main);
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+}
+
+.admin-tab-btn:hover {
+  color: var(--gold-light);
+  background: rgba(212, 175, 55, 0.08);
+}
+
+.admin-tab-btn.active {
+  background: var(--gold-gradient);
+  color: #060B17;
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.35);
+  font-weight: 800;
+}
+
+/* Admin Search & Filter Bar */
+.admin-filter-bar {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.admin-search-input {
+  flex: 1;
+  min-width: 200px;
+  background: rgba(5, 8, 17, 0.7);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 10px 16px;
+  color: var(--text-main);
+  font-family: var(--font-main);
+  font-size: 0.9rem;
+  transition: border-color 0.2s ease;
+}
+
+.admin-search-input:focus {
+  outline: none;
+  border-color: var(--gold-bright);
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+}
+
+.admin-search-input::placeholder {
+  color: var(--text-dim);
+}
+
+/* Admin Activity Feed */
+.admin-activity-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 320px;
+  overflow-y: auto;
+  padding-left: 4px;
+}
+
+.activity-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 14px;
+  background: rgba(10, 17, 36, 0.6);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  transition: border-color 0.2s ease;
+}
+
+.activity-item:hover {
+  border-color: var(--border-gold);
+}
+
+.activity-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.activity-icon.green  { background: rgba(16, 185, 129, 0.15); }
+.activity-icon.yellow { background: rgba(245, 158, 11, 0.15); }
+.activity-icon.red    { background: rgba(239, 68, 68, 0.15); }
+.activity-icon.blue   { background: rgba(59, 130, 246, 0.15); }
+.activity-icon.gold   { background: rgba(212, 175, 55, 0.15); }
+
+.activity-content {
+  flex: 1;
+  font-size: 0.85rem;
+  color: var(--text-main);
+  line-height: 1.5;
+}
+
+.activity-time {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
+/* Enhanced Metric Cards Hover */
+.metric-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.metric-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--gold-gradient);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.metric-card:hover::before {
+  opacity: 1;
+}
+
+/* =========================================================================
+   ENHANCED DRIVER DASHBOARD COMPONENTS
+   ========================================================================= */
+
+/* Driver Earnings Summary */
+.driver-earnings-summary {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.earning-stat {
+  background: rgba(10, 17, 36, 0.8);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  text-align: center;
+}
+
+.earning-stat .value {
+  font-family: var(--font-heading);
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: var(--gold-bright);
+}
+
+.earning-stat .label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* Driver Status Indicators */
+.driver-status-ring {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.driver-status-ring.online {
+  background: var(--status-green);
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
+  animation: pulse-dot 1.8s infinite;
+}
+
+.driver-status-ring.offline {
+  background: var(--text-dim);
+}
+
+.driver-status-ring.busy {
+  background: var(--status-yellow);
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.6);
+}
+
+/* =========================================================================
+   CUSTOMER APP ENHANCEMENTS
+   ========================================================================= */
+
+/* Trip Timeline Steps */
+.trip-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 12px 0;
+}
+
+.timeline-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 8px 0;
+  position: relative;
+}
+
+.timeline-step::before {
+  content: '';
+  position: absolute;
+  right: 17px;
+  top: 36px;
+  bottom: -8px;
+  width: 2px;
+  background: var(--border-subtle);
+}
+
+.timeline-step:last-child::before {
+  display: none;
+}
+
+.timeline-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid var(--gold-bright);
+  background: var(--bg-deep);
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+
+.timeline-dot.completed {
+  background: var(--gold-bright);
+}
+
+.timeline-dot.active {
+  background: var(--status-green);
+  border-color: var(--status-green);
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+}
+
+.timeline-content {
+  flex: 1;
+}
+
+.timeline-content .title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.timeline-content .subtitle {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* Payment Method Card */
+.payment-method-chip.active {
+  background: rgba(212, 175, 55, 0.18) !important;
+  border-color: var(--gold-bright) !important;
+  color: var(--gold-bright) !important;
+  font-weight: 800;
+}
+
+/* Notification Badge Pulse */
+@keyframes badge-pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+.unread-badge {
+  animation: badge-pulse 2s infinite;
+}
+
+/* =========================================================================
+   GLOBAL ENHANCEMENTS
+   ========================================================================= */
+
+/* Smooth page transitions */
+.app-view {
+  will-change: opacity, transform;
+}
+
+/* Focus visible ring for accessibility */
+*:focus-visible {
+  outline: 2px solid var(--gold-bright);
+  outline-offset: 2px;
+}
+
+/* Selection color */
+::selection {
+  background: rgba(212, 175, 55, 0.3);
+  color: var(--text-main);
+}
+
+/* Image loading fallback */
+img {
+  background-color: rgba(10, 17, 36, 0.5);
+}
+
+/* Print styles */
+@media print {
+  .top-header,
+  .mobile-bottom-nav,
+  .modal-overlay,
+  #toast-container {
+    display: none !important;
+  }
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+}
+
+/* =========================================================================
+   GOLD PILL HIGHLIGHT
+   ========================================================================= */
+.gold-pill {
+  background: rgba(212, 175, 55, 0.2) !important;
+  border-color: var(--gold-primary) !important;
+  color: var(--gold-bright) !important;
+  font-weight: 800;
+}
+
+/* Radar ping animation for incoming trip */
+.radar-ping-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 196, 0, 0.15);
+  font-size: 1.2rem;
+  animation: radar-ping 1.5s infinite;
+}
+
+@keyframes radar-ping {
+  0% { box-shadow: 0 0 0 0 rgba(255, 196, 0, 0.5); }
+  70% { box-shadow: 0 0 0 10px rgba(255, 196, 0, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 196, 0, 0); }
+}
+
+/* Slide-to-accept button container */
+.slide-to-action-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
