@@ -17,3 +17,17 @@ assets/images/advertising/WhatsApp Image*
 # Generated helper file
 all_files.txt
 
+# Local audit and maintenance files
+cleanup.ps1
+cleanup_single.ps1
+compute_exclusions.ps1
+generate_removal_commands.ps1
+phase11_2_audit.ps1
+post_verify.ps1
+precheck.ps1
+scan_reports.ps1
+verify_phase11.ps1
+exclusion_list.txt
+remaining_list.txt
+staged_files.txt
+
